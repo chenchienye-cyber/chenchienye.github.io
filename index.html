@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
+        input, select, button { user-select: auto; -webkit-user-select: auto; }
+        
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
             background-color: #f1f5f9; 
@@ -57,7 +59,7 @@
         }
         
         .action-area { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .action-area input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 18px; outline: none; width: 110px; }
+        .action-area input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 18px; outline: none; width: 120px; }
         .action-area select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 18px; background: white; outline: none; }
         .action-area button { padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; }
         .action-area button:hover { background: #1d4ed8; }
@@ -450,7 +452,7 @@
         </div>
         <div class="action-area">
             <button id="undoBtn" class="undo-btn" onclick="undo()" disabled>&#8617; 上一步</button>
-            <input type="text" id="pName" placeholder="姓名" onkeydown="if(event.key==='Enter') createPlayer()">
+            <input type="text" id="pName" placeholder="姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayer()">
             <select id="pGender">
                 <option value="M">男 &#9794;</option>
                 <option value="F">女 &#9792;</option>
@@ -461,9 +463,9 @@
                 <option value="blue">🔵 初中</option>
                 <option value="red">🔴 高手</option>
             </select>
-            <button onclick="createPlayer()">新增</button>
-            <button class="settings-btn" onclick="openSettingsModal()">⚙️ 開關場設定</button>
-            <button id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除模式: 關閉</button>
+            <button type="button" onclick="createPlayer()">新增</button>
+            <button type="button" class="settings-btn" onclick="openSettingsModal()">⚙️ 開關場設定</button>
+            <button type="button" id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除模式: 關閉</button>
         </div>
     </div>
 
@@ -561,12 +563,14 @@
         [1, 2, 3, 4, 5, 6].forEach(num => {
             const btn = document.getElementById(`cbtn-${num}`);
             const stext = document.getElementById(`stext-${num}`);
-            if (activeCourts.includes(num)) {
-                btn.classList.add('active');
-                stext.innerText = "🟢 開場";
-            } else {
-                btn.classList.remove('active');
-                stext.innerText = "⚪ 關場";
+            if (btn && stext) {
+                if (activeCourts.includes(num)) {
+                    btn.classList.add('active');
+                    stext.innerText = "🟢 開場";
+                } else {
+                    btn.classList.remove('active');
+                    stext.innerText = "⚪ 關場";
+                }
             }
         });
     }
@@ -576,30 +580,27 @@
         const rest = document.getElementById('rest');
 
         if (activeCourts.includes(num)) {
-            // 關閉場地：至少保留1個場地開著
             if (activeCourts.length <= 1) {
                 alert("至少需要保留 1 個場地開啟！");
                 return;
             }
             activeCourts = activeCourts.filter(n => n !== num);
 
-            // 清空被關閉場地與等待區裡的球員至休息區
             const oldCourt = document.getElementById(`court-${num}`);
             const oldQueue = document.getElementById(`queue-${num}`);
-            if (oldCourt) {
+            if (oldCourt && rest) {
                 while (oldCourt.firstChild) {
                     oldCourt.firstChild.classList.remove('is-winner');
                     oldCourt.firstChild.dataset.selectedWin = "false";
                     rest.appendChild(oldCourt.firstChild);
                 }
             }
-            if (oldQueue) {
+            if (oldQueue && rest) {
                 while (oldQueue.firstChild) {
                     rest.appendChild(oldQueue.firstChild);
                 }
             }
         } else {
-            // 開啟場地
             activeCourts.push(num);
             activeCourts.sort((a, b) => a - b);
         }
@@ -616,6 +617,8 @@
         const cWrap = document.getElementById('courts-wrapper');
         const qWrap = document.getElementById('queues-wrapper');
         
+        if (!cWrap || !qWrap) return;
+
         cWrap.innerHTML = '';
         qWrap.innerHTML = '';
 
@@ -753,7 +756,6 @@
             rest.appendChild(pNode);
         });
 
-        // 結束比賽後，自動把對應等待區隊伍遞補到場地上
         if (queue) {
             while (queue.firstChild) {
                 court.appendChild(queue.firstChild);
@@ -768,6 +770,8 @@
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
         const levelInput = document.getElementById('pLevel');
+        if (!nameInput) return;
+        
         const val = nameInput.value.trim();
         if(!val) return;
 
@@ -776,7 +780,10 @@
         const pId = 'p_' + Date.now();
         const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, 0, 0, false);
         
-        document.getElementById('rest').appendChild(pElem);
+        const rest = document.getElementById('rest');
+        if (rest) {
+            rest.appendChild(pElem);
+        }
         nameInput.value = '';
         nameInput.focus();
         
@@ -987,6 +994,7 @@
     }
 
     function applyStateObject(store) {
+        if (!store) return;
         const allPossibleZones = ['rest', 1, 2, 3, 4, 5, 6].flatMap(n => n === 'rest' ? ['rest'] : [`court-${n}`, `queue-${n}`]);
         allPossibleZones.forEach(zId => {
             const zone = document.getElementById(zId);
@@ -1021,11 +1029,14 @@
             if (data.activeCourts && Array.isArray(data.activeCourts)) {
                 activeCourts = data.activeCourts;
                 buildLayout();
+                applyStateObject(data.store);
+            } else {
+                // 相容舊格式
+                applyStateObject(data);
             }
-            applyStateObject(data.store || data);
             refreshStats();
         } catch(err) {
-            console.error(err);
+            console.error("Restore Error:", err);
         }
     }
 
