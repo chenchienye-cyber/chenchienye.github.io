@@ -6,6 +6,11 @@
     <title>團團圓圓宵夜團(排場板)</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- 引入 Firebase 即時雲端資料庫 SDK (Compat 版本) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         input, select, button { user-select: auto; -webkit-user-select: auto; }
@@ -185,7 +190,6 @@
         }
         .court-btn .status-text { font-size: 13px; font-weight: 600; }
 
-        /* 開場狀態 (綠色) */
         .court-btn.active {
             background: #f0fdf4;
             border-color: #22c55e;
@@ -407,9 +411,7 @@
             width: 100%;
         }
 
-        .level-text {
-            font-weight: 700;
-        }
+        .level-text { font-weight: 700; }
         .level-text.green { color: #16a34a; }
         .level-text.yellow { color: #d97706; }
         .level-text.blue { color: #0284c7; }
@@ -537,8 +539,38 @@
     </div>
 
 <script>
+    // -------------------------------------------------------------
+    // 1. Firebase 雲端即時資料庫設定金鑰
+    // -------------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyDPgUmF2FPMpFxgjcLodCvI0GmFsB3cdQU",
+        authDomain: "night-badminton.firebaseapp.com",
+        databaseURL: "https://night-badminton-default-rtdb.firebaseio.com", // 已自動為您對接預設雲端資料庫網址
+        projectId: "night-badminton",
+        storageBucket: "night-badminton.firebasestorage.app",
+        messagingSenderId: "271123971372",
+        appId: "1:271123971372:web:fd58c8dbcff6bcc1cd4089",
+        measurementId: "G-8TPKR4K690"
+    };
+
+    let isFirebaseActive = false;
+    let dbRef = null;
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+        dbRef = firebase.database().ref("badminton_supper_club");
+        isFirebaseActive = true;
+        console.log("Firebase 雲端即時同步已成功啟動！");
+    } catch (e) {
+        console.error("Firebase 初始化失敗：", e);
+    }
+
+    // -------------------------------------------------------------
+    // 2. 系統全域變數與對照表
+    // -------------------------------------------------------------
     let activeCourts = [1, 2, 3, 4];
-    
+    let isRemoteUpdating = false;
+
     const levelTextMap = {
         green: "新手",
         yellow: "初階",
@@ -550,6 +582,9 @@
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
 
+    // -------------------------------------------------------------
+    // 3. 視窗 Modal 控制與場地開關
+    // -------------------------------------------------------------
     function openSettingsModal() {
         updateModalUI();
         document.getElementById('settingsModal').classList.add('active');
@@ -771,7 +806,7 @@
         const genderInput = document.getElementById('pGender');
         const levelInput = document.getElementById('pLevel');
         if (!nameInput) return;
-        
+
         const val = nameInput.value.trim();
         if(!val) return;
 
@@ -785,7 +820,6 @@
             rest.appendChild(pElem);
         }
         nameInput.value = '';
-        nameInput.focus();
         
         refreshStats();
         persistData();
@@ -1012,31 +1046,58 @@
         });
     }
 
+    // 寫入資料（同步寫入 Firebase 與 LocalStorage）
     function persistData() {
+        if (isRemoteUpdating) return;
+
         const store = getCurrentStateObject();
         const payload = {
             activeCourts: activeCourts,
             store: store
         };
+
+        // 1. 本地備份
         localStorage.setItem('handsome10_badminton_data', JSON.stringify(payload));
+
+        // 2. 雲端同步
+        if (isFirebaseActive && dbRef) {
+            dbRef.set(payload);
+        }
     }
 
+    // 即時監聽雲端資料變更
     function restoreData() {
-        const raw = localStorage.getItem('handsome10_badminton_data');
-        if (!raw) return;
-        try {
-            const data = JSON.parse(raw);
-            if (data.activeCourts && Array.isArray(data.activeCourts)) {
-                activeCourts = data.activeCourts;
-                buildLayout();
-                applyStateObject(data.store);
-            } else {
-                // 相容舊格式
-                applyStateObject(data);
+        if (isFirebaseActive && dbRef) {
+            dbRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    isRemoteUpdating = true;
+                    if (data.activeCourts && Array.isArray(data.activeCourts)) {
+                        activeCourts = data.activeCourts;
+                        buildLayout();
+                    }
+                    applyStateObject(data.store || data);
+                    refreshStats();
+                    isRemoteUpdating = false;
+                }
+            });
+        } else {
+            // 本地備份讀取
+            const raw = localStorage.getItem('handsome10_badminton_data');
+            if (!raw) return;
+            try {
+                const data = JSON.parse(raw);
+                if (data.activeCourts && Array.isArray(data.activeCourts)) {
+                    activeCourts = data.activeCourts;
+                    buildLayout();
+                    applyStateObject(data.store);
+                } else {
+                    applyStateObject(data);
+                }
+                refreshStats();
+            } catch(err) {
+                console.error("Restore Local Error:", err);
             }
-            refreshStats();
-        } catch(err) {
-            console.error("Restore Error:", err);
         }
     }
 
