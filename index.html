@@ -323,7 +323,7 @@
         }
         .player-card:active { cursor: grabbing; }
 
-        /* 平板觸控拖曳時的浮動卡片樣式 */
+        /* 觸控拖曳浮動樣式 */
         .player-card.dragging-touch {
             position: fixed !important;
             pointer-events: none !important;
@@ -536,6 +536,29 @@
             cursor: pointer;
         }
 
+        /* 手機移動選擇小視窗圖示按鈕 */
+        .move-option-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .move-opt-btn {
+            padding: 14px 8px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+        .move-opt-btn:active {
+            background: #2563eb;
+            color: white;
+        }
+
         /* ------------------------------------------------------------- */
         /* 📱 手機版專屬獨立極致優化 CSS (螢幕寬度 <= 768px 自動啟用) */
         /* ------------------------------------------------------------- */
@@ -560,29 +583,40 @@
                 font-size: 18px;
             }
 
+            /* 手機版頂部工具按鈕分二排折行顯示，不跑出畫面 */
             .action-area {
                 width: 100%;
-                justify-content: space-between;
-                gap: 4px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: flex-start;
+            }
+
+            .action-row {
+                display: flex;
+                gap: 6px;
+                width: 100%;
+                align-items: center;
             }
 
             .action-area input {
-                width: 75px;
-                font-size: 14px;
-                padding: 4px 6px;
+                flex: 1;
+                font-size: 15px;
+                padding: 6px 8px;
             }
 
             .action-area select {
-                font-size: 14px;
-                padding: 4px 4px;
+                font-size: 15px;
+                padding: 6px 4px;
             }
 
             .action-area button {
-                font-size: 14px;
-                padding: 5px 8px;
+                font-size: 15px;
+                padding: 6px 12px;
+                flex: 1;
             }
 
-            /* 手機版啟用分頁選單 */
+            /* 手機版啟用頁籤分頁 */
             .mobile-tabs-bar {
                 display: flex;
             }
@@ -594,7 +628,6 @@
                 min-height: 0;
             }
 
-            /* 根據啟動的分頁切換顯示隱藏 */
             body[data-mobile-tab="rest"] .right-column { display: none !important; }
             body[data-mobile-tab="courts"] .rest-card { display: none !important; }
             body[data-mobile-tab="courts"] .right-column .card:last-child { display: none !important; }
@@ -603,7 +636,7 @@
             body[data-mobile-tab="queues"] .right-column .card:first-child { display: none !important; }
 
             .sub-grid-row {
-                grid-template-columns: repeat(2, 1fr) !important; /* 手機雙欄大卡片 */
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 6px;
             }
 
@@ -625,39 +658,45 @@
             }
 
             .header-note {
-                display: none; /* 手機簡化標題備註 */
+                display: none;
             }
         }
     </style>
 </head>
 <body data-mobile-tab="courts">
 
-    <!-- 頂部列 -->
+    <!-- 頂部列：手機版第二排自動拆行，完整顯示不跑出畫面 -->
     <div class="top-bar">
         <div class="site-title">
             <span class="title-part1">團團圓圓</span>
             <span class="title-part2">宵夜團</span>
         </div>
         <div class="action-area">
-            <button id="undoBtn" class="undo-btn" onclick="undo()" disabled>&#8617; 上一步</button>
-            <input type="text" id="pName" placeholder="姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayer()">
-            <select id="pGender">
-                <option value="M">男 &#9794;</option>
-                <option value="F">女 &#9792;</option>
-            </select>
-            <select id="pLevel">
-                <option value="green">🟢 新手</option>
-                <option value="yellow">🟡 初階</option>
-                <option value="blue">🔵 初中</option>
-                <option value="red">🔴 高手</option>
-            </select>
-            <button type="button" onclick="createPlayer()">新增</button>
-            <button type="button" class="settings-btn" onclick="openSettingsModal()">⚙️ 設定</button>
-            <button type="button" id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除: 關</button>
+            <!-- 第一排：輸入與新增 -->
+            <div class="action-row">
+                <input type="text" id="pName" placeholder="姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayer()">
+                <select id="pGender">
+                    <option value="M">男 &#9794;</option>
+                    <option value="F">女 &#9792;</option>
+                </select>
+                <select id="pLevel">
+                    <option value="green">🟢 新手</option>
+                    <option value="yellow">🟡 初階</option>
+                    <option value="blue">🔵 初中</option>
+                    <option value="red">🔴 高手</option>
+                </select>
+                <button type="button" onclick="createPlayer()">新增</button>
+            </div>
+            <!-- 第二排：設定、上一步、刪除模式 -->
+            <div class="action-row">
+                <button id="undoBtn" class="undo-btn" onclick="undo()" disabled>&#8617; 上一步</button>
+                <button type="button" class="settings-btn" onclick="openSettingsModal()">⚙️ 開關場設定</button>
+                <button type="button" id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除模式: 關</button>
+            </div>
         </div>
     </div>
 
-    <!-- 📱 手機專屬頁籤分頁導覽列 (自動於手機螢幕開啟) -->
+    <!-- 📱 手機專屬頁籤分頁導覽列 -->
     <div class="mobile-tabs-bar">
         <button class="mobile-tab-btn active" id="mtab-courts" onclick="switchMobileTab('courts')">
             🟢 上場區 (<span id="mb-courts-count">0</span>)
@@ -747,6 +786,21 @@
         </div>
     </div>
 
+    <!-- 📱 手機版專屬球員移動點選小視窗 -->
+    <div class="modal-overlay" id="playerMoveModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="moveModalTitle">移動球員</span>
+                <button class="close-modal-btn" onclick="closePlayerMoveModal()">&times;</button>
+            </div>
+            <p style="font-size: 14px; color: #64748b;">請選擇要將球員移動至哪個位置：</p>
+            <div class="move-option-grid" id="moveOptionsContainer"></div>
+            <div class="modal-footer" style="margin-top:16px;">
+                <button class="save-modal-btn" style="background:#64748b;" onclick="closePlayerMoveModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // -------------------------------------------------------------
     // 1. Firebase 雲端即時資料庫設定 (新加坡專屬高頻伺服器)
@@ -780,6 +834,7 @@
     let activeCourts = [1, 2, 3, 4];
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     let isRemoteUpdating = false;
+    let selectedPlayerElemForMove = null;
 
     const levelTextMap = {
         green: "新手",
@@ -793,7 +848,7 @@
     let isDeleteMode = false;
 
     // -------------------------------------------------------------
-    // 📱 手機專屬頁籤分頁控制
+    // 📱 手機專屬頁籤分頁與點擊移動選單控制
     // -------------------------------------------------------------
     function switchMobileTab(tabName) {
         document.body.setAttribute('data-mobile-tab', tabName);
@@ -804,6 +859,55 @@
                 else btn.classList.remove('active');
             }
         });
+    }
+
+    function openPlayerMoveModal(playerElem) {
+        selectedPlayerElemForMove = playerElem;
+        const pName = playerElem.dataset.name || "球員";
+        document.getElementById('moveModalTitle').innerText = `移動球員：${pName}`;
+        
+        const container = document.getElementById('moveOptionsContainer');
+        container.innerHTML = '';
+
+        // 加入開放中的場地
+        activeCourts.forEach((num, idx) => {
+            const qCode = queueLabels[idx] || num;
+            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('court-${num}')">🟢 ${num} 號場</button>`;
+        });
+
+        // 加入開放中的等待區
+        activeCourts.forEach((num, idx) => {
+            const qCode = queueLabels[idx] || num;
+            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('queue-${qCode}')">⏳ 等待 ${qCode}</button>`;
+        });
+
+        // 加入休息區
+        container.innerHTML += `<button class="move-opt-btn" style="background:#e2e8f0;" onclick="executeMobileMove('rest')">⏸️ 休息區</button>`;
+
+        document.getElementById('playerMoveModal').classList.add('active');
+    }
+
+    function closePlayerMoveModal() {
+        document.getElementById('playerMoveModal').classList.remove('active');
+        selectedPlayerElemForMove = null;
+    }
+
+    function executeMobileMove(targetZoneId) {
+        if (!selectedPlayerElemForMove) return;
+        const zone = document.getElementById(targetZoneId);
+        if (zone && selectedPlayerElemForMove.parentElement !== zone) {
+            saveHistoryState();
+            
+            if (!targetZoneId.startsWith('court-')) {
+                selectedPlayerElemForMove.classList.remove('is-winner');
+                selectedPlayerElemForMove.dataset.selectedWin = "false";
+            }
+
+            zone.appendChild(selectedPlayerElemForMove);
+            refreshStats();
+            persistData();
+        }
+        closePlayerMoveModal();
     }
 
     // -------------------------------------------------------------
@@ -1089,6 +1193,9 @@
 
             if (isDeleteMode) {
                 deletePlayerNode(div);
+            } else if (window.innerWidth <= 768 && !div.parentElement.id.startsWith('court-')) {
+                // 手機版：不在球場上的球員，點擊彈出移動視窗
+                openPlayerMoveModal(div);
             } else {
                 toggleWinnerCard(div);
             }
@@ -1154,7 +1261,7 @@
         });
     }
 
-    // 觸控拖曳綁定
+    // 觸控拖曳與點擊優化
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -1242,6 +1349,9 @@
                 elem.dataset.touchHandled = "true";
                 if (isDeleteMode) {
                     deletePlayerNode(elem);
+                } else if (window.innerWidth <= 768 && !elem.parentElement.id.startsWith('court-')) {
+                    // 手機版：點擊打開選擇移動視窗
+                    openPlayerMoveModal(elem);
                 } else {
                     toggleWinnerCard(elem);
                     persistData();
@@ -1371,6 +1481,7 @@
                     refreshStats();
                     isRemoteUpdating = false;
                 } else {
+                    console.log("雲端資料庫為空，載入本地歷史資料...");
                     const raw = localStorage.getItem('handsome10_badminton_data');
                     if (raw) {
                         try {
