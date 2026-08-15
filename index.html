@@ -268,13 +268,15 @@
             touch-action: none;
             min-width: 0;
             width: 100%;
+            box-sizing: border-box;
             transition: transform 0.1s ease, box-shadow 0.1s ease;
             position: relative;
             flex-shrink: 0;
+            overflow: hidden;
         }
         .player-card:active { cursor: grabbing; }
 
-        /* 平板觸控拖曳時的浮動卡片樣式：鎖定像素防變大防殘留 */
+        /* 平板觸控拖曳時的浮動卡片樣式：鎖定精確像素、強制裁切防暴走變大 */
         .player-card.dragging-touch {
             position: fixed !important;
             pointer-events: none !important;
@@ -284,6 +286,8 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.25) !important;
             border-color: #2563eb !important;
             margin: 0 !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
         }
 
         /* 左側性別邊框 */
@@ -968,7 +972,7 @@
     }
 
     // -------------------------------------------------------------
-    // 平板 iOS 觸控拖曳修復：鎖定像素防變大 & 徹底防殘留鬼影
+    // 平板 iOS 觸控拖曳修復：鎖定精確像素、強制 max-width/height 防拉長殘留
     // -------------------------------------------------------------
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
@@ -982,6 +986,8 @@
             elem.style.top = '';
             elem.style.width = '';
             elem.style.height = '';
+            elem.style.maxWidth = '';
+            elem.style.maxHeight = '';
             document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
         };
 
@@ -992,7 +998,7 @@
             startY = touch.clientY;
             elem.dataset.isDragging = "false";
 
-            // 抓取原本卡片的精確像素寬高，防變大
+            // 精確測量當前卡片的像素寬高
             cardRect = elem.getBoundingClientRect();
         };
 
@@ -1006,20 +1012,26 @@
 
             if (elem.dataset.isDragging !== "true") return;
 
-            // 啟用浮動模式並強制鎖定原卡片像素寬高
+            // 進入拖曳模式，同時鎖定 width/height 與 max-width/max-height 防暴走拉長
             if (!elem.classList.contains('dragging-touch')) {
                 elem.classList.add('dragging-touch');
-                if (cardRect) {
-                    elem.style.width = cardRect.width + 'px';
-                    elem.style.height = cardRect.height + 'px';
+                if (cardRect && cardRect.width > 0 && cardRect.height > 0) {
+                    const wStr = cardRect.width + 'px';
+                    const hStr = cardRect.height + 'px';
+                    elem.style.width = wStr;
+                    elem.style.height = hStr;
+                    elem.style.maxWidth = wStr;
+                    elem.style.maxHeight = hStr;
                 }
             }
 
-            // 跟隨手指座標
-            elem.style.left = (touch.clientX - (cardRect ? cardRect.width / 2 : 50)) + 'px';
-            elem.style.top = (touch.clientY - (cardRect ? cardRect.height / 2 : 20)) + 'px';
+            // 精確對準手指位置
+            const halfW = cardRect && cardRect.width > 0 ? cardRect.width / 2 : 50;
+            const halfH = cardRect && cardRect.height > 0 ? cardRect.height / 2 : 20;
+            elem.style.left = (touch.clientX - halfW) + 'px';
+            elem.style.top = (touch.clientY - halfH) + 'px';
 
-            // 偵測下方拖曳目標區
+            // 偵測下方目標區域
             const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
             const zone = targetElement ? targetElement.closest('.drop-zone') : null;
 
@@ -1058,7 +1070,6 @@
             elem.dataset.isDragging = "false";
         };
 
-        // iPad 手勢觸控中斷時強制清理復原，防止殘留
         elem.ontouchcancel = () => {
             resetCardStyle();
             elem.dataset.isDragging = "false";
