@@ -79,7 +79,7 @@
 
         /* 純圖示精簡按鈕通用樣式 */
         .icon-btn {
-            padding: 6px 12px !important;
+            padding: 6px 10px !important;
             font-size: 16px !important;
             display: inline-flex;
             align-items: center;
@@ -89,29 +89,18 @@
             cursor: pointer;
         }
 
-        /* 上一步圖示按鈕 */
-        .undo-btn {
-            background: #64748b !important;
-            color: white !important;
-        }
-        .undo-btn:hover { background: #475569 !important; }
+        /* 按鈕風格 */
+        .undo-btn { background: #64748b !important; color: white !important; }
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
-
-        /* 設定圖示按鈕 */
-        .settings-btn {
-            background: #475569 !important;
-            color: white !important;
-        }
-        .settings-btn:hover { background: #334155 !important; }
-
-        /* 刪除圖示按鈕 */
+        .settings-btn { background: #475569 !important; color: white !important; }
+        .history-btn { background: #0891b2 !important; color: white !important; }
+        
         .delete-toggle-btn {
             background: #dc2626 !important;
             color: #ffffff !important;
             box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
             transition: all 0.2s ease-in-out;
         }
-        .delete-toggle-btn:hover { background: #b91c1c !important; }
         .delete-toggle-btn.active {
             background: #991b1b !important;
             box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
@@ -124,7 +113,7 @@
             100% { transform: scale(1); }
         }
 
-        /* 手機版專屬頁籤導覽列 (電腦平板預設隱藏) */
+        /* 手機版專屬頁籤導覽列 */
         .mobile-tabs-bar {
             display: none;
             background: #ffffff;
@@ -158,7 +147,7 @@
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
         }
 
-        /* 主版面 (電腦與平板預設雙欄) */
+        /* 主版面 */
         .main-layout {
             display: grid;
             grid-template-columns: minmax(210px, 260px) 1fr;
@@ -234,16 +223,9 @@
             color: #64748b;
         }
 
-        /* 備註專屬色彩高亮 */
-        .note-highlight-red {
-            color: #ef4444;
-            font-weight: 700;
-        }
-
-        .note-highlight-green {
-            color: #10b981;
-            font-weight: 700;
-        }
+        /* 備註色彩高亮 */
+        .note-highlight-red { color: #ef4444; font-weight: 700; }
+        .note-highlight-green { color: #10b981; font-weight: 700; }
 
         .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 14px; font-weight: 600; }
 
@@ -267,7 +249,7 @@
         .finish-btn:hover { background: #059669; }
         .finish-btn:active { transform: scale(0.98); }
 
-        /* 拖曳目標區：防止邊框裁切 */
+        /* 拖曳目標區 */
         .drop-zone { 
             flex: 1;
             min-height: 0; 
@@ -317,7 +299,7 @@
             overflow: hidden;
         }
 
-        /* 球員標籤設計：微調高度與邊距，保障第4位球員100%露框 */
+        /* 球員標籤設計 */
         .player-card { 
             padding: 4px 6px; 
             background: #ffffff; 
@@ -474,10 +456,13 @@
             background: #ffffff;
             border-radius: 16px;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes modalIn {
@@ -495,6 +480,7 @@
             margin-bottom: 12px;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .close-modal-btn {
@@ -541,6 +527,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 8px;
+            flex-shrink: 0;
         }
         .save-modal-btn {
             background: #2563eb;
@@ -552,6 +539,42 @@
             font-weight: 700;
             cursor: pointer;
         }
+
+        /* 歷史對戰紀錄與勝率列表 */
+        .history-list-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .history-team-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .winner-text { color: #10b981; }
+        .loser-text { color: #64748b; }
 
         /* 手機移動選擇小視窗圖示按鈕 */
         .move-option-grid {
@@ -722,6 +745,7 @@
             
             <!-- 精簡圖示按鈕區 -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
+            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄">📜</button>
             <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
@@ -817,6 +841,22 @@
         </div>
     </div>
 
+    <!-- 📜 歷史戰績紀錄與時間對戰統計視窗 -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>📜 比賽時間、對戰組合與戰績紀錄</span>
+                <button class="close-modal-btn" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="history-list-container" id="historyRecordsContainer">
+                <p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無歷史比賽紀錄</p>
+            </div>
+            <div class="modal-footer">
+                <button class="save-modal-btn" onclick="closeHistoryModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 📱 手機版專屬球員移動點選小視窗 -->
     <div class="modal-overlay" id="playerMoveModal">
         <div class="modal-box">
@@ -849,12 +889,14 @@
 
     let isFirebaseActive = false;
     let dbRef = null;
+    let historyDbRef = null;
 
     try {
         firebase.initializeApp(firebaseConfig);
         dbRef = firebase.database().ref("badminton_supper_club");
+        historyDbRef = firebase.database().ref("badminton_match_records"); // 獨立對戰歷史與統計資料庫節點
         isFirebaseActive = true;
-        console.log("Firebase 新加坡雲端即時同步已成功啟動！");
+        console.log("Firebase 新加坡雲端即時同步與對戰紀錄資料庫已成功啟動！");
     } catch (e) {
         console.error("Firebase 初始化失敗：", e);
     }
@@ -866,6 +908,7 @@
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     let isRemoteUpdating = false;
     let selectedPlayerElemForMove = null;
+    let localHistoryLogs = [];
 
     const levelTextMap = {
         green: "新手",
@@ -877,6 +920,51 @@
     const historyStack = [];
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
+
+    // -------------------------------------------------------------
+    // 📜 歷史戰績對戰紀錄視窗控制
+    // -------------------------------------------------------------
+    function openHistoryModal() {
+        renderHistoryRecordsUI();
+        document.getElementById('historyModal').classList.add('active');
+    }
+
+    function closeHistoryModal() {
+        document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function renderHistoryRecordsUI() {
+        const container = document.getElementById('historyRecordsContainer');
+        if (!container) return;
+
+        if (localHistoryLogs.length === 0) {
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無歷史比賽紀錄</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+        // 依照時間倒序排列（最新紀錄在最上面）
+        const sortedLogs = [...localHistoryLogs].reverse();
+        sortedLogs.forEach((item) => {
+            const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join(' & ') : '無標記';
+            const losersStr = item.losers && item.losers.length > 0 ? item.losers.join(' & ') : '無標記';
+
+            container.innerHTML += `
+                <div class="history-item-card">
+                    <div class="history-item-header">
+                        <span>🕒 ${item.time || ''}</span>
+                        <span>🏸 ${item.court ? item.court + '號場' : ''}</span>
+                    </div>
+                    <div class="history-team-row">
+                        <span class="winner-text">🏆 勝方：${winnersStr}</span>
+                    </div>
+                    <div class="history-team-row" style="margin-top:2px;">
+                        <span class="loser-text">🛡️ 敗方：${losersStr}</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
 
     // -------------------------------------------------------------
     // 📱 手機專屬頁籤分頁與點擊移動選單控制
@@ -1136,7 +1224,9 @@
         }
     }
 
-    // 依序由 A 遞補上場，且隊列 A -> B -> C -> D 向前推移
+    // -------------------------------------------------------------
+    // 結束比賽：自動寫入雲端【比賽時間與對戰陣容資料庫】
+    // -------------------------------------------------------------
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
@@ -1155,12 +1245,19 @@
 
         saveHistoryState();
 
+        const winners = [];
+        const losers = [];
+
+        // 1. 結算場上球員並寫入個人勝率與累積場數
         courtPlayers.forEach(pNode => {
             let played = parseInt(pNode.dataset.played || 0) + 1;
             let wins = parseInt(pNode.dataset.wins || 0);
 
             if (pNode.dataset.selectedWin === "true") {
                 wins += 1;
+                winners.push(pNode.dataset.name);
+            } else {
+                losers.push(pNode.dataset.name);
             }
 
             pNode.dataset.played = played;
@@ -1172,7 +1269,31 @@
             rest.appendChild(pNode);
         });
 
-        // 遞補模式：由「等待 A」優先遞補上場
+        // 2. 寫入獨立對戰紀錄資料庫
+        if (winners.length > 0 || losers.length > 0) {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-TW', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+
+            const matchLog = {
+                time: timeStr,
+                court: courtNum,
+                winners: winners,
+                losers: losers
+            };
+
+            if (isFirebaseActive && historyDbRef) {
+                historyDbRef.push(matchLog);
+            } else {
+                localHistoryLogs.push(matchLog);
+                localStorage.setItem('handsome10_history_logs', JSON.stringify(localHistoryLogs));
+            }
+        }
+
+        // 3. 遞補模式：由「等待 A」優先遞補上場
         const queueA = document.getElementById('queue-A');
         if (queueA) {
             while (queueA.firstChild) {
@@ -1180,7 +1301,7 @@
             }
         }
 
-        // 隊列推移 (B->A, C->B, D->C, E->D, F->E)
+        // 4. 隊列推移 (B->A, C->B, D->C, E->D, F->E)
         for (let i = 0; i < queueLabels.length - 1; i++) {
             const currCode = queueLabels[i];
             const nextCode = queueLabels[i + 1];
@@ -1555,6 +1676,18 @@
                 console.error("Firebase 讀取受阻，降級使用本地暫存：", error);
                 restoreLocalFallback();
             });
+
+            // 監聽對戰歷史紀錄資料庫
+            if (historyDbRef) {
+                historyDbRef.on('value', (snapshot) => {
+                    const logsObj = snapshot.val();
+                    if (logsObj) {
+                        localHistoryLogs = Object.values(logsObj);
+                    } else {
+                        localHistoryLogs = [];
+                    }
+                });
+            }
         } else {
             restoreLocalFallback();
         }
@@ -1562,19 +1695,27 @@
 
     function restoreLocalFallback() {
         const raw = localStorage.getItem('handsome10_badminton_data');
-        if (!raw) return;
-        try {
-            const data = JSON.parse(raw);
-            if (data.activeCourts && Array.isArray(data.activeCourts)) {
-                activeCourts = data.activeCourts;
-                buildLayout();
-                applyStateObject(data.store);
-            } else {
-                applyStateObject(data);
+        if (raw) {
+            try {
+                const data = JSON.parse(raw);
+                if (data.activeCourts && Array.isArray(data.activeCourts)) {
+                    activeCourts = data.activeCourts;
+                    buildLayout();
+                    applyStateObject(data.store);
+                } else {
+                    applyStateObject(data);
+                }
+                refreshStats();
+            } catch(err) {
+                console.error("Restore Local Error:", err);
             }
-            refreshStats();
-        } catch(err) {
-            console.error("Restore Local Error:", err);
+        }
+
+        const rawHistory = localStorage.getItem('handsome10_history_logs');
+        if (rawHistory) {
+            try {
+                localHistoryLogs = JSON.parse(rawHistory);
+            } catch(e){}
         }
     }
 
