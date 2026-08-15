@@ -15,7 +15,7 @@
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         input, select, button { user-select: auto; -webkit-user-select: auto; }
         
-        /* 鎖定 10 吋平板全畫面滿版 (不出現滾動條) */
+        /* 全域預設 */
         html, body {
             width: 100vw;
             height: 100vh;
@@ -121,7 +121,41 @@
             100% { transform: scale(1); }
         }
 
-        /* 主版面 */
+        /* 手機版專屬頁籤導覽列 (電腦平板預設隱藏) */
+        .mobile-tabs-bar {
+            display: none;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+
+        .mobile-tab-btn {
+            flex: 1;
+            padding: 10px 4px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .mobile-tab-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+        }
+
+        /* 主版面 (電腦與平板預設雙欄) */
         .main-layout {
             display: grid;
             grid-template-columns: minmax(220px, 280px) 1fr;
@@ -184,6 +218,19 @@
             align-items: center; 
             flex-shrink: 0;
         }
+
+        .header-title-group {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .header-note {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
         .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 15px; font-weight: 600; }
 
         /* 結束比賽按鈕 */
@@ -276,7 +323,7 @@
         }
         .player-card:active { cursor: grabbing; }
 
-        /* 平板觸控拖曳時的浮動卡片樣式：鎖定精確像素、強制裁切防暴走變大 */
+        /* 平板觸控拖曳時的浮動卡片樣式 */
         .player-card.dragging-touch {
             position: fixed !important;
             pointer-events: none !important;
@@ -488,9 +535,102 @@
             font-weight: 700;
             cursor: pointer;
         }
+
+        /* ------------------------------------------------------------- */
+        /* 📱 手機版專屬獨立極致優化 CSS (螢幕寬度 <= 768px 自動啟用) */
+        /* ------------------------------------------------------------- */
+        @media (max-width: 768px) {
+            html, body {
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            body {
+                padding: 6px;
+                gap: 6px;
+            }
+
+            .top-bar {
+                padding: 6px 10px;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+
+            .site-title {
+                font-size: 18px;
+            }
+
+            .action-area {
+                width: 100%;
+                justify-content: space-between;
+                gap: 4px;
+            }
+
+            .action-area input {
+                width: 75px;
+                font-size: 14px;
+                padding: 4px 6px;
+            }
+
+            .action-area select {
+                font-size: 14px;
+                padding: 4px 4px;
+            }
+
+            .action-area button {
+                font-size: 14px;
+                padding: 5px 8px;
+            }
+
+            /* 手機版啟用分頁選單 */
+            .mobile-tabs-bar {
+                display: flex;
+            }
+
+            /* 手機版單欄切換顯示 */
+            .main-layout {
+                grid-template-columns: 1fr !important;
+                height: 100%;
+                min-height: 0;
+            }
+
+            /* 根據啟動的分頁切換顯示隱藏 */
+            body[data-mobile-tab="rest"] .right-column { display: none !important; }
+            body[data-mobile-tab="courts"] .rest-card { display: none !important; }
+            body[data-mobile-tab="courts"] .right-column .card:last-child { display: none !important; }
+            
+            body[data-mobile-tab="queues"] .rest-card { display: none !important; }
+            body[data-mobile-tab="queues"] .right-column .card:first-child { display: none !important; }
+
+            .sub-grid-row {
+                grid-template-columns: repeat(2, 1fr) !important; /* 手機雙欄大卡片 */
+                gap: 6px;
+            }
+
+            .drop-zone {
+                min-height: 140px;
+                overflow-y: auto;
+            }
+
+            .player-card {
+                padding: 8px 10px;
+            }
+
+            .player-name-row {
+                font-size: 17px;
+            }
+
+            .player-sub {
+                font-size: 12px;
+            }
+
+            .header-note {
+                display: none; /* 手機簡化標題備註 */
+            }
+        }
     </style>
 </head>
-<body>
+<body data-mobile-tab="courts">
 
     <!-- 頂部列 -->
     <div class="top-bar">
@@ -512,9 +652,22 @@
                 <option value="red">🔴 高手</option>
             </select>
             <button type="button" onclick="createPlayer()">新增</button>
-            <button type="button" class="settings-btn" onclick="openSettingsModal()">⚙️ 開關場設定</button>
-            <button type="button" id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除模式: 關閉</button>
+            <button type="button" class="settings-btn" onclick="openSettingsModal()">⚙️ 設定</button>
+            <button type="button" id="deleteToggleBtn" class="delete-toggle-btn" onclick="toggleDeleteMode()">&#128465; 刪除: 關</button>
         </div>
+    </div>
+
+    <!-- 📱 手機專屬頁籤分頁導覽列 (自動於手機螢幕開啟) -->
+    <div class="mobile-tabs-bar">
+        <button class="mobile-tab-btn active" id="mtab-courts" onclick="switchMobileTab('courts')">
+            🟢 上場區 (<span id="mb-courts-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" id="mtab-queues" onclick="switchMobileTab('queues')">
+            ⏳ 等待區 (<span id="mb-queues-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" id="mtab-rest" onclick="switchMobileTab('rest')">
+            ⏸️ 休息區 (<span id="mb-rest-count">0</span>)
+        </button>
     </div>
 
     <!-- 主版面 -->
@@ -532,13 +685,23 @@
         <div class="right-column">
             <!-- 上場區 -->
             <div class="card">
-                <div class="card-header">&#128994; 上場區</div>
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#128994; 上場區</span>
+                        <span class="header-note">(先點選 勝場球員 再按 結束比賽)</span>
+                    </div>
+                </div>
                 <div class="sub-grid-row" id="courts-wrapper"></div>
             </div>
 
             <!-- 等待區 -->
             <div class="card">
-                <div class="card-header">&#8987; 等待區</div>
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#8987; 等待區</span>
+                        <span class="header-note">(依序上場 A→B→C→D)</span>
+                    </div>
+                </div>
                 <div class="sub-grid-row" id="queues-wrapper"></div>
             </div>
         </div>
@@ -615,6 +778,7 @@
     // 2. 系統全域變數與對照表
     // -------------------------------------------------------------
     let activeCourts = [1, 2, 3, 4];
+    const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     let isRemoteUpdating = false;
 
     const levelTextMap = {
@@ -627,6 +791,20 @@
     const historyStack = [];
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
+
+    // -------------------------------------------------------------
+    // 📱 手機專屬頁籤分頁控制
+    // -------------------------------------------------------------
+    function switchMobileTab(tabName) {
+        document.body.setAttribute('data-mobile-tab', tabName);
+        ['courts', 'queues', 'rest'].forEach(t => {
+            const btn = document.getElementById(`mtab-${t}`);
+            if (btn) {
+                if (t === tabName) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        });
+    }
 
     // -------------------------------------------------------------
     // 3. 視窗 Modal 控制與場地開關
@@ -668,7 +846,10 @@
             activeCourts = activeCourts.filter(n => n !== num);
 
             const oldCourt = document.getElementById(`court-${num}`);
-            const oldQueue = document.getElementById(`queue-${num}`);
+            const qIndex = activeCourts.indexOf(num);
+            const qCode = queueLabels[qIndex] || num;
+            const oldQueue = document.getElementById(`queue-${qCode}`);
+
             if (oldCourt && rest) {
                 while (oldCourt.firstChild) {
                     oldCourt.firstChild.classList.remove('is-winner');
@@ -703,7 +884,9 @@
         cWrap.innerHTML = '';
         qWrap.innerHTML = '';
 
-        activeCourts.forEach(num => {
+        activeCourts.forEach((num, index) => {
+            const qCode = queueLabels[index] || (index + 1);
+
             cWrap.innerHTML += `
                 <div class="slot-item">
                     <div class="slot-inner">
@@ -713,7 +896,7 @@
                         </div>
                         <div class="drop-zone" id="court-${num}"></div>
                     </div>
-                    <button class="finish-btn" onclick="finishMatch(${num})">結束比賽</button>
+                    <button class="finish-btn" onclick="finishMatch(${num}, '${qCode}')">結束比賽</button>
                 </div>
             `;
 
@@ -721,10 +904,10 @@
                 <div class="slot-item">
                     <div class="slot-inner">
                         <div class="card-header">
-                            <span>等待 ${num}</span>
-                            <span class="badge" id="b-queue-${num}">0</span>
+                            <span>等待 ${qCode}</span>
+                            <span class="badge" id="b-queue-${qCode}">0</span>
                         </div>
-                        <div class="drop-zone" id="queue-${num}"></div>
+                        <div class="drop-zone" id="queue-${qCode}"></div>
                     </div>
                 </div>
             `;
@@ -738,11 +921,11 @@
         const btn = document.getElementById('deleteToggleBtn');
         if (isDeleteMode) {
             btn.classList.add('active');
-            btn.innerHTML = '&#128465; 刪除模式: 開啟中';
+            btn.innerHTML = '&#128465; 刪除: 開';
             document.body.classList.add('delete-mode-active');
         } else {
             btn.classList.remove('active');
-            btn.innerHTML = '&#128465; 刪除模式: 關閉';
+            btn.innerHTML = '&#128465; 刪除: 關';
             document.body.classList.remove('delete-mode-active');
         }
     }
@@ -803,10 +986,10 @@
         }
     }
 
-    function finishMatch(courtNum) {
+    function finishMatch(courtNum, qCode) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
-        const queue = document.getElementById(`queue-${courtNum}`);
+        const queue = document.getElementById(`queue-${qCode}`);
 
         if (!court || !rest) return;
 
@@ -902,7 +1085,7 @@
         `;
 
         div.onclick = (e) => {
-            if (div.dataset.isDragging === "true") return;
+            if (div.dataset.isDragging === "true" || div.dataset.touchHandled === "true") return;
 
             if (isDeleteMode) {
                 deletePlayerNode(div);
@@ -971,9 +1154,7 @@
         });
     }
 
-    // -------------------------------------------------------------
-    // 平板 iOS 觸控拖曳修復：鎖定精確像素、強制 max-width/height 防拉長殘留
-    // -------------------------------------------------------------
+    // 觸控拖曳綁定
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -997,8 +1178,8 @@
             startX = touch.clientX;
             startY = touch.clientY;
             elem.dataset.isDragging = "false";
+            elem.dataset.touchHandled = "false";
 
-            // 精確測量當前卡片的像素寬高
             cardRect = elem.getBoundingClientRect();
         };
 
@@ -1006,13 +1187,12 @@
             if (isDeleteMode) return;
             const touch = e.touches[0];
             
-            if (Math.abs(touch.clientX - startX) > 6 || Math.abs(touch.clientY - startY) > 6) {
+            if (Math.abs(touch.clientX - startX) > 12 || Math.abs(touch.clientY - startY) > 12) {
                 elem.dataset.isDragging = "true";
             }
 
             if (elem.dataset.isDragging !== "true") return;
 
-            // 進入拖曳模式，同時鎖定 width/height 與 max-width/max-height 防暴走拉長
             if (!elem.classList.contains('dragging-touch')) {
                 elem.classList.add('dragging-touch');
                 if (cardRect && cardRect.width > 0 && cardRect.height > 0) {
@@ -1025,13 +1205,11 @@
                 }
             }
 
-            // 精確對準手指位置
             const halfW = cardRect && cardRect.width > 0 ? cardRect.width / 2 : 50;
             const halfH = cardRect && cardRect.height > 0 ? cardRect.height / 2 : 20;
             elem.style.left = (touch.clientX - halfW) + 'px';
             elem.style.top = (touch.clientY - halfH) + 'px';
 
-            // 偵測下方目標區域
             const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
             const zone = targetElement ? targetElement.closest('.drop-zone') : null;
 
@@ -1061,10 +1239,12 @@
                 refreshStats();
                 persistData();
             } else if (!wasDragging) {
+                elem.dataset.touchHandled = "true";
                 if (isDeleteMode) {
                     deletePlayerNode(elem);
                 } else {
                     toggleWinnerCard(elem);
+                    persistData();
                 }
             }
             elem.dataset.isDragging = "false";
@@ -1077,19 +1257,46 @@
     }
 
     function refreshStats() {
-        const allZones = ['rest', ...activeCourts.map(n => `court-${n}`), ...activeCourts.map(c => `queue-${c}`)];
-        allZones.forEach(zId => {
-            const z = document.getElementById(zId);
-            const b = document.getElementById(`b-${zId}`);
-            if (z && b) b.innerText = z.children.length;
+        const allZones = ['rest', ...activeCourts.map(n => `court-${n}`), ...queueLabels.map(c => `queue-${c}`)];
+        let totalCourtsCount = 0;
+        let totalQueuesCount = 0;
+
+        activeCourts.forEach((n, idx) => {
+            const qCode = queueLabels[idx] || n;
+            const cz = document.getElementById(`court-${n}`);
+            const qz = document.getElementById(`queue-${qCode}`);
+            const cb = document.getElementById(`b-court-${n}`);
+            const qb = document.getElementById(`b-queue-${qCode}`);
+
+            if (cz && cb) {
+                cb.innerText = cz.children.length;
+                totalCourtsCount += cz.children.length;
+            }
+            if (qz && qb) {
+                qb.innerText = qz.children.length;
+                totalQueuesCount += qz.children.length;
+            }
         });
+
         const rest = document.getElementById('rest');
         const bRest = document.getElementById('b-rest');
-        if (rest && bRest) bRest.innerText = rest.children.length;
+        const restCount = rest ? rest.children.length : 0;
+        if (bRest) bRest.innerText = restCount;
+
+        // 手機版分頁計數更新
+        const mbCourts = document.getElementById('mb-courts-count');
+        const mbQueues = document.getElementById('mb-queues-count');
+        const mbRest = document.getElementById('mb-rest-count');
+        if (mbCourts) mbCourts.innerText = totalCourtsCount;
+        if (mbQueues) mbQueues.innerText = totalQueuesCount;
+        if (mbRest) mbRest.innerText = restCount;
     }
 
     function getCurrentStateObject() {
-        const allPossibleZones = ['rest', 1, 2, 3, 4, 5, 6].flatMap(n => n === 'rest' ? ['rest'] : [`court-${n}`, `queue-${n}`]);
+        const courtZones = [1, 2, 3, 4, 5, 6].map(n => `court-${n}`);
+        const queueZones = queueLabels.map(c => `queue-${c}`);
+        const allPossibleZones = ['rest', ...courtZones, ...queueZones];
+
         const store = {};
         allPossibleZones.forEach(zId => {
             const z = document.getElementById(zId);
@@ -1110,7 +1317,10 @@
 
     function applyStateObject(store) {
         if (!store) return;
-        const allPossibleZones = ['rest', 1, 2, 3, 4, 5, 6].flatMap(n => n === 'rest' ? ['rest'] : [`court-${n}`, `queue-${n}`]);
+        const courtZones = [1, 2, 3, 4, 5, 6].map(n => `court-${n}`);
+        const queueZones = queueLabels.map(c => `queue-${c}`);
+        const allPossibleZones = ['rest', ...courtZones, ...queueZones];
+
         allPossibleZones.forEach(zId => {
             const zone = document.getElementById(zId);
             if (zone) zone.innerHTML = '';
@@ -1137,13 +1347,11 @@
             store: store
         };
 
-        // 1. 本地備份
         localStorage.setItem('handsome10_badminton_data', JSON.stringify(payload));
 
-        // 2. 雲端同步
         if (isFirebaseActive && dbRef) {
             dbRef.set(payload).catch((err) => {
-                console.error("Firebase 寫入失敗（請檢查 Rules 是否已開啟）：", err);
+                console.error("Firebase 寫入失敗：", err);
             });
         }
     }
@@ -1163,7 +1371,6 @@
                     refreshStats();
                     isRemoteUpdating = false;
                 } else {
-                    console.log("雲端資料庫為空，載入本地歷史資料...");
                     const raw = localStorage.getItem('handsome10_badminton_data');
                     if (raw) {
                         try {
