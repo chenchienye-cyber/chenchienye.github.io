@@ -92,8 +92,9 @@
         /* 按鈕風格 */
         .undo-btn { background: #64748b !important; color: white !important; }
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
-        .settings-btn { background: #475569 !important; color: white !important; }
+        .roster-btn { background: #8b5cf6 !important; color: white !important; }
         .history-btn { background: #0891b2 !important; color: white !important; }
+        .settings-btn { background: #475569 !important; color: white !important; }
         
         .delete-toggle-btn {
             background: #dc2626 !important;
@@ -259,7 +260,7 @@
             padding: 3px; 
             display: flex; 
             flex-direction: column; 
-            gap: 3px; 
+            gap: 4px; 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -456,7 +457,7 @@
             background: #ffffff;
             border-radius: 16px;
             width: 100%;
-            max-width: 520px;
+            max-width: 540px;
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -540,7 +541,78 @@
             cursor: pointer;
         }
 
-        /* 歷史對戰紀錄與勝率列表 */
+        /* 👥 常客球員點名視窗樣式 */
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding: 4px;
+            margin-bottom: 12px;
+        }
+
+        .roster-item-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .roster-item-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .roster-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .roster-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 歷史對戰紀錄與個人勝率頁籤 */
+        .history-tabs-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .history-tab-btn {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .history-tab-btn.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
         .history-list-container {
             flex: 1;
             overflow-y: auto;
@@ -561,10 +633,47 @@
         .history-item-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             color: #64748b;
             font-size: 12px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 4px;
         }
+
+        .history-time-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .history-duration-tag {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .hist-act-btn {
+            border: none;
+            background: #e2e8f0;
+            color: #334155;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .hist-act-btn.del { background: #fee2e2; color: #dc2626; }
 
         .history-team-row {
             display: flex;
@@ -575,6 +684,23 @@
 
         .winner-text { color: #10b981; }
         .loser-text { color: #64748b; }
+
+        /* 個人勝率統計表格 */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .stats-table th, .stats-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .stats-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+        }
 
         /* 手機移動選擇小視窗圖示按鈕 */
         .move-option-grid {
@@ -745,7 +871,8 @@
             
             <!-- 精簡圖示按鈕區 -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
-            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄">📜</button>
+            <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
+            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜</button>
             <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
@@ -801,6 +928,24 @@
         </div>
     </div>
 
+    <!-- 👥 常客球員資料庫與點名視窗 -->
+    <div class="modal-overlay" id="rosterModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>👥 常客球員名單與點名出席</span>
+                <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
+            </div>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">勾選已出席球員，點擊下方按鈕即可快速加入本次球局休息區：</p>
+            <div class="roster-grid" id="rosterContainer">
+                <p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無常客球員紀錄</p>
+            </div>
+            <div class="modal-footer">
+                <button class="save-modal-btn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
+                <button class="save-modal-btn" style="background:#64748b;" onclick="closeRosterModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 開關場設定彈出視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
@@ -841,13 +986,20 @@
         </div>
     </div>
 
-    <!-- 📜 歷史戰績紀錄與時間對戰統計視窗 -->
+    <!-- 📜 歷史戰績紀錄、修改刪除與個人勝率統計視窗 -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>📜 比賽時間、對戰組合與戰績紀錄</span>
+                <span>📜 戰績歷史與勝率統計</span>
                 <button class="close-modal-btn" onclick="closeHistoryModal()">&times;</button>
             </div>
+            
+            <!-- 視窗頁籤切換：對戰紀錄 vs 個人勝率 -->
+            <div class="history-tabs-bar">
+                <button class="history-tab-btn active" id="htab-logs" onclick="switchHistoryTab('logs')">⚔️ 對戰紀錄</button>
+                <button class="history-tab-btn" id="htab-stats" onclick="switchHistoryTab('stats')">📊 個人戰績榜</button>
+            </div>
+
             <div class="history-list-container" id="historyRecordsContainer">
                 <p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無歷史比賽紀錄</p>
             </div>
@@ -890,13 +1042,15 @@
     let isFirebaseActive = false;
     let dbRef = null;
     let historyDbRef = null;
+    let rosterDbRef = null;
 
     try {
         firebase.initializeApp(firebaseConfig);
         dbRef = firebase.database().ref("badminton_supper_club");
-        historyDbRef = firebase.database().ref("badminton_match_records"); // 獨立對戰歷史與統計資料庫節點
+        historyDbRef = firebase.database().ref("badminton_match_records");
+        rosterDbRef = firebase.database().ref("badminton_player_roster"); // 常客球員名單節點
         isFirebaseActive = true;
-        console.log("Firebase 新加坡雲端即時同步與對戰紀錄資料庫已成功啟動！");
+        console.log("Firebase 新加坡雲端即時同步與常客資料庫已成功啟動！");
     } catch (e) {
         console.error("Firebase 初始化失敗：", e);
     }
@@ -908,7 +1062,14 @@
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     let isRemoteUpdating = false;
     let selectedPlayerElemForMove = null;
-    let localHistoryLogs = [];
+    
+    // 紀錄各個場地「比賽開始時間」
+    const courtStartTimes = {};
+
+    // 歷史紀錄與常客名單資料庫
+    let rawHistoryLogs = {}; 
+    let globalPlayerRoster = {}; 
+    let currentHistoryTab = 'logs';
 
     const levelTextMap = {
         green: "新手",
@@ -921,11 +1082,127 @@
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
 
+    // 時間格式化輔助函式 (去掉秒數)
+    function formatTimeNoSeconds(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const hh = String(dateObj.getHours()).padStart(2, '0');
+        const mm = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${y}/${m}/${d} ${hh}:${mm}`;
+    }
+
+    function formatHourMinOnly(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const hh = String(dateObj.getHours()).padStart(2, '0');
+        const mm = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+    }
+
     // -------------------------------------------------------------
-    // 📜 歷史戰績對戰紀錄視窗控制
+    // 👥 常客球員點名視窗控制
+    // -------------------------------------------------------------
+    function openRosterModal() {
+        renderRosterUI();
+        document.getElementById('rosterModal').classList.add('active');
+    }
+
+    function closeRosterModal() {
+        document.getElementById('rosterModal').classList.remove('active');
+    }
+
+    function renderRosterUI() {
+        const container = document.getElementById('rosterContainer');
+        if (!container) return;
+
+        const keys = Object.keys(globalPlayerRoster);
+        if (keys.length === 0) {
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無常客球員紀錄</p>';
+            return;
+        }
+
+        // 找出目前已在場上/休息區的球員姓名
+        const currentActiveNames = [];
+        const stateObj = getCurrentStateObject();
+        Object.values(stateObj).forEach(arr => {
+            if (Array.isArray(arr)) {
+                arr.forEach(p => currentActiveNames.push(p.name));
+            }
+        });
+
+        container.innerHTML = '';
+        keys.forEach(key => {
+            const p = globalPlayerRoster[key];
+            const isAlreadyInGame = currentActiveNames.includes(p.name);
+            const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
+            const lvlName = levelTextMap[p.level] || '新手';
+
+            container.innerHTML += `
+                <label class="roster-item-card" style="${isAlreadyInGame ? 'opacity:0.5;' : ''}">
+                    <input type="checkbox" value="${key}" ${isAlreadyInGame ? 'disabled' : ''}>
+                    <div class="roster-info">
+                        <div class="roster-name">${p.name} ${genderSymbol}</div>
+                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在球局中)' : ''}</div>
+                    </div>
+                </label>
+            `;
+        });
+    }
+
+    function addSelectedRosterToGame() {
+        const container = document.getElementById('rosterContainer');
+        if (!container) return;
+
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            alert("請先勾選要加入球局的球員！");
+            return;
+        }
+
+        saveHistoryState();
+        const rest = document.getElementById('rest');
+
+        checkboxes.forEach(cb => {
+            const key = cb.value;
+            const p = globalPlayerRoster[key];
+            if (p && rest) {
+                const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+                const pElem = makePlayerNode(pId, p.name, p.gender, p.level || "green", 0, 0, false);
+                rest.appendChild(pElem);
+            }
+        });
+
+        refreshStats();
+        persistData();
+        closeRosterModal();
+    }
+
+    // 自動新增球員至常客資料庫（自動去除重複）
+    function registerPlayerToRoster(name, gender, level) {
+        if (!name) return;
+        const normalizedKey = name.trim().toLowerCase();
+        
+        const rosterObj = {
+            name: name.trim(),
+            gender: gender,
+            level: level || "green",
+            updatedAt: Date.now()
+        };
+
+        if (isFirebaseActive && rosterDbRef) {
+            rosterDbRef.child(normalizedKey).set(rosterObj);
+        } else {
+            globalPlayerRoster[normalizedKey] = rosterObj;
+            localStorage.setItem('handsome10_player_roster', JSON.stringify(globalPlayerRoster));
+        }
+    }
+
+    // -------------------------------------------------------------
+    // 📜 歷史戰績對戰紀錄、修改刪除與個人勝率統計控制
     // -------------------------------------------------------------
     function openHistoryModal() {
-        renderHistoryRecordsUI();
+        switchHistoryTab(currentHistoryTab);
         document.getElementById('historyModal').classList.add('active');
     }
 
@@ -933,27 +1210,60 @@
         document.getElementById('historyModal').classList.remove('active');
     }
 
+    function switchHistoryTab(tabName) {
+        currentHistoryTab = tabName;
+        const btnLogs = document.getElementById('htab-logs');
+        const btnStats = document.getElementById('htab-stats');
+        if (btnLogs && btnStats) {
+            if (tabName === 'logs') {
+                btnLogs.classList.add('active');
+                btnStats.classList.remove('active');
+                renderHistoryRecordsUI();
+            } else {
+                btnStats.classList.add('active');
+                btnLogs.classList.remove('active');
+                renderPlayerStatsUI();
+            }
+        }
+    }
+
     function renderHistoryRecordsUI() {
         const container = document.getElementById('historyRecordsContainer');
         if (!container) return;
 
-        if (localHistoryLogs.length === 0) {
+        const keys = Object.keys(rawHistoryLogs);
+        if (keys.length === 0) {
             container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無歷史比賽紀錄</p>';
             return;
         }
 
         container.innerHTML = '';
-        // 依照時間倒序排列（最新紀錄在最上面）
-        const sortedLogs = [...localHistoryLogs].reverse();
-        sortedLogs.forEach((item) => {
+        const sortedKeys = keys.reverse();
+        sortedKeys.forEach((key) => {
+            const item = rawHistoryLogs[key];
             const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join(' & ') : '無標記';
             const losersStr = item.losers && item.losers.length > 0 ? item.losers.join(' & ') : '無標記';
+
+            let timeDisplay = item.time || '';
+            if (item.startTime && item.endTime) {
+                timeDisplay = `開始 ${item.startTime} ｜ 結束 ${item.endTime}`;
+            } else if (item.startTime) {
+                timeDisplay = `時間：${item.startTime}`;
+            }
+
+            const durationDisplay = item.durationMins ? `${item.durationMins} 分鐘` : (item.duration ? `${item.duration}` : '');
 
             container.innerHTML += `
                 <div class="history-item-card">
                     <div class="history-item-header">
-                        <span>🕒 ${item.time || ''}</span>
-                        <span>🏸 ${item.court ? item.court + '號場' : ''}</span>
+                        <div class="history-time-detail">
+                            <span>📅 ${timeDisplay} (🏸 ${item.court ? item.court + '號場' : ''})</span>
+                            ${durationDisplay ? `<span class="history-duration-tag">⏱️ 耗時：${durationDisplay}</span>` : ''}
+                        </div>
+                        <div class="history-actions">
+                            <button class="hist-act-btn" onclick="editHistoryRecord('${key}')">✏️ 修改</button>
+                            <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')">🗑️ 刪除</button>
+                        </div>
                     </div>
                     <div class="history-team-row">
                         <span class="winner-text">🏆 勝方：${winnersStr}</span>
@@ -964,6 +1274,117 @@
                 </div>
             `;
         });
+    }
+
+    function renderPlayerStatsUI() {
+        const container = document.getElementById('historyRecordsContainer');
+        if (!container) return;
+
+        const statsMap = {};
+
+        Object.values(rawHistoryLogs).forEach(log => {
+            if (Array.isArray(log.winners)) {
+                log.winners.forEach(name => {
+                    if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 };
+                    statsMap[name].played += 1;
+                    statsMap[name].wins += 1;
+                });
+            }
+            if (Array.isArray(log.losers)) {
+                log.losers.forEach(name => {
+                    if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 };
+                    statsMap[name].played += 1;
+                });
+            }
+        });
+
+        const playerList = Object.keys(statsMap).map(name => {
+            const p = statsMap[name].played;
+            const w = statsMap[name].wins;
+            const rate = p > 0 ? Math.round((w / p) * 100) : 0;
+            return { name, played: p, wins: w, losses: p - w, rate };
+        });
+
+        if (playerList.length === 0) {
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無個人統計戰績</p>';
+            return;
+        }
+
+        playerList.sort((a, b) => b.rate - a.rate || b.played - a.played);
+
+        let html = `
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>球員</th>
+                        <th>場數</th>
+                        <th>勝 / 敗</th>
+                        <th>勝率</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        playerList.forEach((item, idx) => {
+            let rankBadge = idx + 1;
+            if (idx === 0) rankBadge = '🥇 1';
+            else if (idx === 1) rankBadge = '🥈 2';
+            else if (idx === 2) rankBadge = '🥉 3';
+
+            html += `
+                <tr>
+                    <td><b>${rankBadge}</b></td>
+                    <td><b>${item.name}</b></td>
+                    <td>${item.played} 場</td>
+                    <td>${item.wins} 勝 / ${item.losses} 敗</td>
+                    <td><b style="color:#10b981;">${item.rate}%</b></td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function deleteHistoryRecord(key) {
+        if (!confirm("確定要刪除這筆對戰紀錄嗎？")) return;
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).remove();
+        } else {
+            delete rawHistoryLogs[key];
+            localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
+    }
+
+    function editHistoryRecord(key) {
+        const item = rawHistoryLogs[key];
+        if (!item) return;
+
+        const oldWinners = item.winners ? item.winners.join(',') : '';
+        const oldLosers = item.losers ? item.losers.join(',') : '';
+
+        const newWinnersStr = prompt("修改【勝方球員】姓名 (多位請用逗號分開)：", oldWinners);
+        if (newWinnersStr === null) return;
+
+        const newLosersStr = prompt("修改【敗方球員】姓名 (多位請用逗號分開)：", oldLosers);
+        if (newLosersStr === null) return;
+
+        const updatedRecord = {
+            ...item,
+            winners: newWinnersStr.split(',').map(s => s.trim()).filter(Boolean),
+            losers: newLosersStr.split(',').map(s => s.trim()).filter(Boolean)
+        };
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).set(updatedRecord);
+        } else {
+            rawHistoryLogs[key] = updatedRecord;
+            localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
     }
 
     // -------------------------------------------------------------
@@ -1040,6 +1461,12 @@
             }
 
             zone.appendChild(selectedPlayerElemForMove);
+            
+            if (targetZoneId.startsWith('court-') && zone.children.length === 4) {
+                const cNum = targetZoneId.split('-')[1];
+                if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+            }
+
             refreshStats();
             persistData();
         }
@@ -1102,6 +1529,7 @@
                     rest.appendChild(oldQueue.firstChild);
                 }
             }
+            delete courtStartTimes[num];
         } else {
             activeCourts.push(num);
             activeCourts.sort((a, b) => a - b);
@@ -1225,7 +1653,7 @@
     }
 
     // -------------------------------------------------------------
-    // 結束比賽：自動寫入雲端【比賽時間與對戰陣容資料庫】
+    // 結束比賽：自動計算時間並同步常客球員庫
     // -------------------------------------------------------------
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
@@ -1248,7 +1676,6 @@
         const winners = [];
         const losers = [];
 
-        // 1. 結算場上球員並寫入個人勝率與累積場數
         courtPlayers.forEach(pNode => {
             let played = parseInt(pNode.dataset.played || 0) + 1;
             let wins = parseInt(pNode.dataset.wins || 0);
@@ -1269,39 +1696,50 @@
             rest.appendChild(pNode);
         });
 
-        // 2. 寫入獨立對戰紀錄資料庫
         if (winners.length > 0 || losers.length > 0) {
-            const now = new Date();
-            const timeStr = now.toLocaleString('zh-TW', {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                hour12: false
-            });
+            const endTimeObj = new Date();
+            const startMs = courtStartTimes[courtNum] || (endTimeObj.getTime() - 15 * 60 * 1000);
+            const startTimeObj = new Date(startMs);
+
+            const durationMs = Math.max(0, endTimeObj.getTime() - startMs);
+            const durationMins = Math.max(1, Math.round(durationMs / (1000 * 60)));
+
+            const startStr = formatTimeNoSeconds(startTimeObj);
+            const endStr = formatHourMinOnly(endTimeObj);
 
             const matchLog = {
-                time: timeStr,
+                time: startStr,
+                startTime: startStr,
+                endTime: endStr,
+                durationMins: durationMins,
                 court: courtNum,
                 winners: winners,
                 losers: losers
             };
 
+            delete courtStartTimes[courtNum];
+
             if (isFirebaseActive && historyDbRef) {
                 historyDbRef.push(matchLog);
             } else {
-                localHistoryLogs.push(matchLog);
-                localStorage.setItem('handsome10_history_logs', JSON.stringify(localHistoryLogs));
+                const autoKey = 'log_' + Date.now();
+                rawHistoryLogs[autoKey] = matchLog;
+                localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
             }
         }
 
-        // 3. 遞補模式：由「等待 A」優先遞補上場
+        // 遞補模式：由「等待 A」優先遞補上場
         const queueA = document.getElementById('queue-A');
         if (queueA) {
             while (queueA.firstChild) {
                 court.appendChild(queueA.firstChild);
             }
+            if (court.children.length === 4) {
+                courtStartTimes[courtNum] = Date.now();
+            }
         }
 
-        // 4. 隊列推移 (B->A, C->B, D->C, E->D, F->E)
+        // 隊列推移 (B->A, C->B, D->C, E->D, F->E)
         for (let i = 0; i < queueLabels.length - 1; i++) {
             const currCode = queueLabels[i];
             const nextCode = queueLabels[i + 1];
@@ -1337,6 +1775,10 @@
         if (rest) {
             rest.appendChild(pElem);
         }
+
+        // 自動將球員寫入常客資料庫
+        registerPlayerToRoster(val, genderInput.value, levelInput.value);
+
         nameInput.value = '';
         
         refreshStats();
@@ -1436,6 +1878,12 @@
                     }
 
                     zone.appendChild(elem);
+
+                    if (zone.id.startsWith('court-') && zone.children.length === 4) {
+                        const cNum = zone.id.split('-')[1];
+                        if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+                    }
+
                     refreshStats();
                     persistData();
                 }
@@ -1526,6 +1974,12 @@
                 }
 
                 touchTargetZone.appendChild(elem);
+
+                if (touchTargetZone.id.startsWith('court-') && touchTargetZone.children.length === 4) {
+                    const cNum = touchTargetZone.id.split('-')[1];
+                    if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+                }
+
                 touchTargetZone = null;
                 refreshStats();
                 persistData();
@@ -1624,6 +2078,9 @@
                 store[zId].forEach(item => {
                     const pNode = makePlayerNode(item.id, item.name, item.gender, item.level || "green", item.played, item.wins, item.isWinner);
                     zone.appendChild(pNode);
+
+                    // 同步寫入常客資料庫
+                    registerPlayerToRoster(item.name, item.gender, item.level);
                 });
             }
         });
@@ -1680,11 +2137,19 @@
             // 監聽對戰歷史紀錄資料庫
             if (historyDbRef) {
                 historyDbRef.on('value', (snapshot) => {
-                    const logsObj = snapshot.val();
-                    if (logsObj) {
-                        localHistoryLogs = Object.values(logsObj);
-                    } else {
-                        localHistoryLogs = [];
+                    rawHistoryLogs = snapshot.val() || {};
+                    if (document.getElementById('historyModal').classList.contains('active')) {
+                        switchHistoryTab(currentHistoryTab);
+                    }
+                });
+            }
+
+            // 監聽常客球員名單資料庫
+            if (rosterDbRef) {
+                rosterDbRef.on('value', (snapshot) => {
+                    globalPlayerRoster = snapshot.val() || {};
+                    if (document.getElementById('rosterModal').classList.contains('active')) {
+                        renderRosterUI();
                     }
                 });
             }
@@ -1714,7 +2179,14 @@
         const rawHistory = localStorage.getItem('handsome10_history_logs');
         if (rawHistory) {
             try {
-                localHistoryLogs = JSON.parse(rawHistory);
+                rawHistoryLogs = JSON.parse(rawHistory) || {};
+            } catch(e){}
+        }
+
+        const rawRoster = localStorage.getItem('handsome10_player_roster');
+        if (rawRoster) {
+            try {
+                globalPlayerRoster = JSON.parse(rawRoster) || {};
             } catch(e){}
         }
     }
