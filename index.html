@@ -28,7 +28,7 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            padding: 10px 10px calc(28px + env(safe-area-inset-bottom, 0px)) 10px;
             gap: 10px;
         }
         
@@ -571,9 +571,7 @@
             font-weight: 600;
         }
 
-        /* ------------------------------------------------------------- */
         /* 📱 手機版專屬獨立極致優化 CSS (螢幕寬度 <= 768px 自動啟用) */
-        /* ------------------------------------------------------------- */
         @media (max-width: 768px) {
             html, body {
                 height: 100vh;
@@ -581,7 +579,7 @@
             }
 
             body {
-                padding: 6px;
+                padding: 6px 6px calc(16px + env(safe-area-inset-bottom, 0px)) 6px;
                 gap: 6px;
             }
 
@@ -595,7 +593,6 @@
                 font-size: 18px;
             }
 
-            /* 手機版頂部工具按鈕分二排折行顯示 */
             .action-area {
                 width: 100%;
                 display: flex;
@@ -653,18 +650,30 @@
                 overflow-y: auto;
             }
 
-            /* 彈性微調手機卡片高度，防擠壓掉第4位球員 */
+            .slot-item {
+                padding: 4px;
+            }
+
+            .drop-zone {
+                padding: 2px;
+                gap: 3px;
+                min-height: 0;
+                overflow-y: auto;
+            }
+
+            /* 手機版精細精簡卡片尺寸，確保 4 位球員無障礙顯示 */
             .player-card {
-                padding: 5px 6px;
-                gap: 1px;
+                padding: 4px 6px;
+                gap: 0px;
+                flex-shrink: 0;
             }
 
             .player-name-row {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .player-sub {
-                font-size: 11px;
+                font-size: 10px;
             }
 
             .header-note {
@@ -796,7 +805,7 @@
         </div>
     </div>
 
-    <!-- 📱 手機版專屬球員移動點選小視窗 (含即時人數顯示) -->
+    <!-- 📱 手機版專屬球員移動點選小視窗 -->
     <div class="modal-overlay" id="playerMoveModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -879,7 +888,6 @@
         const container = document.getElementById('moveOptionsContainer');
         container.innerHTML = '';
 
-        // 加入開放中的場地與當前人數標籤
         activeCourts.forEach((num) => {
             const cZone = document.getElementById(`court-${num}`);
             const count = cZone ? cZone.children.length : 0;
@@ -891,7 +899,6 @@
             `;
         });
 
-        // 加入開放中的等待區與當前人數標籤
         activeCourts.forEach((num, idx) => {
             const qCode = queueLabels[idx] || num;
             const qZone = document.getElementById(`queue-${qCode}`);
@@ -904,7 +911,6 @@
             `;
         });
 
-        // 加入休息區與當前人數標籤
         const restZone = document.getElementById('rest');
         const restCount = restZone ? restZone.children.length : 0;
         container.innerHTML += `
@@ -1290,7 +1296,7 @@
         });
     }
 
-    // 觸控拖曳與點擊優化
+    // 觸控拖曳與點擊防誤觸優化
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -1328,6 +1334,8 @@
             }
 
             if (elem.dataset.isDragging !== "true") return;
+
+            if (e.cancelable) e.preventDefault();
 
             if (!elem.classList.contains('dragging-touch')) {
                 elem.classList.add('dragging-touch');
@@ -1421,7 +1429,6 @@
         const restCount = rest ? rest.children.length : 0;
         if (bRest) bRest.innerText = restCount;
 
-        // 手機版分頁計數更新
         const mbCourts = document.getElementById('mb-courts-count');
         const mbQueues = document.getElementById('mb-queues-count');
         const mbRest = document.getElementById('mb-rest-count');
@@ -1475,7 +1482,6 @@
         });
     }
 
-    // 寫入資料（同步寫入 Firebase 與 LocalStorage）
     function persistData() {
         if (isRemoteUpdating) return;
 
@@ -1494,7 +1500,6 @@
         }
     }
 
-    // 即時監聽雲端資料變更
     function restoreData() {
         if (isFirebaseActive && dbRef) {
             dbRef.on('value', (snapshot) => {
