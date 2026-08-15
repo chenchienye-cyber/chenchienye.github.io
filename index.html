@@ -227,8 +227,19 @@
 
         .header-note {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: #64748b;
+        }
+
+        /* 備註專屬色彩高亮 */
+        .note-highlight-red {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .note-highlight-green {
+            color: #10b981;
+            font-weight: 700;
         }
 
         .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 15px; font-weight: 600; }
@@ -661,7 +672,6 @@
                 overflow-y: auto;
             }
 
-            /* 手機版精細精簡卡片尺寸，確保 4 位球員無障礙顯示 */
             .player-card {
                 padding: 4px 6px;
                 gap: 0px;
@@ -746,7 +756,7 @@
                 <div class="card-header">
                     <div class="header-title-group">
                         <span>&#128994; 上場區</span>
-                        <span class="header-note">(先點選 勝場球員 再按 結束比賽)</span>
+                        <span class="header-note">(先點選 <span class="note-highlight-red">勝場球員</span> 再按 <span class="note-highlight-green">結束比賽</span>)</span>
                     </div>
                 </div>
                 <div class="sub-grid-row" id="courts-wrapper"></div>
@@ -757,7 +767,7 @@
                 <div class="card-header">
                     <div class="header-title-group">
                         <span>&#8987; 等待區</span>
-                        <span class="header-note">(依序上場 A→B→C→D)</span>
+                        <span class="header-note">(依序遞補上場 A→B→C→D)</span>
                     </div>
                 </div>
                 <div class="sub-grid-row" id="queues-wrapper"></div>
@@ -1036,7 +1046,7 @@
                         </div>
                         <div class="drop-zone" id="court-${num}"></div>
                     </div>
-                    <button class="finish-btn" onclick="finishMatch(${num}, '${qCode}')">結束比賽</button>
+                    <button class="finish-btn" onclick="finishMatch(${num})">結束比賽</button>
                 </div>
             `;
 
@@ -1126,10 +1136,9 @@
         }
     }
 
-    function finishMatch(courtNum, qCode) {
+    function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
-        const queue = document.getElementById(`queue-${qCode}`);
 
         if (!court || !rest) return;
 
@@ -1162,9 +1171,25 @@
             rest.appendChild(pNode);
         });
 
-        if (queue) {
-            while (queue.firstChild) {
-                court.appendChild(queue.firstChild);
+        // 遞補模式：由「等待 A」優先遞補上場
+        const queueA = document.getElementById('queue-A');
+        if (queueA) {
+            while (queueA.firstChild) {
+                court.appendChild(queueA.firstChild);
+            }
+        }
+
+        // 隊列推移 (B->A, C->B, D->C, E->D, F->E)
+        for (let i = 0; i < queueLabels.length - 1; i++) {
+            const currCode = queueLabels[i];
+            const nextCode = queueLabels[i + 1];
+            const currQ = document.getElementById(`queue-${currCode}`);
+            const nextQ = document.getElementById(`queue-${nextCode}`);
+
+            if (currQ && nextQ) {
+                while (nextQ.firstChild) {
+                    currQ.appendChild(nextQ.firstChild);
+                }
             }
         }
 
