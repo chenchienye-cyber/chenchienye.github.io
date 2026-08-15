@@ -267,7 +267,7 @@
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
-            overflow: hidden;
+            overflow-y: auto;
         }
         .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
 
@@ -279,6 +279,7 @@
             width: 100%;
             flex: 1;
             min-height: 0;
+            overflow-y: auto;
         }
 
         .slot-item { 
@@ -539,24 +540,35 @@
         /* 手機移動選擇小視窗圖示按鈕 */
         .move-option-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
             margin-top: 12px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 2px;
         }
         .move-opt-btn {
-            padding: 14px 8px;
+            padding: 12px 6px;
             border-radius: 10px;
             border: 1px solid #cbd5e1;
             background: #f8fafc;
             color: #1e293b;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .move-opt-btn:active {
             background: #2563eb;
             color: white;
+        }
+        .move-opt-count {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 600;
         }
 
         /* ------------------------------------------------------------- */
@@ -583,7 +595,7 @@
                 font-size: 18px;
             }
 
-            /* 手機版頂部工具按鈕分二排折行顯示，不跑出畫面 */
+            /* 手機版頂部工具按鈕分二排折行顯示 */
             .action-area {
                 width: 100%;
                 display: flex;
@@ -616,12 +628,10 @@
                 flex: 1;
             }
 
-            /* 手機版啟用頁籤分頁 */
             .mobile-tabs-bar {
                 display: flex;
             }
 
-            /* 手機版單欄切換顯示 */
             .main-layout {
                 grid-template-columns: 1fr !important;
                 height: 100%;
@@ -638,23 +648,23 @@
             .sub-grid-row {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 6px;
-            }
-
-            .drop-zone {
-                min-height: 140px;
+                flex: 1;
+                min-height: 0;
                 overflow-y: auto;
             }
 
+            /* 彈性微調手機卡片高度，防擠壓掉第4位球員 */
             .player-card {
-                padding: 8px 10px;
+                padding: 5px 6px;
+                gap: 1px;
             }
 
             .player-name-row {
-                font-size: 17px;
+                font-size: 15px;
             }
 
             .player-sub {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .header-note {
@@ -665,7 +675,7 @@
 </head>
 <body data-mobile-tab="courts">
 
-    <!-- 頂部列：手機版第二排自動拆行，完整顯示不跑出畫面 -->
+    <!-- 頂部列 -->
     <div class="top-bar">
         <div class="site-title">
             <span class="title-part1">團團圓圓</span>
@@ -786,7 +796,7 @@
         </div>
     </div>
 
-    <!-- 📱 手機版專屬球員移動點選小視窗 -->
+    <!-- 📱 手機版專屬球員移動點選小視窗 (含即時人數顯示) -->
     <div class="modal-overlay" id="playerMoveModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -869,20 +879,40 @@
         const container = document.getElementById('moveOptionsContainer');
         container.innerHTML = '';
 
-        // 加入開放中的場地
-        activeCourts.forEach((num, idx) => {
-            const qCode = queueLabels[idx] || num;
-            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('court-${num}')">🟢 ${num} 號場</button>`;
+        // 加入開放中的場地與當前人數標籤
+        activeCourts.forEach((num) => {
+            const cZone = document.getElementById(`court-${num}`);
+            const count = cZone ? cZone.children.length : 0;
+            container.innerHTML += `
+                <button class="move-opt-btn" onclick="executeMobileMove('court-${num}')">
+                    <span>🟢 ${num} 號場</span>
+                    <span class="move-opt-count">(${count}人)</span>
+                </button>
+            `;
         });
 
-        // 加入開放中的等待區
+        // 加入開放中的等待區與當前人數標籤
         activeCourts.forEach((num, idx) => {
             const qCode = queueLabels[idx] || num;
-            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('queue-${qCode}')">⏳ 等待 ${qCode}</button>`;
+            const qZone = document.getElementById(`queue-${qCode}`);
+            const count = qZone ? qZone.children.length : 0;
+            container.innerHTML += `
+                <button class="move-opt-btn" onclick="executeMobileMove('queue-${qCode}')">
+                    <span>⏳ 等待 ${qCode}</span>
+                    <span class="move-opt-count">(${count}人)</span>
+                </button>
+            `;
         });
 
-        // 加入休息區
-        container.innerHTML += `<button class="move-opt-btn" style="background:#e2e8f0;" onclick="executeMobileMove('rest')">⏸️ 休息區</button>`;
+        // 加入休息區與當前人數標籤
+        const restZone = document.getElementById('rest');
+        const restCount = restZone ? restZone.children.length : 0;
+        container.innerHTML += `
+            <button class="move-opt-btn" style="background:#e2e8f0; grid-column: span 2;" onclick="executeMobileMove('rest')">
+                <span>⏸️ 休息區</span>
+                <span class="move-opt-count">(${restCount}人)</span>
+            </button>
+        `;
 
         document.getElementById('playerMoveModal').classList.add('active');
     }
@@ -1194,7 +1224,6 @@
             if (isDeleteMode) {
                 deletePlayerNode(div);
             } else if (window.innerWidth <= 768 && !div.parentElement.id.startsWith('court-')) {
-                // 手機版：不在球場上的球員，點擊彈出移動視窗
                 openPlayerMoveModal(div);
             } else {
                 toggleWinnerCard(div);
@@ -1350,7 +1379,6 @@
                 if (isDeleteMode) {
                     deletePlayerNode(elem);
                 } else if (window.innerWidth <= 768 && !elem.parentElement.id.startsWith('court-')) {
-                    // 手機版：點擊打開選擇移動視窗
                     openPlayerMoveModal(elem);
                 } else {
                     toggleWinnerCard(elem);
