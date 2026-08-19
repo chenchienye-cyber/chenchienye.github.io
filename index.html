@@ -73,7 +73,7 @@
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
         .action-area input { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; width: 100px; }
-        .action-area select { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: white; outline: none; }
+        .action-area select { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: white; outline: none; }
         .action-area button { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .action-area button:hover { background: #1d4ed8; }
 
@@ -716,6 +716,33 @@
             font-weight: 700;
         }
 
+        /* 雙擊個人專屬戰績對戰視窗卡片 */
+        .personal-summary-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+        .p-sum-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .p-sum-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: #15803d;
+        }
+        .p-sum-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
         /* 手機移動選擇小視窗圖示按鈕 */
         .move-option-grid {
             display: grid;
@@ -1023,6 +1050,44 @@
         </div>
     </div>
 
+    <!-- 👤 雙擊隊員跳出的【個人戰績與專屬參戰歷史】彈出視窗 -->
+    <div class="modal-overlay" id="personalDetailModal" onclick="closePersonalDetailModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span id="pDetailModalTitle">👤 球員戰績履歷</span>
+                <button class="close-modal-btn" onclick="closePersonalDetailModal()">&times;</button>
+            </div>
+            
+            <div class="personal-summary-box">
+                <div class="p-sum-item">
+                    <span class="p-sum-num" id="pd-played">0</span>
+                    <span class="p-sum-label">總打場數</span>
+                </div>
+                <div class="p-sum-item">
+                    <span class="p-sum-num" style="color:#10b981;" id="pd-wins">0</span>
+                    <span class="p-sum-label">勝場</span>
+                </div>
+                <div class="p-sum-item">
+                    <span class="p-sum-num" style="color:#ef4444;" id="pd-losses">0</span>
+                    <span class="p-sum-label">敗場</span>
+                </div>
+                <div class="p-sum-item">
+                    <span class="p-sum-num" style="color:#0284c7;" id="pd-winrate">0%</span>
+                    <span class="p-sum-label">歷史勝率</span>
+                </div>
+            </div>
+
+            <p style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px;">⚔️ 親自參戰歷史紀錄：</p>
+            <div class="history-list-container" id="pd-matchLogsContainer">
+                <p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無該球員參戰紀錄</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="save-modal-btn" onclick="closePersonalDetailModal()">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 📱 手機版專屬球員移動點選小視窗 -->
     <div class="modal-overlay" id="playerMoveModal">
         <div class="modal-box">
@@ -1128,6 +1193,85 @@
     }
 
     // -------------------------------------------------------------
+    // 👤 雙擊球員跳出個人專屬戰績對戰視窗
+    // -------------------------------------------------------------
+    function openPersonalDetailModal(playerName) {
+        if (!playerName) return;
+        
+        document.getElementById('pDetailModalTitle').innerText = `👤 球員履歷：${playerName}`;
+        
+        let played = 0;
+        let wins = 0;
+        let losses = 0;
+        const personalLogs = [];
+
+        Object.values(rawHistoryLogs).forEach(item => {
+            const inWinners = Array.isArray(item.winners) && item.winners.includes(playerName);
+            const inLosers = Array.isArray(item.losers) && item.losers.includes(playerName);
+
+            if (inWinners || inLosers) {
+                played += 1;
+                if (inWinners) wins += 1;
+                if (inLosers) losses += 1;
+                personalLogs.push(item);
+            }
+        });
+
+        const rate = played > 0 ? Math.round((wins / played) * 100) : 0;
+
+        document.getElementById('pd-played').innerText = played;
+        document.getElementById('pd-wins').innerText = wins;
+        document.getElementById('pd-losses').innerText = losses;
+        document.getElementById('pd-winrate').innerText = `${rate}%`;
+
+        const container = document.getElementById('pd-matchLogsContainer');
+        if (personalLogs.length === 0) {
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無該球員參戰紀錄</p>';
+        } else {
+            container.innerHTML = '';
+            const sortedLogs = [...personalLogs].reverse();
+            sortedLogs.forEach(item => {
+                const isWon = item.winners && item.winners.includes(playerName);
+                const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join(' & ') : '無標記';
+                const losersStr = item.losers && item.losers.length > 0 ? item.losers.join(' & ') : '無標記';
+
+                let timeDisplay = item.time || '';
+                if (item.startTime && item.endTime) {
+                    timeDisplay = `開始 ${item.startTime} ｜ 結束 ${item.endTime}`;
+                } else if (item.startTime) {
+                    timeDisplay = `時間：${item.startTime}`;
+                }
+
+                container.innerHTML += `
+                    <div class="history-item-card" style="border-left: 5px solid ${isWon ? '#10b981' : '#ef4444'};">
+                        <div class="history-item-header">
+                            <span>📅 ${timeDisplay} (🏸 ${item.court ? item.court + '號場' : ''})</span>
+                            <span class="history-duration-tag" style="background:${isWon ? '#d1fae5' : '#fee2e2'}; color:${isWon ? '#065f46' : '#991b1b'};">
+                                ${isWon ? '🏆 勝利' : '🛡️ 敗北'}
+                            </span>
+                        </div>
+                        <div class="history-team-row">
+                            <span class="winner-text">🏆 勝方：${winnersStr}</span>
+                        </div>
+                        <div class="history-team-row" style="margin-top:2px;">
+                            <span class="loser-text">🛡️ 敗方：${losersStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('personalDetailModal').classList.add('active');
+    }
+
+    function closePersonalDetailModal(e) {
+        if (e && e.target !== document.getElementById('personalDetailModal') && !e.target.classList.contains('close-modal-btn')) {
+            return;
+        }
+        document.getElementById('personalDetailModal').classList.remove('active');
+    }
+
+    // -------------------------------------------------------------
     // 👥 常客球員點名視窗控制與刪除功能
     // -------------------------------------------------------------
     function openRosterModal() {
@@ -1149,7 +1293,6 @@
             return;
         }
 
-        // 找出目前已在場上/休息區的球員姓名
         const currentActiveNames = [];
         const stateObj = getCurrentStateObject();
         Object.values(stateObj).forEach(arr => {
@@ -1206,7 +1349,6 @@
         closeRosterModal();
     }
 
-    // 從常客資料庫中刪除球員（需密碼 888）
     function deletePlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1224,10 +1366,8 @@
         }
     }
 
-    // 自動新增球員至常客資料庫（自動清理 Key 中含有的非法字元如 '.'）
     function registerPlayerToRoster(name, gender, level) {
         if (!name) return;
-        // 清理 Firebase 不允許的路徑半角符號 . # $ [ ]
         const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
         if (!safeKey) return;
         
@@ -1381,7 +1521,7 @@
             else if (idx === 2) rankBadge = '🥉 3';
 
             html += `
-                <tr>
+                <tr style="cursor:pointer;" onclick="openPersonalDetailModal('${item.name}')" title="點擊查看詳細履歷">
                     <td><b>${rankBadge}</b></td>
                     <td><b>${item.name}</b></td>
                     <td>${item.played} 場</td>
@@ -1395,7 +1535,6 @@
         container.innerHTML = html;
     }
 
-    // 刪除歷史對戰紀錄（需密碼 888）
     function deleteHistoryRecord(key) {
         if (!confirm("確定要刪除這筆對戰紀錄嗎？")) return;
         if (!verifyPassword()) return;
@@ -1409,7 +1548,6 @@
         }
     }
 
-    // 修改歷史對戰紀錄（需密碼 888）
     function editHistoryRecord(key) {
         const item = rawHistoryLogs[key];
         if (!item) return;
@@ -1637,7 +1775,6 @@
         bindDropZones();
     }
 
-    // 切換刪除模式（主畫面點擊球員卡片刪除，需驗證密碼 888）
     function toggleDeleteMode() {
         if (!isDeleteMode) {
             if (!verifyPassword()) return;
@@ -1867,26 +2004,6 @@
             </div>
         `;
 
-        div.onclick = (e) => {
-            if (div.dataset.isDragging === "true" || div.dataset.touchHandled === "true") return;
-
-            if (isDeleteMode) {
-                deletePlayerNode(div);
-            } else if (window.innerWidth <= 768 && !div.parentElement.id.startsWith('court-')) {
-                openPlayerMoveModal(div);
-            } else {
-                toggleWinnerCard(div);
-            }
-        };
-
-        div.ondragstart = (e) => {
-            if (isDeleteMode) {
-                e.preventDefault();
-                return;
-            }
-            e.dataTransfer.setData('text/plain', div.id);
-        };
-
         bindTouchEvents(div);
 
         return div;
@@ -1945,11 +2062,13 @@
         });
     }
 
-    // 觸控拖曳與點擊防誤觸優化
+    // 觸控、單擊選勝/移動與【雙擊跳出個人戰績對戰履歷】優化
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
         let cardRect = null;
+        let clickTimer = null;
+        let clickCount = 0;
 
         const resetCardStyle = () => {
             elem.classList.remove('dragging-touch');
@@ -1961,6 +2080,34 @@
             elem.style.maxWidth = '';
             elem.style.maxHeight = '';
             document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+        };
+
+        const handleTapAction = () => {
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => {
+                    // 單擊觸發：刪除 / 移動視窗 / 標記勝利
+                    if (isDeleteMode) {
+                        deletePlayerNode(elem);
+                    } else if (window.innerWidth <= 768 && !elem.parentElement.id.startsWith('court-')) {
+                        openPlayerMoveModal(elem);
+                    } else {
+                        toggleWinnerCard(elem);
+                        persistData();
+                    }
+                    clickCount = 0;
+                }, 250);
+            } else if (clickCount === 2) {
+                // 雙擊觸發：跳出個人戰績履歷小視窗
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                openPersonalDetailModal(elem.dataset.name);
+            }
+        };
+
+        elem.onclick = (e) => {
+            if (elem.dataset.isDragging === "true" || elem.dataset.touchHandled === "true") return;
+            handleTapAction();
         };
 
         elem.ontouchstart = (e) => {
@@ -2039,14 +2186,7 @@
                 persistData();
             } else if (!wasDragging) {
                 elem.dataset.touchHandled = "true";
-                if (isDeleteMode) {
-                    deletePlayerNode(elem);
-                } else if (window.innerWidth <= 768 && !elem.parentElement.id.startsWith('court-')) {
-                    openPlayerMoveModal(elem);
-                } else {
-                    toggleWinnerCard(elem);
-                    persistData();
-                }
+                handleTapAction();
             }
             elem.dataset.isDragging = "false";
         };
@@ -2187,7 +2327,6 @@
                 restoreLocalFallback();
             });
 
-            // 監聽對戰歷史紀錄資料庫
             if (historyDbRef) {
                 historyDbRef.on('value', (snapshot) => {
                     rawHistoryLogs = snapshot.val() || {};
@@ -2197,7 +2336,6 @@
                 });
             }
 
-            // 監聽常客球員名單資料庫
             if (rosterDbRef) {
                 rosterDbRef.on('value', (snapshot) => {
                     globalPlayerRoster = snapshot.val() || {};
