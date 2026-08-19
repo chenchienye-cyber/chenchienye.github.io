@@ -73,7 +73,7 @@
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
         .action-area input { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; width: 100px; }
-        .action-area select { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: white; outline: none; }
+        .action-area select { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: white; outline: none; }
         .action-area button { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .action-area button:hover { background: #1d4ed8; }
 
@@ -1064,7 +1064,7 @@
         historyDbRef = firebase.database().ref("badminton_match_records");
         rosterDbRef = firebase.database().ref("badminton_player_roster");
         isFirebaseActive = true;
-        console.log("Firebase 新加坡雲端即時同步已成功啟動！");
+        console.log("Firebase 新加坡雲端即時同步與常客資料庫已成功啟動！");
     } catch (e) {
         console.error("Firebase 初始化失敗：", e);
     }
@@ -1224,10 +1224,12 @@
         }
     }
 
-    // 自動新增球員至常客資料庫
+    // 自動新增球員至常客資料庫（自動清理 Key 中含有的非法字元如 '.'）
     function registerPlayerToRoster(name, gender, level) {
         if (!name) return;
-        const normalizedKey = name.trim().toLowerCase();
+        // 清理 Firebase 不允許的路徑半角符號 . # $ [ ]
+        const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
+        if (!safeKey) return;
         
         const rosterObj = {
             name: name.trim(),
@@ -1237,9 +1239,9 @@
         };
 
         if (isFirebaseActive && rosterDbRef) {
-            rosterDbRef.child(normalizedKey).set(rosterObj);
+            rosterDbRef.child(safeKey).set(rosterObj);
         } else {
-            globalPlayerRoster[normalizedKey] = rosterObj;
+            globalPlayerRoster[safeKey] = rosterObj;
             localStorage.setItem('handsome10_player_roster', JSON.stringify(globalPlayerRoster));
         }
     }
