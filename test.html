@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🧪 測試版排場板</title>
+    <title>羽球排場系統</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -67,16 +67,19 @@
         .action-area button { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .action-area button:hover { background: #1d4ed8; }
 
-        /* 純圖示精簡按鈕通用樣式 */
+        /* 按鈕通用樣式 */
         .icon-btn {
             padding: 6px 10px !important;
-            font-size: 16px !important;
+            font-size: 15px !important;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         /* 按鈕風格 */
@@ -897,7 +900,7 @@
     <!-- 頂部列 -->
     <div class="top-bar">
         <div class="site-title" id="displayClubTitle">
-            🧪 測試版排場板
+            載入中...
         </div>
         <div class="action-area">
             <!-- 輸入、選單與新增按鈕 -->
@@ -914,10 +917,10 @@
             </select>
             <button type="button" onclick="createPlayer()">新增</button>
             
-            <!-- 精簡圖示按鈕區 -->
+            <!-- 精簡圖示按鈕區（📜 按鈕已補上【對戰紀錄】中文） -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
-            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜</button>
+            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
             <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
@@ -1124,6 +1127,14 @@
     const urlParams = new URLSearchParams(window.location.search);
     const clubId = isTestPage ? 'test' : (urlParams.get('club') || 'night');
 
+    // 後台寫死的三個球隊與測試球隊預設設定對照表
+    const defaultClubConfigs = {
+        'night': { name: "團團圓圓宵夜團", pwd: "888" },
+        'gem': { name: "隨心所玉羽球團", pwd: "666" },
+        'default': { name: "羽球團", pwd: "123" },
+        'test': { name: "🧪 測試版排場板", pwd: "999" }
+    };
+
     // Firebase 基礎設定
     const firebaseConfig = {
         apiKey: "AIzaSyDPgUmF2FPMpFxgjcLodCvI0GmFsB3cdQU",
@@ -1142,7 +1153,7 @@
     let historyDbRef = null;
     let rosterDbRef = null;
 
-    // 動態綁定測試資料庫節點 clubs/test/...
+    // 動態綁定球隊專屬資料庫節點 clubs/${clubId}/...
     try {
         firebase.initializeApp(firebaseConfig);
         baseClubRef = firebase.database().ref(`clubs/${clubId}`);
@@ -1155,9 +1166,10 @@
         console.error("Firebase 初始化失敗：", e);
     }
 
-    // 🔒 測試版預設密碼 999 與隊名
-    let currentAdminPassword = "999";
-    let currentClubName = "🧪 測試版排場板";
+    // 🔒 管理驗證密碼與隊名由後台對照表讀取
+    const matchedConfig = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+    let currentAdminPassword = matchedConfig.pwd;
+    let currentClubName = matchedConfig.name;
 
     function verifyPassword() {
         const input = prompt("🔐 請輸入管理員密碼：");
