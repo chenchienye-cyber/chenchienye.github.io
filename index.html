@@ -67,16 +67,19 @@
         .action-area button { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .action-area button:hover { background: #1d4ed8; }
 
-        /* 純圖示精簡按鈕通用樣式 */
+        /* 按鈕通用樣式 */
         .icon-btn {
             padding: 6px 10px !important;
-            font-size: 16px !important;
+            font-size: 15px !important;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         /* 按鈕風格 */
@@ -408,7 +411,7 @@
             display: inline-block;
         }
 
-        /* 副資訊列與程度包覆膠囊（高對比清晰化） */
+        /* 副資訊列與程度包覆膠囊 */
         .player-sub {
             font-size: 10px;
             color: #475569;
@@ -423,16 +426,17 @@
         .level-badge {
             padding: 1px 5px;
             border-radius: 4px;
-            font-weight: 800;
+            font-weight: 600;
             font-size: 10px;
+            color: #ffffff !important;
             letter-spacing: 0.3px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             display: inline-block;
         }
-        .level-badge.green { background-color: #16a34a; color: #ffffff; }
-        .level-badge.yellow { background-color: #f59e0b; color: #78350f; }
-        .level-badge.blue { background-color: #0284c7; color: #ffffff; }
-        .level-badge.red { background-color: #dc2626; color: #ffffff; }
+        .level-badge.green { background-color: #16a34a; }
+        .level-badge.yellow { background-color: #eab308; }
+        .level-badge.blue { background-color: #0284c7; }
+        .level-badge.red { background-color: #dc2626; }
 
         /* 彈出式 Modal 視窗樣式 */
         .modal-overlay {
@@ -777,7 +781,7 @@
             font-weight: 600;
         }
 
-        /* 📱 手機版專屬獨立極致優化 CSS (螢幕寬度 <= 768px 自動啟用) */
+        /* 📱 手機版專屬獨立極致優化 CSS */
         @media (max-width: 768px) {
             html, body {
                 height: 100vh;
@@ -913,10 +917,10 @@
             </select>
             <button type="button" onclick="createPlayer()">新增</button>
             
-            <!-- 精簡圖示按鈕區 -->
+            <!-- 精簡圖示按鈕區（📜 按鈕已補上【對戰紀錄】中文） -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
-            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜</button>
+            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
             <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
@@ -1117,16 +1121,18 @@
 
 <script>
     // -------------------------------------------------------------
-    // 1. URL 網址參數對應球隊資料庫設定
+    // 1. 智慧判斷網頁：若為 test.html 則鎖定 test 測試庫，其餘(如 index.html)自動抓取 ?club= 參數
     // -------------------------------------------------------------
+    const isTestPage = window.location.pathname.endsWith('test.html');
     const urlParams = new URLSearchParams(window.location.search);
-    const clubId = urlParams.get('club') || 'night';
+    const clubId = isTestPage ? 'test' : (urlParams.get('club') || 'night');
 
-    // 後台寫死的三個球隊預設設定對照表
+    // 後台寫死的三個球隊與測試球隊預設設定對照表
     const defaultClubConfigs = {
         'night': { name: "團團圓圓宵夜團", pwd: "888" },
         'gem': { name: "隨心所玉羽球團", pwd: "666" },
-        'default': { name: "羽球團", pwd: "123" }
+        'default': { name: "羽球團", pwd: "123" },
+        'test': { name: "🧪 測試版排場板", pwd: "999" }
     };
 
     // Firebase 基礎設定
