@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>團團圓圓宵夜團(排場板)</title>
+    <title>羽球排場系統</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -45,7 +45,7 @@
             gap: 10px; 
         }
         
-        /* 圓圓胖胖可愛隊名樣式 */
+        /* 動態球隊隊名樣式 */
         .site-title { 
             font-size: 20px; 
             font-weight: 700; 
@@ -55,20 +55,10 @@
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
-        }
-
-        .title-part1 {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #fa8231 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.3));
-        }
-
-        .title-part2 {
-            background: linear-gradient(135deg, #f7b731 0%, #fa8231 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 1px 2px rgba(250, 130, 49, 0.3));
+            filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.2));
         }
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
@@ -524,11 +514,34 @@
             box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
         }
 
+        /* 設定視窗表單欄位 */
+        .setting-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+        .setting-field-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+        }
+        .setting-field-group input {
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;
             gap: 8px;
             flex-shrink: 0;
+            margin-top: 12px;
         }
         .save-modal-btn {
             background: #2563eb;
@@ -891,9 +904,8 @@
 
     <!-- 頂部列 -->
     <div class="top-bar">
-        <div class="site-title">
-            <span class="title-part1">團團圓圓</span>
-            <span class="title-part2">宵夜團</span>
+        <div class="site-title" id="displayClubTitle">
+            載入中...
         </div>
         <div class="action-area">
             <!-- 輸入、選單與新增按鈕 -->
@@ -914,7 +926,7 @@
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜</button>
-            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
+            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場與球隊設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
     </div>
@@ -987,11 +999,11 @@
         </div>
     </div>
 
-    <!-- 開關場設定彈出視窗 -->
+    <!-- 開關場與球隊名稱密碼設定視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 開場 / 關場設定</span>
+                <span>⚙️ 開場 / 關場與球隊設定</span>
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
             <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
@@ -1021,8 +1033,19 @@
                     <span class="status-text" id="stext-6">關場</span>
                 </button>
             </div>
+
+            <!-- 球隊名稱與自訂管理密碼設定欄位 -->
+            <div class="setting-field-group">
+                <label>🏷️ 本球隊名稱：</label>
+                <input type="text" id="cfgClubName" placeholder="例如：團團圓圓宵夜團">
+                
+                <label style="margin-top:8px;">🔐 本球隊管理密碼：</label>
+                <input type="text" id="cfgAdminPassword" placeholder="例如：888">
+            </div>
+
             <div class="modal-footer">
-                <button class="save-modal-btn" onclick="closeSettingsModal()">確定完成</button>
+                <button class="save-modal-btn" onclick="saveClubSettings()">儲存設定</button>
+                <button class="save-modal-btn" style="background:#64748b;" onclick="closeSettingsModal()">關閉</button>
             </div>
         </div>
     </div>
@@ -1105,8 +1128,19 @@
 
 <script>
     // -------------------------------------------------------------
-    // 1. Firebase 雲端即時資料庫設定 (新加坡專屬高頻伺服器)
+    // 1. URL 網址參數對應球隊資料庫設定
     // -------------------------------------------------------------
+    const urlParams = new URLSearchParams(window.location.search);
+    const clubId = urlParams.get('club') || 'night'; // 預設使用 night (團團圓圓宵夜團)
+
+    // 三個球隊預設設定對照表
+    const defaultClubConfigs = {
+        'night': { name: "團團圓圓宵夜團", pwd: "888" },
+        'gem': { name: "隨心所玉羽球團", pwd: "666" },
+        'default': { name: "羽球團", pwd: "123" }
+    };
+
+    // Firebase 基礎設定
     const firebaseConfig = {
         apiKey: "AIzaSyDPgUmF2FPMpFxgjcLodCvI0GmFsB3cdQU",
         authDomain: "night-badminton.firebaseapp.com",
@@ -1119,27 +1153,33 @@
     };
 
     let isFirebaseActive = false;
+    let baseClubRef = null;
     let dbRef = null;
     let historyDbRef = null;
     let rosterDbRef = null;
+    let settingsDbRef = null;
 
+    // 動態綁定球隊專屬資料庫節點 clubs/${clubId}/...
     try {
         firebase.initializeApp(firebaseConfig);
-        dbRef = firebase.database().ref("badminton_supper_club");
-        historyDbRef = firebase.database().ref("badminton_match_records");
-        rosterDbRef = firebase.database().ref("badminton_player_roster");
+        baseClubRef = firebase.database().ref(`clubs/${clubId}`);
+        dbRef = baseClubRef.child("badminton_supper_club");
+        historyDbRef = baseClubRef.child("badminton_match_records");
+        rosterDbRef = baseClubRef.child("badminton_player_roster");
+        settingsDbRef = baseClubRef.child("settings");
         isFirebaseActive = true;
-        console.log("Firebase 新加坡雲端即時同步與常客資料庫已成功啟動！");
+        console.log(`Firebase 新加坡即時同步已啟動，當前球隊代碼：[${clubId}]`);
     } catch (e) {
         console.error("Firebase 初始化失敗：", e);
     }
 
-    // 🔒 管理驗證密碼
-    const ADMIN_PASSWORD = "888";
+    // 🔒 管理驗證密碼變數（由 Firebase 動態載入，預設從表格抓）
+    let currentAdminPassword = (defaultClubConfigs[clubId] ? defaultClubConfigs[clubId].pwd : "888");
+    let currentClubName = (defaultClubConfigs[clubId] ? defaultClubConfigs[clubId].name : "羽球排場系統");
 
     function verifyPassword() {
         const input = prompt("🔐 請輸入管理員密碼：");
-        if (input === ADMIN_PASSWORD) {
+        if (input === currentAdminPassword) {
             return true;
         } else {
             alert("❌ 密碼錯誤，無法執行此操作！");
@@ -1361,7 +1401,7 @@
             rosterDbRef.child(key).remove();
         } else {
             delete globalPlayerRoster[key];
-            localStorage.setItem('handsome10_player_roster', JSON.stringify(globalPlayerRoster));
+            localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
             renderRosterUI();
         }
     }
@@ -1382,7 +1422,7 @@
             rosterDbRef.child(safeKey).set(rosterObj);
         } else {
             globalPlayerRoster[safeKey] = rosterObj;
-            localStorage.setItem('handsome10_player_roster', JSON.stringify(globalPlayerRoster));
+            localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
         }
     }
 
@@ -1543,7 +1583,7 @@
             historyDbRef.child(key).remove();
         } else {
             delete rawHistoryLogs[key];
-            localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
+            localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
             renderHistoryRecordsUI();
         }
     }
@@ -1573,7 +1613,7 @@
             historyDbRef.child(key).set(updatedRecord);
         } else {
             rawHistoryLogs[key] = updatedRecord;
-            localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
+            localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
             renderHistoryRecordsUI();
         }
     }
@@ -1665,15 +1705,47 @@
     }
 
     // -------------------------------------------------------------
-    // 3. 視窗 Modal 控制與場地開關
+    // 3. 視窗 Modal 控制與場地與球隊名稱密碼設定
     // -------------------------------------------------------------
     function openSettingsModal() {
         updateModalUI();
+        document.getElementById('cfgClubName').value = currentClubName;
+        document.getElementById('cfgAdminPassword').value = currentAdminPassword;
         document.getElementById('settingsModal').classList.add('active');
     }
 
     function closeSettingsModal() {
         document.getElementById('settingsModal').classList.remove('active');
+    }
+
+    function saveClubSettings() {
+        const newName = document.getElementById('cfgClubName').value.trim();
+        const newPwd = document.getElementById('cfgAdminPassword').value.trim();
+
+        if (!newName || !newPwd) {
+            alert("球隊名稱與管理密碼皆不能為空！");
+            return;
+        }
+
+        const settingsObj = {
+            clubName: newName,
+            adminPassword: newPwd,
+            updatedAt: Date.now()
+        };
+
+        if (isFirebaseActive && settingsDbRef) {
+            settingsDbRef.set(settingsObj).then(() => {
+                alert("✅ 球隊名稱與密碼設定已成功儲存！");
+                closeSettingsModal();
+            });
+        } else {
+            currentClubName = newName;
+            currentAdminPassword = newPwd;
+            document.getElementById('displayClubTitle').innerText = newName;
+            localStorage.setItem(`handsome10_club_settings_${clubId}`, JSON.stringify(settingsObj));
+            alert("✅ 本地設定已更新！");
+            closeSettingsModal();
+        }
     }
 
     function updateModalUI() {
@@ -1916,7 +1988,7 @@
             } else {
                 const autoKey = 'log_' + Date.now();
                 rawHistoryLogs[autoKey] = matchLog;
-                localStorage.setItem('handsome10_history_logs', JSON.stringify(rawHistoryLogs));
+                localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
             }
         }
 
@@ -2086,7 +2158,6 @@
             clickCount++;
             if (clickCount === 1) {
                 clickTimer = setTimeout(() => {
-                    // 單擊觸發：刪除 / 移動視窗 / 標記勝利
                     if (isDeleteMode) {
                         deletePlayerNode(elem);
                     } else if (window.innerWidth <= 768 && !elem.parentElement.id.startsWith('court-')) {
@@ -2098,7 +2169,6 @@
                     clickCount = 0;
                 }, 250);
             } else if (clickCount === 2) {
-                // 雙擊觸發：跳出個人戰績履歷小視窗
                 clearTimeout(clickTimer);
                 clickCount = 0;
                 openPersonalDetailModal(elem.dataset.name);
@@ -2288,7 +2358,7 @@
             store: store
         };
 
-        localStorage.setItem('handsome10_badminton_data', JSON.stringify(payload));
+        localStorage.setItem(`handsome10_badminton_data_${clubId}`, JSON.stringify(payload));
 
         if (isFirebaseActive && dbRef) {
             dbRef.set(payload).catch((err) => {
@@ -2299,6 +2369,7 @@
 
     function restoreData() {
         if (isFirebaseActive && dbRef) {
+            // 1. 監聽該團的排場板狀態
             dbRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -2312,7 +2383,7 @@
                     isRemoteUpdating = false;
                 } else {
                     console.log("雲端資料庫為空，載入本地歷史資料...");
-                    const raw = localStorage.getItem('handsome10_badminton_data');
+                    const raw = localStorage.getItem(`handsome10_badminton_data_${clubId}`);
                     if (raw) {
                         try {
                             const localData = JSON.parse(raw);
@@ -2327,6 +2398,28 @@
                 restoreLocalFallback();
             });
 
+            // 2. 監聽該團的設定檔（球隊名稱與管理密碼）
+            if (settingsDbRef) {
+                settingsDbRef.on('value', (snapshot) => {
+                    const cfg = snapshot.val();
+                    if (cfg) {
+                        if (cfg.clubName) {
+                            currentClubName = cfg.clubName;
+                            document.getElementById('displayClubTitle').innerText = currentClubName;
+                        }
+                        if (cfg.adminPassword) {
+                            currentAdminPassword = cfg.adminPassword;
+                        }
+                    } else {
+                        // 雲端若未設定，自動寫入預設對照值
+                        const def = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+                        settingsDbRef.set({ clubName: def.name, adminPassword: def.pwd });
+                        document.getElementById('displayClubTitle').innerText = def.name;
+                    }
+                });
+            }
+
+            // 3. 監聽該團對戰歷史紀錄資料庫
             if (historyDbRef) {
                 historyDbRef.on('value', (snapshot) => {
                     rawHistoryLogs = snapshot.val() || {};
@@ -2336,6 +2429,7 @@
                 });
             }
 
+            // 4. 監聽該團常客球員名單資料庫
             if (rosterDbRef) {
                 rosterDbRef.on('value', (snapshot) => {
                     globalPlayerRoster = snapshot.val() || {};
@@ -2350,7 +2444,7 @@
     }
 
     function restoreLocalFallback() {
-        const raw = localStorage.getItem('handsome10_badminton_data');
+        const raw = localStorage.getItem(`handsome10_badminton_data_${clubId}`);
         if (raw) {
             try {
                 const data = JSON.parse(raw);
@@ -2367,19 +2461,22 @@
             }
         }
 
-        const rawHistory = localStorage.getItem('handsome10_history_logs');
+        const rawHistory = localStorage.getItem(`handsome10_history_logs_${clubId}`);
         if (rawHistory) {
             try {
                 rawHistoryLogs = JSON.parse(rawHistory) || {};
             } catch(e){}
         }
 
-        const rawRoster = localStorage.getItem('handsome10_player_roster');
+        const rawRoster = localStorage.getItem(`handsome10_player_roster_${clubId}`);
         if (rawRoster) {
             try {
                 globalPlayerRoster = JSON.parse(rawRoster) || {};
             } catch(e){}
         }
+
+        const def = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+        document.getElementById('displayClubTitle').innerText = def.name;
     }
 
     window.addEventListener('keydown', (e) => {
