@@ -483,20 +483,21 @@
             padding: 0 4px;
         }
 
+        /* 8場開關網格 */
         .court-toggle-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             margin-bottom: 16px;
         }
 
         .court-btn {
-            padding: 12px 8px;
+            padding: 12px 6px;
             border-radius: 10px;
             border: 2px solid #cbd5e1;
             background: #f8fafc;
             color: #64748b;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -512,28 +513,6 @@
             border-color: #22c55e;
             color: #15803d;
             box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
-        }
-
-        /* 設定視窗表單欄位 */
-        .setting-field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 12px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
-        }
-        .setting-field-group label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #475569;
-        }
-        .setting-field-group input {
-            padding: 8px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
         }
 
         .modal-footer {
@@ -897,6 +876,10 @@
             .header-note {
                 display: none;
             }
+
+            .court-toggle-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -926,7 +909,7 @@
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜</button>
-            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場與球隊設定">⚙️</button>
+            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
             <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
     </div>
@@ -999,11 +982,11 @@
         </div>
     </div>
 
-    <!-- 開關場與球隊名稱密碼設定視窗 -->
+    <!-- 開關場設定彈出視窗（支援 8 個場地） -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 開場 / 關場與球隊設定</span>
+                <span>⚙️ 開場 / 關場設定</span>
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
             <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
@@ -1032,20 +1015,18 @@
                     <span>6 號場</span>
                     <span class="status-text" id="stext-6">關場</span>
                 </button>
-            </div>
-
-            <!-- 球隊名稱與自訂管理密碼設定欄位 -->
-            <div class="setting-field-group">
-                <label>🏷️ 本球隊名稱：</label>
-                <input type="text" id="cfgClubName" placeholder="例如：團團圓圓宵夜團">
-                
-                <label style="margin-top:8px;">🔐 本球隊管理密碼：</label>
-                <input type="text" id="cfgAdminPassword" placeholder="例如：888">
+                <button class="court-btn" id="cbtn-7" onclick="toggleCourt(7)">
+                    <span>7 號場</span>
+                    <span class="status-text" id="stext-7">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-8" onclick="toggleCourt(8)">
+                    <span>8 號場</span>
+                    <span class="status-text" id="stext-8">關場</span>
+                </button>
             </div>
 
             <div class="modal-footer">
-                <button class="save-modal-btn" onclick="saveClubSettings()">儲存設定</button>
-                <button class="save-modal-btn" style="background:#64748b;" onclick="closeSettingsModal()">關閉</button>
+                <button class="save-modal-btn" onclick="closeSettingsModal()">完成</button>
             </div>
         </div>
     </div>
@@ -1131,9 +1112,9 @@
     // 1. URL 網址參數對應球隊資料庫設定
     // -------------------------------------------------------------
     const urlParams = new URLSearchParams(window.location.search);
-    const clubId = urlParams.get('club') || 'night'; // 預設使用 night (團團圓圓宵夜團)
+    const clubId = urlParams.get('club') || 'night';
 
-    // 三個球隊預設設定對照表
+    // 後台寫死的三個球隊預設設定對照表
     const defaultClubConfigs = {
         'night': { name: "團團圓圓宵夜團", pwd: "888" },
         'gem': { name: "隨心所玉羽球團", pwd: "666" },
@@ -1157,7 +1138,6 @@
     let dbRef = null;
     let historyDbRef = null;
     let rosterDbRef = null;
-    let settingsDbRef = null;
 
     // 動態綁定球隊專屬資料庫節點 clubs/${clubId}/...
     try {
@@ -1166,16 +1146,16 @@
         dbRef = baseClubRef.child("badminton_supper_club");
         historyDbRef = baseClubRef.child("badminton_match_records");
         rosterDbRef = baseClubRef.child("badminton_player_roster");
-        settingsDbRef = baseClubRef.child("settings");
         isFirebaseActive = true;
         console.log(`Firebase 新加坡即時同步已啟動，當前球隊代碼：[${clubId}]`);
     } catch (e) {
         console.error("Firebase 初始化失敗：", e);
     }
 
-    // 🔒 管理驗證密碼變數（由 Firebase 動態載入，預設從表格抓）
-    let currentAdminPassword = (defaultClubConfigs[clubId] ? defaultClubConfigs[clubId].pwd : "888");
-    let currentClubName = (defaultClubConfigs[clubId] ? defaultClubConfigs[clubId].name : "羽球排場系統");
+    // 🔒 管理驗證密碼與隊名由後台對照表讀取
+    const matchedConfig = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+    let currentAdminPassword = matchedConfig.pwd;
+    let currentClubName = matchedConfig.name;
 
     function verifyPassword() {
         const input = prompt("🔐 請輸入管理員密碼：");
@@ -1191,7 +1171,7 @@
     // 2. 系統全域變數與對照表
     // -------------------------------------------------------------
     let activeCourts = [1, 2, 3, 4];
-    const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     let isRemoteUpdating = false;
     let selectedPlayerElemForMove = null;
     
@@ -1705,12 +1685,10 @@
     }
 
     // -------------------------------------------------------------
-    // 3. 視窗 Modal 控制與場地與球隊名稱密碼設定
+    // 3. 視窗 Modal 控制與場地開關 (支援 8 個場地)
     // -------------------------------------------------------------
     function openSettingsModal() {
         updateModalUI();
-        document.getElementById('cfgClubName').value = currentClubName;
-        document.getElementById('cfgAdminPassword').value = currentAdminPassword;
         document.getElementById('settingsModal').classList.add('active');
     }
 
@@ -1718,38 +1696,8 @@
         document.getElementById('settingsModal').classList.remove('active');
     }
 
-    function saveClubSettings() {
-        const newName = document.getElementById('cfgClubName').value.trim();
-        const newPwd = document.getElementById('cfgAdminPassword').value.trim();
-
-        if (!newName || !newPwd) {
-            alert("球隊名稱與管理密碼皆不能為空！");
-            return;
-        }
-
-        const settingsObj = {
-            clubName: newName,
-            adminPassword: newPwd,
-            updatedAt: Date.now()
-        };
-
-        if (isFirebaseActive && settingsDbRef) {
-            settingsDbRef.set(settingsObj).then(() => {
-                alert("✅ 球隊名稱與密碼設定已成功儲存！");
-                closeSettingsModal();
-            });
-        } else {
-            currentClubName = newName;
-            currentAdminPassword = newPwd;
-            document.getElementById('displayClubTitle').innerText = newName;
-            localStorage.setItem(`handsome10_club_settings_${clubId}`, JSON.stringify(settingsObj));
-            alert("✅ 本地設定已更新！");
-            closeSettingsModal();
-        }
-    }
-
     function updateModalUI() {
-        [1, 2, 3, 4, 5, 6].forEach(num => {
+        [1, 2, 3, 4, 5, 6, 7, 8].forEach(num => {
             const btn = document.getElementById(`cbtn-${num}`);
             const stext = document.getElementById(`stext-${num}`);
             if (btn && stext) {
@@ -2303,7 +2251,7 @@
     }
 
     function getCurrentStateObject() {
-        const courtZones = [1, 2, 3, 4, 5, 6].map(n => `court-${n}`);
+        const courtZones = [1, 2, 3, 4, 5, 6, 7, 8].map(n => `court-${n}`);
         const queueZones = queueLabels.map(c => `queue-${c}`);
         const allPossibleZones = ['rest', ...courtZones, ...queueZones];
 
@@ -2327,7 +2275,7 @@
 
     function applyStateObject(store) {
         if (!store) return;
-        const courtZones = [1, 2, 3, 4, 5, 6].map(n => `court-${n}`);
+        const courtZones = [1, 2, 3, 4, 5, 6, 7, 8].map(n => `court-${n}`);
         const queueZones = queueLabels.map(c => `queue-${c}`);
         const allPossibleZones = ['rest', ...courtZones, ...queueZones];
 
@@ -2368,8 +2316,10 @@
     }
 
     function restoreData() {
+        // 設定頂部顯示隊名標題
+        document.getElementById('displayClubTitle').innerText = currentClubName;
+
         if (isFirebaseActive && dbRef) {
-            // 1. 監聽該團的排場板狀態
             dbRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -2398,28 +2348,6 @@
                 restoreLocalFallback();
             });
 
-            // 2. 監聽該團的設定檔（球隊名稱與管理密碼）
-            if (settingsDbRef) {
-                settingsDbRef.on('value', (snapshot) => {
-                    const cfg = snapshot.val();
-                    if (cfg) {
-                        if (cfg.clubName) {
-                            currentClubName = cfg.clubName;
-                            document.getElementById('displayClubTitle').innerText = currentClubName;
-                        }
-                        if (cfg.adminPassword) {
-                            currentAdminPassword = cfg.adminPassword;
-                        }
-                    } else {
-                        // 雲端若未設定，自動寫入預設對照值
-                        const def = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
-                        settingsDbRef.set({ clubName: def.name, adminPassword: def.pwd });
-                        document.getElementById('displayClubTitle').innerText = def.name;
-                    }
-                });
-            }
-
-            // 3. 監聽該團對戰歷史紀錄資料庫
             if (historyDbRef) {
                 historyDbRef.on('value', (snapshot) => {
                     rawHistoryLogs = snapshot.val() || {};
@@ -2429,7 +2357,6 @@
                 });
             }
 
-            // 4. 監聽該團常客球員名單資料庫
             if (rosterDbRef) {
                 rosterDbRef.on('value', (snapshot) => {
                     globalPlayerRoster = snapshot.val() || {};
@@ -2475,8 +2402,7 @@
             } catch(e){}
         }
 
-        const def = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
-        document.getElementById('displayClubTitle').innerText = def.name;
+        document.getElementById('displayClubTitle').innerText = currentClubName;
     }
 
     window.addEventListener('keydown', (e) => {
