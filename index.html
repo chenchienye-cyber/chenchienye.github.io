@@ -301,7 +301,7 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 1px;
-            cursor: pointer;
+            cursor: grab;
             touch-action: none;
             min-width: 0;
             width: 100%;
@@ -2082,13 +2082,22 @@
         });
     }
 
-    // 觸控、單擊選勝/移動與【雙擊跳出個人戰績對戰履歷】優化
+    // 拖曳、觸控與單擊/雙擊完全分離（修復休息區拖曳卡住問題）
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
         let cardRect = null;
         let clickTimer = null;
         let clickCount = 0;
+
+        // 原生拖曳（電腦與支援 HTML5 Drag 的平板）
+        elem.ondragstart = (e) => {
+            if (isDeleteMode) {
+                e.preventDefault();
+                return;
+            }
+            e.dataTransfer.setData('text/plain', elem.id);
+        };
 
         const resetCardStyle = () => {
             elem.classList.remove('dragging-touch');
@@ -2115,8 +2124,8 @@
                         persistData();
                     }
                     clickCount = 0;
-                }, 250);
-            } else if (clickCount === 2) {
+                }, 220);
+            } else if (clickCount >= 2) {
                 clearTimeout(clickTimer);
                 clickCount = 0;
                 openPersonalDetailModal(elem.dataset.name);
@@ -2124,18 +2133,17 @@
         };
 
         elem.onclick = (e) => {
-            if (elem.dataset.isDragging === "true" || elem.dataset.touchHandled === "true") return;
+            if (elem.dataset.isDragging === "true") return;
             handleTapAction();
         };
 
+        // 觸控模擬拖曳（行動裝置）
         elem.ontouchstart = (e) => {
             if (isDeleteMode) return;
             const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
             elem.dataset.isDragging = "false";
-            elem.dataset.touchHandled = "false";
-
             cardRect = elem.getBoundingClientRect();
         };
 
@@ -2143,7 +2151,7 @@
             if (isDeleteMode) return;
             const touch = e.touches[0];
             
-            if (Math.abs(touch.clientX - startX) > 12 || Math.abs(touch.clientY - startY) > 12) {
+            if (Math.abs(touch.clientX - startX) > 8 || Math.abs(touch.clientY - startY) > 8) {
                 elem.dataset.isDragging = "true";
             }
 
@@ -2202,9 +2210,6 @@
                 touchTargetZone = null;
                 refreshStats();
                 persistData();
-            } else if (!wasDragging) {
-                elem.dataset.touchHandled = "true";
-                handleTapAction();
             }
             elem.dataset.isDragging = "false";
         };
@@ -2316,7 +2321,6 @@
     }
 
     function restoreData() {
-        // 設定頂部顯示隊名標題
         document.getElementById('displayClubTitle').innerText = currentClubName;
 
         if (isFirebaseActive && dbRef) {
