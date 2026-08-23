@@ -371,7 +371,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            gap: 1px;
+            gap: 2px;
         }
 
         /* 姓名列 */
@@ -408,23 +408,31 @@
             display: inline-block;
         }
 
-        /* 副資訊列 */
+        /* 副資訊列與程度包覆膠囊（高對比清晰化） */
         .player-sub {
-            font-size: 10.5px;
-            color: #64748b;
-            font-weight: normal;
+            font-size: 10px;
+            color: #475569;
+            font-weight: 600;
             white-space: nowrap;
             display: flex;
-            gap: 3px;
+            gap: 4px;
             align-items: center;
             width: 100%;
         }
 
-        .level-text { font-weight: 700; }
-        .level-text.green { color: #16a34a; }
-        .level-text.yellow { color: #d97706; }
-        .level-text.blue { color: #0284c7; }
-        .level-text.red { color: #dc2626; }
+        .level-badge {
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 10px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            display: inline-block;
+        }
+        .level-badge.green { background-color: #16a34a; color: #ffffff; }
+        .level-badge.yellow { background-color: #f59e0b; color: #78350f; }
+        .level-badge.blue { background-color: #0284c7; color: #ffffff; }
+        .level-badge.red { background-color: #dc2626; color: #ffffff; }
 
         /* 彈出式 Modal 視窗樣式 */
         .modal-overlay {
@@ -2018,7 +2026,7 @@
                     <span class="winner-tag">勝</span>
                 </div>
                 <div class="player-sub">
-                    <span class="level-text ${level}">[${lvlName}]</span>
+                    <span class="level-badge ${level}">${lvlName}</span>
                     <span>${played}場 | ${winRate}%</span>
                 </div>
             </div>
@@ -2039,7 +2047,7 @@
         const subElem = elem.querySelector('.player-sub');
         if (subElem) {
             subElem.innerHTML = `
-                <span class="level-text ${level}">[${lvlName}]</span>
+                <span class="level-badge ${level}">${lvlName}</span>
                 <span>${played}場 | ${winRate}%</span>
             `;
         }
@@ -2082,7 +2090,7 @@
         });
     }
 
-    // 拖曳、觸控與單擊/雙擊完全分離（修復休息區拖曳卡住問題）
+    // 拖曳、觸控與單擊/雙擊完全分離
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -2090,7 +2098,6 @@
         let clickTimer = null;
         let clickCount = 0;
 
-        // 原生拖曳（電腦與支援 HTML5 Drag 的平板）
         elem.ondragstart = (e) => {
             if (isDeleteMode) {
                 e.preventDefault();
@@ -2137,7 +2144,6 @@
             handleTapAction();
         };
 
-        // 觸控模擬拖曳（行動裝置）
         elem.ontouchstart = (e) => {
             if (isDeleteMode) return;
             const touch = e.touches[0];
