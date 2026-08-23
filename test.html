@@ -1118,9 +1118,11 @@
 
 <script>
     // -------------------------------------------------------------
-    // 1. 強制設定為獨立測試資料庫 (clubs/test)
+    // 1. 智慧判斷網頁：若為 test.html 則鎖定 test 測試庫，其餘(如 index.html)自動抓取 ?club= 參數
     // -------------------------------------------------------------
-    const clubId = 'test'; // 🧪 測試版專屬 ID，100% 隔離正式資料
+    const isTestPage = window.location.pathname.endsWith('test.html');
+    const urlParams = new URLSearchParams(window.location.search);
+    const clubId = isTestPage ? 'test' : (urlParams.get('club') || 'night');
 
     // Firebase 基礎設定
     const firebaseConfig = {
