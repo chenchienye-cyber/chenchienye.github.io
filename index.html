@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🧪 測試版排場板</title>
+    <title>羽球排場系統</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -408,7 +408,7 @@
             display: inline-block;
         }
 
-        /* 副資訊列與程度包覆膠囊 */
+        /* 副資訊列與程度包覆膠囊（高對比清晰化） */
         .player-sub {
             font-size: 10px;
             color: #475569;
@@ -423,17 +423,16 @@
         .level-badge {
             padding: 1px 5px;
             border-radius: 4px;
-            font-weight: 600;
+            font-weight: 800;
             font-size: 10px;
-            color: #ffffff !important;
             letter-spacing: 0.3px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
             display: inline-block;
         }
-        .level-badge.green { background-color: #16a34a; }
-        .level-badge.yellow { background-color: #eab308; }
-        .level-badge.blue { background-color: #0284c7; }
-        .level-badge.red { background-color: #dc2626; }
+        .level-badge.green { background-color: #16a34a; color: #ffffff; }
+        .level-badge.yellow { background-color: #f59e0b; color: #78350f; }
+        .level-badge.blue { background-color: #0284c7; color: #ffffff; }
+        .level-badge.red { background-color: #dc2626; color: #ffffff; }
 
         /* 彈出式 Modal 視窗樣式 */
         .modal-overlay {
@@ -778,7 +777,7 @@
             font-weight: 600;
         }
 
-        /* 📱 手機版專屬獨立極致優化 CSS */
+        /* 📱 手機版專屬獨立極致優化 CSS (螢幕寬度 <= 768px 自動啟用) */
         @media (max-width: 768px) {
             html, body {
                 height: 100vh;
@@ -897,7 +896,7 @@
     <!-- 頂部列 -->
     <div class="top-bar">
         <div class="site-title" id="displayClubTitle">
-            🧪 測試版排場板
+            載入中...
         </div>
         <div class="action-area">
             <!-- 輸入、選單與新增按鈕 -->
@@ -1118,11 +1117,17 @@
 
 <script>
     // -------------------------------------------------------------
-    // 1. 智慧判斷網頁：若為 test.html 則鎖定 test 測試庫，其餘(如 index.html)自動抓取 ?club= 參數
+    // 1. URL 網址參數對應球隊資料庫設定
     // -------------------------------------------------------------
-    const isTestPage = window.location.pathname.endsWith('test.html');
     const urlParams = new URLSearchParams(window.location.search);
-    const clubId = isTestPage ? 'test' : (urlParams.get('club') || 'night');
+    const clubId = urlParams.get('club') || 'night';
+
+    // 後台寫死的三個球隊預設設定對照表
+    const defaultClubConfigs = {
+        'night': { name: "團團圓圓宵夜團", pwd: "888" },
+        'gem': { name: "隨心所玉羽球團", pwd: "666" },
+        'default': { name: "羽球團", pwd: "123" }
+    };
 
     // Firebase 基礎設定
     const firebaseConfig = {
@@ -1142,7 +1147,7 @@
     let historyDbRef = null;
     let rosterDbRef = null;
 
-    // 動態綁定測試資料庫節點 clubs/test/...
+    // 動態綁定球隊專屬資料庫節點 clubs/${clubId}/...
     try {
         firebase.initializeApp(firebaseConfig);
         baseClubRef = firebase.database().ref(`clubs/${clubId}`);
@@ -1155,9 +1160,10 @@
         console.error("Firebase 初始化失敗：", e);
     }
 
-    // 🔒 測試版預設密碼 999 與隊名
-    let currentAdminPassword = "999";
-    let currentClubName = "🧪 測試版排場板";
+    // 🔒 管理驗證密碼與隊名由後台對照表讀取
+    const matchedConfig = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+    let currentAdminPassword = matchedConfig.pwd;
+    let currentClubName = matchedConfig.name;
 
     function verifyPassword() {
         const input = prompt("🔐 請輸入管理員密碼：");
