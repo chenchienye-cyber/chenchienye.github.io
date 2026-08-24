@@ -459,7 +459,7 @@
             background: #ffffff;
             border-radius: 16px;
             width: 100%;
-            max-width: 540px;
+            max-width: 680px; /* 拓寬至 680px */
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -563,10 +563,10 @@
             border: 1px solid #cbd5e1;
         }
 
-        /* 👥 常客球員點名視窗樣式 */
+        /* 👥 常客球員點名視窗網格優化 */
         .roster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 調整為最小 130px */
             gap: 8px;
             max-height: 55vh;
             overflow-y: auto;
@@ -578,37 +578,41 @@
             background: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 6px 10px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            min-width: 0; /* 允許內部文字彈性縮小 */
         }
         .roster-item-card input[type="checkbox"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .roster-info {
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-width: 0;
+            min-width: 0; /* 讓名字截斷而不擠爆邊框 */
+            overflow: hidden;
         }
 
         .roster-name {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #0f172a;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* 名字過長自動以 ... 截斷，不疊字 */
         }
 
         .roster-action-btns {
             display: flex;
-            gap: 4px;
+            gap: 2px;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .roster-act-btn {
@@ -616,8 +620,8 @@
             color: #334155;
             border: none;
             border-radius: 6px;
-            padding: 4px 6px;
-            font-size: 12px;
+            padding: 4px 5px;
+            font-size: 11px;
             cursor: pointer;
             flex-shrink: 0;
             transition: background 0.2s;
@@ -909,6 +913,10 @@
 
             .court-toggle-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .roster-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
         }
     </style>
@@ -1355,7 +1363,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、修改與匯出匯入功能
+    // 👥 常客球員點名視窗、修改（含歷史戰績連動）與匯出匯入功能
     // -------------------------------------------------------------
     function openRosterModal() {
         renderRosterUI();
@@ -1394,9 +1402,9 @@
             container.innerHTML += `
                 <div class="roster-item-card" style="${isAlreadyInGame ? 'opacity:0.6;' : ''}">
                     <input type="checkbox" value="${key}" id="cb_${key}" ${isAlreadyInGame ? 'disabled' : ''}>
-                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;">
+                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在球局)' : ''}</div>
+                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在局)' : ''}</div>
                     </label>
                     <div class="roster-action-btns">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
@@ -1435,7 +1443,7 @@
         closeRosterModal();
     }
 
-    // 🎯【核心修正】：修改常客球員資訊，一併更新畫面上所有已存在的舊球員卡片！
+    // 🎯【重磅修正】：修改常客球員資訊，連同「對戰歷史紀錄」與「排場板卡片」一併同步連動更新！
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1483,7 +1491,36 @@
             }
         });
 
-        // 2. 更新 Firebase 或本地常客資料庫
+        // 2. 連動更新對戰歷史紀錄中的名字（包含勝方與敗方）
+        if (oldName !== newName) {
+            let historyUpdated = false;
+            Object.keys(rawHistoryLogs).forEach(logKey => {
+                const log = rawHistoryLogs[logKey];
+                let logModified = false;
+
+                if (Array.isArray(log.winners) && log.winners.includes(oldName)) {
+                    log.winners = log.winners.map(n => n === oldName ? newName : n);
+                    logModified = true;
+                }
+                if (Array.isArray(log.losers) && log.losers.includes(oldName)) {
+                    log.losers = log.losers.map(n => n === oldName ? newName : n);
+                    logModified = true;
+                }
+
+                if (logModified) {
+                    historyUpdated = true;
+                    if (isFirebaseActive && historyDbRef) {
+                        historyDbRef.child(logKey).set(log);
+                    }
+                }
+            });
+
+            if (historyUpdated && !isFirebaseActive) {
+                localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+            }
+        }
+
+        // 3. 更新 Firebase 或本地常客資料庫
         if (isFirebaseActive && rosterDbRef) {
             if (newSafeKey !== key) {
                 rosterDbRef.child(key).remove();
