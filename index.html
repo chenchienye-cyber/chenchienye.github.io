@@ -459,7 +459,7 @@
             background: #ffffff;
             border-radius: 16px;
             width: 100%;
-            max-width: 540px;
+            max-width: 680px; /* 拓寬至 680px */
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -529,26 +529,44 @@
 
         .modal-footer {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             gap: 8px;
             flex-shrink: 0;
             margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .modal-footer-btns {
+            display: flex;
+            gap: 6px;
+            align-items: center;
         }
         .save-modal-btn {
             background: #2563eb;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .save-modal-btn.secondary {
+            background: #64748b;
+        }
+        .save-modal-btn.outline {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
         }
 
-        /* 👥 常客球員點名視窗樣式 */
+        /* 👥 常客球員點名視窗網格優化 */
         .roster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 調整為最小 130px */
             gap: 8px;
             max-height: 55vh;
             overflow-y: auto;
@@ -560,47 +578,56 @@
             background: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 6px 10px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            min-width: 0; /* 允許內部文字彈性縮小 */
         }
         .roster-item-card input[type="checkbox"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .roster-info {
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-width: 0;
+            min-width: 0; /* 讓名字截斷而不擠爆邊框 */
+            overflow: hidden;
         }
 
         .roster-name {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #0f172a;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* 名字過長自動以 ... 截斷，不疊字 */
         }
 
-        .roster-del-btn {
-            background: #fee2e2;
-            color: #dc2626;
+        .roster-action-btns {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .roster-act-btn {
+            background: #e2e8f0;
+            color: #334155;
             border: none;
             border-radius: 6px;
-            padding: 4px 6px;
-            font-size: 12px;
+            padding: 4px 5px;
+            font-size: 11px;
             cursor: pointer;
             flex-shrink: 0;
             transition: background 0.2s;
         }
-        .roster-del-btn:hover {
-            background: #fca5a5;
-        }
+        .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
+        .roster-act-btn.del:hover { background: #fca5a5; }
 
         /* 歷史對戰紀錄與個人勝率頁籤 */
         .history-tabs-bar {
@@ -693,16 +720,6 @@
         }
         .hist-act-btn.del { background: #fee2e2; color: #dc2626; }
 
-        .history-team-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 700;
-        }
-
-        .winner-text { color: #10b981; }
-        .loser-text { color: #64748b; }
-
         /* 個人勝率統計表格 */
         .stats-table {
             width: 100%;
@@ -779,6 +796,11 @@
             font-size: 13px;
             opacity: 0.8;
             font-weight: 600;
+        }
+
+        /* 隱藏的檔案上傳輸入框 */
+        .file-input-hidden {
+            display: none !important;
         }
 
         /* 📱 手機版專屬獨立極致優化 CSS */
@@ -892,10 +914,18 @@
             .court-toggle-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .roster-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
         }
     </style>
 </head>
 <body data-mobile-tab="courts">
+
+    <!-- 隱藏的檔案選擇輸入框，供匯入 JSON 選擇 -->
+    <input type="file" id="rosterFileInput" class="file-input-hidden" accept=".json" onchange="handleRosterFileImport(event)">
+    <input type="file" id="historyFileInput" class="file-input-hidden" accept=".json" onchange="handleHistoryFileImport(event)">
 
     <!-- 頂部列 -->
     <div class="top-bar">
@@ -917,7 +947,7 @@
             </select>
             <button type="button" onclick="createPlayer()">新增</button>
             
-            <!-- 精簡圖示按鈕區（📜 按鈕已補上【對戰紀錄】中文） -->
+            <!-- 精簡圖示按鈕區 -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
@@ -976,20 +1006,26 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員資料庫與點名視窗 -->
+    <!-- 👥 常客球員資料庫與點名視窗（含匯出/匯入/修改） -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
                 <span>👥 常客球員名單與點名出席</span>
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
             </div>
-            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">勾選已出席球員（或點擊 🗑️ 刪除常客，需輸入密碼）：</p>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">勾選已出席球員（或點擊 ✏️ 修改 / 🗑️ 刪除常客）：</p>
             <div class="roster-grid" id="rosterContainer">
                 <p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無常客球員紀錄</p>
             </div>
             <div class="modal-footer">
-                <button class="save-modal-btn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
-                <button class="save-modal-btn" style="background:#64748b;" onclick="closeRosterModal()">關閉</button>
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn outline" onclick="exportRosterJSON()" title="匯出常客名單 JSON 檔">📤 匯出名單</button>
+                    <button class="save-modal-btn outline" onclick="triggerRosterImport()" title="匯入常客名單 JSON 檔">📥 匯入名單</button>
+                </div>
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
+                    <button class="save-modal-btn secondary" onclick="closeRosterModal()">關閉</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1038,12 +1074,13 @@
             </div>
 
             <div class="modal-footer">
+                <div></div>
                 <button class="save-modal-btn" onclick="closeSettingsModal()">完成</button>
             </div>
         </div>
     </div>
 
-    <!-- 📜 歷史戰績紀錄、修改刪除與個人勝率統計視窗 -->
+    <!-- 📜 歷史戰績紀錄、修改刪除與個人勝率統計視窗（含匯出/匯入） -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -1061,7 +1098,11 @@
                 <p style="color:#64748b; font-size:14px; text-align:center; margin-top:20px;">尚無歷史比賽紀錄</p>
             </div>
             <div class="modal-footer">
-                <button class="save-modal-btn" onclick="closeHistoryModal()">關閉</button>
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn outline" onclick="exportHistoryJSON()" title="匯出對戰紀錄 JSON 檔">📤 匯出戰績</button>
+                    <button class="save-modal-btn outline" onclick="triggerHistoryImport()" title="匯入對戰紀錄 JSON 檔">📥 匯入戰績</button>
+                </div>
+                <button class="save-modal-btn secondary" onclick="closeHistoryModal()">關閉</button>
             </div>
         </div>
     </div>
@@ -1099,7 +1140,8 @@
             </div>
 
             <div class="modal-footer">
-                <button class="save-modal-btn" onclick="closePersonalDetailModal()">關閉視窗</button>
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closePersonalDetailModal()">關閉視窗</button>
             </div>
         </div>
     </div>
@@ -1114,7 +1156,8 @@
             <p style="font-size: 14px; color: #64748b;">請選擇要將球員移動至哪個位置：</p>
             <div class="move-option-grid" id="moveOptionsContainer"></div>
             <div class="modal-footer" style="margin-top:16px;">
-                <button class="save-modal-btn" style="background:#64748b;" onclick="closePlayerMoveModal()">取消</button>
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closePlayerMoveModal()">取消</button>
             </div>
         </div>
     </div>
@@ -1226,6 +1269,20 @@
         return `${hh}:${mm}`;
     }
 
+    // JSON 檔案下載通用輔助函式
+    function downloadJSONFile(dataObj, filename) {
+        const jsonStr = JSON.stringify(dataObj, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     // -------------------------------------------------------------
     // 👤 雙擊球員跳出個人專屬戰績對戰視窗
     // -------------------------------------------------------------
@@ -1306,7 +1363,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗控制與刪除功能
+    // 👥 常客球員點名視窗、修改（含歷史戰績連動）與匯出匯入功能
     // -------------------------------------------------------------
     function openRosterModal() {
         renderRosterUI();
@@ -1345,11 +1402,14 @@
             container.innerHTML += `
                 <div class="roster-item-card" style="${isAlreadyInGame ? 'opacity:0.6;' : ''}">
                     <input type="checkbox" value="${key}" id="cb_${key}" ${isAlreadyInGame ? 'disabled' : ''}>
-                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;">
+                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在球局)' : ''}</div>
+                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在局)' : ''}</div>
                     </label>
-                    <button type="button" class="roster-del-btn" onclick="deletePlayerFromRoster('${key}', event)" title="刪除球員">🗑️</button>
+                    <div class="roster-action-btns">
+                        <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
+                        <button type="button" class="roster-act-btn del" onclick="deletePlayerFromRoster('${key}', event)" title="刪除球員">🗑️</button>
+                    </div>
                 </div>
             `;
         });
@@ -1381,6 +1441,102 @@
         refreshStats();
         persistData();
         closeRosterModal();
+    }
+
+    // 🎯【重磅修正】：修改常客球員資訊，連同「對戰歷史紀錄」與「排場板卡片」一併同步連動更新！
+    function editPlayerFromRoster(key, e) {
+        if (e) e.stopPropagation();
+        const p = globalPlayerRoster[key];
+        if (!p) return;
+
+        if (!verifyPassword()) return;
+
+        const oldName = p.name;
+        const newNameInput = prompt("修改球員姓名：", oldName);
+        if (newNameInput === null) return;
+        const newName = newNameInput.trim();
+        if (!newName) {
+            alert("球員姓名不能為空！");
+            return;
+        }
+
+        const newGenderInput = prompt("修改球員性別 (輸入 M 為男，F 為女)：", p.gender);
+        if (newGenderInput === null) return;
+        const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
+
+        const newLevelInput = prompt("修改羽球程度 (輸入 green:新手, yellow:初階, blue:初中, red:高手)：", p.level || "green");
+        if (newLevelInput === null) return;
+        const newLevel = ['green','yellow','blue','red'].includes(newLevelInput.trim()) ? newLevelInput.trim() : (p.level || "green");
+
+        const updatedPlayer = {
+            name: newName,
+            gender: newGender,
+            level: newLevel,
+            updatedAt: Date.now()
+        };
+
+        const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
+
+        // 1. 同步更新目前排場畫面上所有該球員卡片
+        document.querySelectorAll('.player-card').forEach(card => {
+            if (card.dataset.name === oldName) {
+                card.dataset.name = newName;
+                card.dataset.gender = newGender;
+                card.dataset.level = newLevel;
+
+                const nameTextElem = card.querySelector('.player-name-text');
+                if (nameTextElem) nameTextElem.innerText = newName;
+
+                updatePlayerCardUI(card);
+            }
+        });
+
+        // 2. 連動更新對戰歷史紀錄中的名字（包含勝方與敗方）
+        if (oldName !== newName) {
+            let historyUpdated = false;
+            Object.keys(rawHistoryLogs).forEach(logKey => {
+                const log = rawHistoryLogs[logKey];
+                let logModified = false;
+
+                if (Array.isArray(log.winners) && log.winners.includes(oldName)) {
+                    log.winners = log.winners.map(n => n === oldName ? newName : n);
+                    logModified = true;
+                }
+                if (Array.isArray(log.losers) && log.losers.includes(oldName)) {
+                    log.losers = log.losers.map(n => n === oldName ? newName : n);
+                    logModified = true;
+                }
+
+                if (logModified) {
+                    historyUpdated = true;
+                    if (isFirebaseActive && historyDbRef) {
+                        historyDbRef.child(logKey).set(log);
+                    }
+                }
+            });
+
+            if (historyUpdated && !isFirebaseActive) {
+                localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+            }
+        }
+
+        // 3. 更新 Firebase 或本地常客資料庫
+        if (isFirebaseActive && rosterDbRef) {
+            if (newSafeKey !== key) {
+                rosterDbRef.child(key).remove();
+            }
+            rosterDbRef.child(newSafeKey).set(updatedPlayer).then(() => {
+                persistData();
+            });
+        } else {
+            if (newSafeKey !== key) {
+                delete globalPlayerRoster[key];
+            }
+            globalPlayerRoster[newSafeKey] = updatedPlayer;
+            localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
+            renderRosterUI();
+            persistData();
+        }
     }
 
     function deletePlayerFromRoster(key, e) {
@@ -1420,8 +1576,56 @@
         }
     }
 
+    // 匯出球員常客名單 JSON
+    function exportRosterJSON() {
+        if (Object.keys(globalPlayerRoster).length === 0) {
+            alert("目前尚無常客名單可供匯出！");
+            return;
+        }
+        const filename = `badminton_roster_${clubId}_${new Date().toISOString().slice(0,10)}.json`;
+        downloadJSONFile(globalPlayerRoster, filename);
+    }
+
+    // 觸發匯入球員名單檔案選擇
+    function triggerRosterImport() {
+        if (!verifyPassword()) return;
+        document.getElementById('rosterFileInput').click();
+    }
+
+    // 處理匯入常客名單 JSON
+    function handleRosterFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const importedData = JSON.parse(evt.target.result);
+                if (typeof importedData !== 'object' || importedData === null) {
+                    throw new Error("檔案格式不正確");
+                }
+
+                if (isFirebaseActive && rosterDbRef) {
+                    rosterDbRef.update(importedData).then(() => {
+                        alert("✅ 常客名單已成功匯入並同步至雲端！");
+                        renderRosterUI();
+                    });
+                } else {
+                    globalPlayerRoster = { ...globalPlayerRoster, ...importedData };
+                    localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
+                    alert("✅ 常客名單已成功匯入！");
+                    renderRosterUI();
+                }
+            } catch (err) {
+                alert("❌ 匯入失敗：請確認選擇的是正確的常客名單 JSON 檔案！");
+            }
+            e.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
     // -------------------------------------------------------------
-    // 📜 歷史戰績對戰紀錄、修改刪除與個人勝率統計控制
+    // 📜 歷史戰績對戰紀錄、修改刪除與戰績匯出匯入功能
     // -------------------------------------------------------------
     function openHistoryModal() {
         switchHistoryTab(currentHistoryTab);
@@ -1612,6 +1816,54 @@
         }
     }
 
+    // 匯出歷史對戰紀錄 JSON
+    function exportHistoryJSON() {
+        if (Object.keys(rawHistoryLogs).length === 0) {
+            alert("目前尚無對戰紀錄可供匯出！");
+            return;
+        }
+        const filename = `badminton_history_${clubId}_${new Date().toISOString().slice(0,10)}.json`;
+        downloadJSONFile(rawHistoryLogs, filename);
+    }
+
+    // 觸發匯入戰績檔案選擇
+    function triggerHistoryImport() {
+        if (!verifyPassword()) return;
+        document.getElementById('historyFileInput').click();
+    }
+
+    // 處理匯入對戰紀錄 JSON
+    function handleHistoryFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const importedData = JSON.parse(evt.target.result);
+                if (typeof importedData !== 'object' || importedData === null) {
+                    throw new Error("檔案格式不正確");
+                }
+
+                if (isFirebaseActive && historyDbRef) {
+                    historyDbRef.update(importedData).then(() => {
+                        alert("✅ 對戰紀錄已成功匯入並同步至雲端！");
+                        switchHistoryTab(currentHistoryTab);
+                    });
+                } else {
+                    rawHistoryLogs = { ...rawHistoryLogs, ...importedData };
+                    localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+                    alert("✅ 對戰紀錄已成功匯入！");
+                    switchHistoryTab(currentHistoryTab);
+                }
+            } catch (err) {
+                alert("❌ 匯入失敗：請確認選擇的是正確的對戰紀錄 JSON 檔案！");
+            }
+            e.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
     // -------------------------------------------------------------
     // 📱 手機專屬頁籤分頁與點擊移動選單控制
     // -------------------------------------------------------------
@@ -1685,11 +1937,18 @@
                 selectedPlayerElemForMove.dataset.selectedWin = "false";
             }
 
-            zone.appendChild(selectedPlayerElemForMove);
-            
-            if (targetZoneId.startsWith('court-') && zone.children.length === 4) {
+            if (targetZoneId.startsWith('court-')) {
                 const cNum = targetZoneId.split('-')[1];
-                if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+                if (zone.children.length === 0 || !courtStartTimes[cNum]) {
+                    courtStartTimes[cNum] = Date.now();
+                }
+            }
+
+            const oldParent = selectedPlayerElemForMove.parentElement;
+            zone.appendChild(selectedPlayerElemForMove);
+            if (oldParent && oldParent.id.startsWith('court-') && oldParent.children.length === 0) {
+                const oldCNum = oldParent.id.split('-')[1];
+                delete courtStartTimes[oldCNum];
             }
 
             refreshStats();
@@ -1879,7 +2138,7 @@
     }
 
     // -------------------------------------------------------------
-    // 結束比賽：自動計算時間並同步常客球員庫
+    // 結束比賽：精準計算比賽時間並寫入紀錄
     // -------------------------------------------------------------
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
@@ -1924,7 +2183,7 @@
 
         if (winners.length > 0 || losers.length > 0) {
             const endTimeObj = new Date();
-            const startMs = courtStartTimes[courtNum] || (endTimeObj.getTime() - 15 * 60 * 1000);
+            const startMs = courtStartTimes[courtNum] || endTimeObj.getTime();
             const startTimeObj = new Date(startMs);
 
             const durationMs = Math.max(0, endTimeObj.getTime() - startMs);
@@ -1960,7 +2219,7 @@
             while (queueA.firstChild) {
                 court.appendChild(queueA.firstChild);
             }
-            if (court.children.length === 4) {
+            if (court.children.length > 0) {
                 courtStartTimes[courtNum] = Date.now();
             }
         }
@@ -2082,11 +2341,19 @@
                         elem.dataset.selectedWin = "false";
                     }
 
+                    if (zone.id.startsWith('court-')) {
+                        const cNum = zone.id.split('-')[1];
+                        if (zone.children.length === 0 || !courtStartTimes[cNum]) {
+                            courtStartTimes[cNum] = Date.now();
+                        }
+                    }
+
+                    const oldParent = elem.parentElement;
                     zone.appendChild(elem);
 
-                    if (zone.id.startsWith('court-') && zone.children.length === 4) {
-                        const cNum = zone.id.split('-')[1];
-                        if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+                    if (oldParent && oldParent.id.startsWith('court-') && oldParent.children.length === 0) {
+                        const oldCNum = oldParent.id.split('-')[1];
+                        delete courtStartTimes[oldCNum];
                     }
 
                     refreshStats();
@@ -2212,11 +2479,19 @@
                     elem.dataset.selectedWin = "false";
                 }
 
+                if (touchTargetZone.id.startsWith('court-')) {
+                    const cNum = touchTargetZone.id.split('-')[1];
+                    if (touchTargetZone.children.length === 0 || !courtStartTimes[cNum]) {
+                        courtStartTimes[cNum] = Date.now();
+                    }
+                }
+
+                const oldParent = elem.parentElement;
                 touchTargetZone.appendChild(elem);
 
-                if (touchTargetZone.id.startsWith('court-') && touchTargetZone.children.length === 4) {
-                    const cNum = touchTargetZone.id.split('-')[1];
-                    if (!courtStartTimes[cNum]) courtStartTimes[cNum] = Date.now();
+                if (oldParent && oldParent.id.startsWith('court-') && oldParent.children.length === 0) {
+                    const oldCNum = oldParent.id.split('-')[1];
+                    delete courtStartTimes[oldCNum];
                 }
 
                 touchTargetZone = null;
