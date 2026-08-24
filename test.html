@@ -1435,7 +1435,7 @@
         closeRosterModal();
     }
 
-    // 修改常客球員資訊 (姓名、性別、程度)
+    // 🎯【核心修正】：修改常客球員資訊，一併更新畫面上所有已存在的舊球員卡片！
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1443,7 +1443,8 @@
 
         if (!verifyPassword()) return;
 
-        const newNameInput = prompt("修改球員姓名：", p.name);
+        const oldName = p.name;
+        const newNameInput = prompt("修改球員姓名：", oldName);
         if (newNameInput === null) return;
         const newName = newNameInput.trim();
         if (!newName) {
@@ -1468,11 +1469,28 @@
 
         const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
 
+        // 1. 同步更新目前排場畫面上所有該球員卡片
+        document.querySelectorAll('.player-card').forEach(card => {
+            if (card.dataset.name === oldName) {
+                card.dataset.name = newName;
+                card.dataset.gender = newGender;
+                card.dataset.level = newLevel;
+
+                const nameTextElem = card.querySelector('.player-name-text');
+                if (nameTextElem) nameTextElem.innerText = newName;
+
+                updatePlayerCardUI(card);
+            }
+        });
+
+        // 2. 更新 Firebase 或本地常客資料庫
         if (isFirebaseActive && rosterDbRef) {
             if (newSafeKey !== key) {
                 rosterDbRef.child(key).remove();
             }
-            rosterDbRef.child(newSafeKey).set(updatedPlayer);
+            rosterDbRef.child(newSafeKey).set(updatedPlayer).then(() => {
+                persistData();
+            });
         } else {
             if (newSafeKey !== key) {
                 delete globalPlayerRoster[key];
@@ -1480,6 +1498,7 @@
             globalPlayerRoster[newSafeKey] = updatedPlayer;
             localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
             renderRosterUI();
+            persistData();
         }
     }
 
@@ -1881,7 +1900,6 @@
                 selectedPlayerElemForMove.dataset.selectedWin = "false";
             }
 
-            // 🎯【核心修正】：當放入第一個球員時，立即啟動該場地的計時器！
             if (targetZoneId.startsWith('court-')) {
                 const cNum = targetZoneId.split('-')[1];
                 if (zone.children.length === 0 || !courtStartTimes[cNum]) {
@@ -1889,7 +1907,6 @@
                 }
             }
 
-            // 若將球員從場地中拉走且場地空了，則清空計時
             const oldParent = selectedPlayerElemForMove.parentElement;
             zone.appendChild(selectedPlayerElemForMove);
             if (oldParent && oldParent.id.startsWith('court-') && oldParent.children.length === 0) {
@@ -2129,7 +2146,6 @@
 
         if (winners.length > 0 || losers.length > 0) {
             const endTimeObj = new Date();
-            // 🎯【核心修正】：精準使用實際放入球員時的開始時間，若剛好沒抓到則以現在時間作為開始時間
             const startMs = courtStartTimes[courtNum] || endTimeObj.getTime();
             const startTimeObj = new Date(startMs);
 
@@ -2288,7 +2304,6 @@
                         elem.dataset.selectedWin = "false";
                     }
 
-                    // 🎯【核心修正】：當放入球員至上場區時，若該場地為空，立即記錄開始計時！
                     if (zone.id.startsWith('court-')) {
                         const cNum = zone.id.split('-')[1];
                         if (zone.children.length === 0 || !courtStartTimes[cNum]) {
@@ -2427,7 +2442,6 @@
                     elem.dataset.selectedWin = "false";
                 }
 
-                // 🎯【核心修正】：觸控拖曳放置時，立即開始計時
                 if (touchTargetZone.id.startsWith('court-')) {
                     const cNum = touchTargetZone.id.split('-')[1];
                     if (touchTargetZone.children.length === 0 || !courtStartTimes[cNum]) {
