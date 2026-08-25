@@ -1607,7 +1607,7 @@
         closeRosterModal();
     }
 
-    // 修改常客球員資訊 (姓名、性別、程度、分類)
+    // 🎯 修改常客球員資訊 (數字輸入簡化程度選項)
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1628,13 +1628,27 @@
         if (newGenderInput === null) return;
         const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
 
-        const newLevelInput = prompt("修改羽球程度 (輸入 green:新手, yellow:初階, blue:初中, red:高手)：", p.level || "green");
+        // 🎯 數字選項提示化
+        const currentLevelNum = p.level === 'yellow' ? '2' : (p.level === 'blue' ? '3' : (p.level === 'red' ? '4' : '1'));
+        const newLevelInput = prompt("修改羽球程度 (請輸入數字)：\n1 : 🟢 新手\n2 : 🟡 初階\n3 : 🔵 初中\n4 : 🔴 高手", currentLevelNum);
         if (newLevelInput === null) return;
-        const newLevel = ['green','yellow','blue','red'].includes(newLevelInput.trim()) ? newLevelInput.trim() : (p.level || "green");
 
-        const newCatInput = prompt("修改球員分類 (輸入 member:季繳, regular:常客, casual:臨打)：", p.category || "casual");
+        let newLevel = p.level || "green";
+        const levelTrimmed = newLevelInput.trim().toLowerCase();
+        if (levelTrimmed === '1' || levelTrimmed === 'green' || levelTrimmed === '新手') newLevel = 'green';
+        else if (levelTrimmed === '2' || levelTrimmed === 'yellow' || levelTrimmed === '初階') newLevel = 'yellow';
+        else if (levelTrimmed === '3' || levelTrimmed === 'blue' || levelTrimmed === '初中') newLevel = 'blue';
+        else if (levelTrimmed === '4' || levelTrimmed === 'red' || levelTrimmed === '高手') newLevel = 'red';
+
+        const currentCatNum = p.category === 'regular' ? '2' : (p.category === 'casual' ? '3' : '1');
+        const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)", currentCatNum);
         if (newCatInput === null) return;
-        const newCategory = ['member','regular','casual'].includes(newCatInput.trim()) ? newCatInput.trim() : (p.category || "casual");
+
+        let newCategory = p.category || "casual";
+        const catTrimmed = newCatInput.trim().toLowerCase();
+        if (catTrimmed === '1' || catTrimmed === 'member' || catTrimmed === '季繳') newCategory = 'member';
+        else if (catTrimmed === '2' || catTrimmed === 'regular' || catTrimmed === '常客') newCategory = 'regular';
+        else if (catTrimmed === '3' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
 
         const updatedPlayer = {
             name: newName,
@@ -2404,7 +2418,7 @@
         persistData();
     }
 
-    // 預設新增球員時加入【臨打 (casual)】
+    // 預設新增球員歸類為 casual (臨打)
     function createPlayer() {
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
