@@ -85,6 +85,7 @@
         /* 按鈕風格 */
         .undo-btn { background: #64748b !important; color: white !important; }
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
+        .reset-btn { background: #ea580c !important; color: white !important; }
         .roster-btn { background: #8b5cf6 !important; color: white !important; }
         .history-btn { background: #0891b2 !important; color: white !important; }
         .settings-btn { background: #475569 !important; color: white !important; }
@@ -459,7 +460,7 @@
             background: #ffffff;
             border-radius: 16px;
             width: 100%;
-            max-width: 680px; /* 拓寬至 680px */
+            max-width: 680px;
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -563,12 +564,50 @@
             border: 1px solid #cbd5e1;
         }
 
-        /* 👥 常客球員點名視窗網格優化 */
+        /* 👥 常客球員點名視窗分類頁籤與網格優化 */
+        .roster-tabs-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .roster-tab-btn {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .roster-tab-btn.active {
+            background: #ffffff;
+            color: #2563eb;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .roster-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
         .roster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 調整為最小 130px */
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 8px;
-            max-height: 55vh;
+            max-height: 50vh;
             overflow-y: auto;
             padding: 4px;
             margin-bottom: 12px;
@@ -582,7 +621,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            min-width: 0; /* 允許內部文字彈性縮小 */
+            min-width: 0;
         }
         .roster-item-card input[type="checkbox"] {
             width: 18px;
@@ -595,7 +634,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-width: 0; /* 讓名字截斷而不擠爆邊框 */
+            min-width: 0;
             overflow: hidden;
         }
 
@@ -605,7 +644,7 @@
             color: #0f172a;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* 名字過長自動以 ... 截斷，不疊字 */
+            text-overflow: ellipsis;
         }
 
         .roster-action-btns {
@@ -629,7 +668,7 @@
         .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
         .roster-act-btn.del:hover { background: #fca5a5; }
 
-        /* 歷史對戰紀錄與個人勝率頁籤 */
+        /* 歷史對戰紀錄頁籤與極致精簡一列排版 */
         .history-tabs-bar {
             display: flex;
             gap: 6px;
@@ -664,48 +703,52 @@
             margin-bottom: 12px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .history-item-card {
+        /* ⚡ 一列式對戰紀錄精簡卡片 */
+        .history-item-single-row {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 8px;
+            padding: 6px 10px;
             font-size: 13px;
-        }
-
-        .history-item-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 6px;
-            border-bottom: 1px dashed #e2e8f0;
-            padding-bottom: 4px;
+            justify-content: space-between;
+            gap: 8px;
+            white-space: nowrap;
         }
 
-        .history-time-detail {
+        .hist-row-info {
             display: flex;
-            flex-direction: column;
-            gap: 2px;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .history-duration-tag {
-            background: #e0f2fe;
-            color: #0369a1;
-            font-weight: 700;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            display: inline-block;
-            width: fit-content;
+        .hist-time-tag {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .hist-teams-compact {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .history-actions {
             display: flex;
-            gap: 6px;
+            gap: 4px;
+            flex-shrink: 0;
         }
 
         .hist-act-btn {
@@ -945,10 +988,16 @@
                 <option value="blue">🔵 初中</option>
                 <option value="red">🔴 高手</option>
             </select>
+            <select id="pCategory">
+                <option value="member">季繳</option>
+                <option value="regular">常客</option>
+                <option value="casual">臨打</option>
+            </select>
             <button type="button" onclick="createPlayer()">新增</button>
             
             <!-- 精簡圖示按鈕區 -->
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
+            <button type="button" class="icon-btn reset-btn" onclick="resetCurrentGame()" title="重置球局 (清空所有人，保留戰績)">🧹</button>
             <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
             <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
@@ -1006,17 +1055,30 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員資料庫與點名視窗（含匯出/匯入/修改） -->
+    <!-- 👥 常客球員資料庫與點名視窗（含分類頁籤與一鍵全選） -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>👥 常客球員名單與點名出席</span>
+                <span>👥 球員名單與出席點名</span>
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
             </div>
-            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">勾選已出席球員（或點擊 ✏️ 修改 / 🗑️ 刪除常客）：</p>
-            <div class="roster-grid" id="rosterContainer">
-                <p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無常客球員紀錄</p>
+
+            <!-- 球員分類頁籤 (1. 季繳 2. 常客 3. 臨打) -->
+            <div class="roster-tabs-bar">
+                <button class="roster-tab-btn active" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳</button>
+                <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客</button>
+                <button class="roster-tab-btn" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打</button>
             </div>
+
+            <div class="roster-toolbar">
+                <span id="rosterCountText">此分類共 0 人</span>
+                <button type="button" class="hist-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選 / 取消全選</button>
+            </div>
+
+            <div class="roster-grid" id="rosterContainer">
+                <p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無球員紀錄</p>
+            </div>
+
             <div class="modal-footer">
                 <div class="modal-footer-btns">
                     <button class="save-modal-btn outline" onclick="exportRosterJSON()" title="匯出常客名單 JSON 檔">📤 匯出名單</button>
@@ -1080,7 +1142,7 @@
         </div>
     </div>
 
-    <!-- 📜 歷史戰績紀錄、修改刪除與個人勝率統計視窗（含匯出/匯入） -->
+    <!-- 📜 歷史戰績紀錄、修改刪除與個人勝率統計視窗 -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -1239,12 +1301,19 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
+    let currentRosterTab = 'member'; //預設選取【季繳】分頁
 
     const levelTextMap = {
         green: "新手",
         yellow: "初階",
         blue: "初中",
         red: "高手"
+    };
+
+    const categoryTextMap = {
+        member: "季繳",
+        regular: "常客",
+        casual: "臨打"
     };
 
     const historyStack = [];
@@ -1281,6 +1350,33 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    // 🧹 重置球局：一次刪除休息區、等待區與上場區的所有球員，對戰紀錄絕對保留
+    function resetCurrentGame() {
+        if (!confirm("⚠️ 確定要重置球局嗎？此操作將會刪除排場板上（休息區、上場區、等待區）的所有球員！\n\n（歷史對戰紀錄與常客名單依然會完整保留）")) {
+            return;
+        }
+
+        if (!verifyPassword()) return;
+
+        saveHistoryState();
+
+        const courtZones = [1, 2, 3, 4, 5, 6, 7, 8].map(n => `court-${n}`);
+        const queueZones = queueLabels.map(c => `queue-${c}`);
+        const allZones = ['rest', ...courtZones, ...queueZones];
+
+        allZones.forEach(zId => {
+            const z = document.getElementById(zId);
+            if (z) z.innerHTML = '';
+        });
+
+        // 清空所有場地的計時
+        Object.keys(courtStartTimes).forEach(key => delete courtStartTimes[key]);
+
+        refreshStats();
+        persistData();
+        alert("🧹 球局已成功重置！");
     }
 
     // -------------------------------------------------------------
@@ -1323,29 +1419,20 @@
             const sortedLogs = [...personalLogs].reverse();
             sortedLogs.forEach(item => {
                 const isWon = item.winners && item.winners.includes(playerName);
-                const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join(' & ') : '無標記';
-                const losersStr = item.losers && item.losers.length > 0 ? item.losers.join(' & ') : '無標記';
+                const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+                const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
 
-                let timeDisplay = item.time || '';
-                if (item.startTime && item.endTime) {
-                    timeDisplay = `開始 ${item.startTime} ｜ 結束 ${item.endTime}`;
-                } else if (item.startTime) {
-                    timeDisplay = `時間：${item.startTime}`;
-                }
+                let timeDisplay = item.startTime || item.time || '';
+                const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
 
                 container.innerHTML += `
-                    <div class="history-item-card" style="border-left: 5px solid ${isWon ? '#10b981' : '#ef4444'};">
-                        <div class="history-item-header">
-                            <span>📅 ${timeDisplay} (🏸 ${item.court ? item.court + '號場' : ''})</span>
-                            <span class="history-duration-tag" style="background:${isWon ? '#d1fae5' : '#fee2e2'}; color:${isWon ? '#065f46' : '#991b1b'};">
-                                ${isWon ? '🏆 勝利' : '🛡️ 敗北'}
-                            </span>
-                        </div>
-                        <div class="history-team-row">
-                            <span class="winner-text">🏆 勝方：${winnersStr}</span>
-                        </div>
-                        <div class="history-team-row" style="margin-top:2px;">
-                            <span class="loser-text">🛡️ 敗方：${losersStr}</span>
+                    <div class="history-item-single-row" style="border-left: 4px solid ${isWon ? '#10b981' : '#ef4444'};">
+                        <div class="hist-row-info">
+                            <span class="hist-time-tag">📅 ${timeDisplay} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
+                            <div class="hist-teams-compact">
+                                <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                                <span class="loser-text">🛡️ 敗: ${losersStr}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1363,10 +1450,10 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、修改（含歷史戰績連動）與匯出匯入功能
+    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與一鍵全選
     // -------------------------------------------------------------
     function openRosterModal() {
-        renderRosterUI();
+        switchRosterTab(currentRosterTab);
         document.getElementById('rosterModal').classList.add('active');
     }
 
@@ -1374,13 +1461,36 @@
         document.getElementById('rosterModal').classList.remove('active');
     }
 
+    function switchRosterTab(categoryKey) {
+        currentRosterTab = categoryKey;
+        ['member', 'regular', 'casual'].forEach(cat => {
+            const btn = document.getElementById(`rtab-${cat}`);
+            if (btn) {
+                if (cat === categoryKey) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        });
+        renderRosterUI();
+    }
+
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
+        const countTextElem = document.getElementById('rosterCountText');
         if (!container) return;
 
         const keys = Object.keys(globalPlayerRoster);
-        if (keys.length === 0) {
-            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無常客球員紀錄</p>';
+        // 過濾出目前選取分類的球員 (相容舊資料預設為 member/regular)
+        const categoryKeys = keys.filter(k => {
+            const pCat = globalPlayerRoster[k].category || 'member';
+            return pCat === currentRosterTab;
+        });
+
+        if (countTextElem) {
+            countTextElem.innerText = `此分類【${categoryTextMap[currentRosterTab]}】共 ${categoryKeys.length} 人`;
+        }
+
+        if (categoryKeys.length === 0) {
+            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
             return;
         }
 
@@ -1393,7 +1503,7 @@
         });
 
         container.innerHTML = '';
-        keys.forEach(key => {
+        categoryKeys.forEach(key => {
             const p = globalPlayerRoster[key];
             const isAlreadyInGame = currentActiveNames.includes(p.name);
             const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
@@ -1415,11 +1525,23 @@
         });
     }
 
-    function addSelectedRosterToGame() {
+    // 針對目前顯示分類進行「全選 / 取消全選」
+    function toggleSelectAllCategoryRoster() {
         const container = document.getElementById('rosterContainer');
         if (!container) return;
 
-        const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+        const checkboxes = Array.from(container.querySelectorAll('input[type="checkbox"]:not(:disabled)'));
+        if (checkboxes.length === 0) return;
+
+        const allChecked = checkboxes.every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+    }
+
+    function addSelectedRosterToGame() {
+        const modal = document.getElementById('rosterModal');
+        if (!modal) return;
+
+        const checkboxes = modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked');
         if (checkboxes.length === 0) {
             alert("請先勾選要加入球局的球員！");
             return;
@@ -1443,7 +1565,7 @@
         closeRosterModal();
     }
 
-    // 🎯【重磅修正】：修改常客球員資訊，連同「對戰歷史紀錄」與「排場板卡片」一併同步連動更新！
+    // 修改常客球員資訊 (姓名、性別、程度、分類)
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1468,10 +1590,15 @@
         if (newLevelInput === null) return;
         const newLevel = ['green','yellow','blue','red'].includes(newLevelInput.trim()) ? newLevelInput.trim() : (p.level || "green");
 
+        const newCatInput = prompt("修改球員分類 (輸入 member:季繳, regular:常客, casual:臨打)：", p.category || "member");
+        if (newCatInput === null) return;
+        const newCategory = ['member','regular','casual'].includes(newCatInput.trim()) ? newCatInput.trim() : (p.category || "member");
+
         const updatedPlayer = {
             name: newName,
             gender: newGender,
             level: newLevel,
+            category: newCategory,
             updatedAt: Date.now()
         };
 
@@ -1556,15 +1683,18 @@
         }
     }
 
-    function registerPlayerToRoster(name, gender, level) {
+    function registerPlayerToRoster(name, gender, level, category = "member") {
         if (!name) return;
         const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
         if (!safeKey) return;
         
+        const existingCategory = globalPlayerRoster[safeKey] ? globalPlayerRoster[safeKey].category : category;
+
         const rosterObj = {
             name: name.trim(),
             gender: gender,
             level: level || "green",
+            category: existingCategory || "member",
             updatedAt: Date.now()
         };
 
@@ -1625,7 +1755,7 @@
     }
 
     // -------------------------------------------------------------
-    // 📜 歷史戰績對戰紀錄、修改刪除與戰績匯出匯入功能
+    // 📜 歷史戰績對戰紀錄、修改刪除與戰績匯出匯入功能（單列式精簡）
     // -------------------------------------------------------------
     function openHistoryModal() {
         switchHistoryTab(currentHistoryTab);
@@ -1653,6 +1783,7 @@
         }
     }
 
+    // ⚡【核心精簡化】：單行一列顯示對戰紀錄，提高畫面閱讀量！
     function renderHistoryRecordsUI() {
         const container = document.getElementById('historyRecordsContainer');
         if (!container) return;
@@ -1667,35 +1798,24 @@
         const sortedKeys = keys.reverse();
         sortedKeys.forEach((key) => {
             const item = rawHistoryLogs[key];
-            const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join(' & ') : '無標記';
-            const losersStr = item.losers && item.losers.length > 0 ? item.losers.join(' & ') : '無標記';
+            const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+            const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
 
-            let timeDisplay = item.time || '';
-            if (item.startTime && item.endTime) {
-                timeDisplay = `開始 ${item.startTime} ｜ 結束 ${item.endTime}`;
-            } else if (item.startTime) {
-                timeDisplay = `時間：${item.startTime}`;
-            }
-
-            const durationDisplay = item.durationMins ? `${item.durationMins} 分鐘` : (item.duration ? `${item.duration}` : '');
+            let timeDisplay = item.startTime || item.time || '';
+            const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
 
             container.innerHTML += `
-                <div class="history-item-card">
-                    <div class="history-item-header">
-                        <div class="history-time-detail">
-                            <span>📅 ${timeDisplay} (🏸 ${item.court ? item.court + '號場' : ''})</span>
-                            ${durationDisplay ? `<span class="history-duration-tag">⏱️ 耗時：${durationDisplay}</span>` : ''}
-                        </div>
-                        <div class="history-actions">
-                            <button class="hist-act-btn" onclick="editHistoryRecord('${key}')">✏️ 修改</button>
-                            <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')">🗑️ 刪除</button>
+                <div class="history-item-single-row">
+                    <div class="hist-row-info">
+                        <span class="hist-time-tag">📅 ${timeDisplay} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
+                        <div class="hist-teams-compact">
+                            <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                            <span class="loser-text">🛡️ 敗: ${losersStr}</span>
                         </div>
                     </div>
-                    <div class="history-team-row">
-                        <span class="winner-text">🏆 勝方：${winnersStr}</span>
-                    </div>
-                    <div class="history-team-row" style="margin-top:2px;">
-                        <span class="loser-text">🛡️ 敗方：${losersStr}</span>
+                    <div class="history-actions">
+                        <button class="hist-act-btn" onclick="editHistoryRecord('${key}')">✏️</button>
+                        <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')">🗑️</button>
                     </div>
                 </div>
             `;
@@ -2246,6 +2366,7 @@
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
         const levelInput = document.getElementById('pLevel');
+        const categoryInput = document.getElementById('pCategory');
         if (!nameInput) return;
 
         const val = nameInput.value.trim();
@@ -2261,7 +2382,7 @@
             rest.appendChild(pElem);
         }
 
-        registerPlayerToRoster(val, genderInput.value, levelInput.value);
+        registerPlayerToRoster(val, genderInput.value, levelInput.value, categoryInput ? categoryInput.value : "member");
 
         nameInput.value = '';
         
