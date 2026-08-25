@@ -45,13 +45,13 @@
             gap: 10px; 
         }
         
-        /* 動態球隊隊名樣式 */
+        /* 動態球隊隊名樣式（可點擊觸發管理選單） */
         .site-title { 
             font-size: 20px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
-            gap: 6px; 
+            gap: 8px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -59,18 +59,28 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.2));
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .site-title:active { transform: scale(0.98); }
+
+        .site-title-badge {
+            font-size: 11px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 6px;
+            -webkit-text-fill-color: #475569;
+            font-family: sans-serif;
         }
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
-        .action-area input { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; width: 100px; }
-        .action-area select { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: white; outline: none; }
-        .action-area button { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        .action-area button:hover { background: #1d4ed8; }
 
         /* 按鈕通用樣式 */
         .icon-btn {
-            padding: 6px 10px !important;
-            font-size: 15px !important;
+            padding: 6px 12px !important;
+            font-size: 14px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -85,28 +95,7 @@
         /* 按鈕風格 */
         .undo-btn { background: #64748b !important; color: white !important; }
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
-        .reset-btn { background: #ea580c !important; color: white !important; }
-        .roster-btn { background: #8b5cf6 !important; color: white !important; }
         .history-btn { background: #0891b2 !important; color: white !important; }
-        .settings-btn { background: #475569 !important; color: white !important; }
-        
-        .delete-toggle-btn {
-            background: #dc2626 !important;
-            color: #ffffff !important;
-            box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
-            transition: all 0.2s ease-in-out;
-        }
-        .delete-toggle-btn.active {
-            background: #991b1b !important;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
 
         /* 手機版專屬頁籤導覽列 */
         .mobile-tabs-bar {
@@ -496,6 +485,68 @@
             padding: 0 4px;
         }
 
+        /* ⚙️ 管理選單視窗內部元件樣式 */
+        .menu-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .menu-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .menu-add-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .menu-add-row input {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+        .menu-add-row select {
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+            outline: none;
+        }
+        .menu-grid-btns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .menu-action-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px 10px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
+
         /* 8場開關網格 */
         .court-toggle-grid {
             display: grid;
@@ -861,43 +912,10 @@
             .top-bar {
                 padding: 6px 10px;
                 gap: 6px;
-                flex-wrap: wrap;
             }
 
             .site-title {
                 font-size: 18px;
-            }
-
-            .action-area {
-                width: 100%;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-                justify-content: flex-start;
-            }
-
-            .action-row {
-                display: flex;
-                gap: 6px;
-                width: 100%;
-                align-items: center;
-            }
-
-            .action-area input {
-                flex: 1;
-                font-size: 15px;
-                padding: 6px 8px;
-            }
-
-            .action-area select {
-                font-size: 15px;
-                padding: 6px 4px;
-            }
-
-            .action-area button {
-                font-size: 15px;
-                padding: 6px 12px;
-                flex: 1;
             }
 
             .mobile-tabs-bar {
@@ -961,6 +979,10 @@
             .roster-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
+
+            .menu-grid-btns {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -970,33 +992,15 @@
     <input type="file" id="rosterFileInput" class="file-input-hidden" accept=".json" onchange="handleRosterFileImport(event)">
     <input type="file" id="historyFileInput" class="file-input-hidden" accept=".json" onchange="handleHistoryFileImport(event)">
 
-    <!-- 頂部列 -->
+    <!-- 頂部列：極致精簡（點擊球隊名稱開啟全功能管理選單） -->
     <div class="top-bar">
-        <div class="site-title" id="displayClubTitle">
-            載入中...
+        <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
+            <span id="displayClubTitle">載入中...</span>
+            <span class="site-title-badge">⚙️ 管理</span>
         </div>
         <div class="action-area">
-            <!-- 輸入、選單與新增按鈕 -->
-            <input type="text" id="pName" placeholder="姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayer()">
-            <select id="pGender">
-                <option value="M">男 &#9794;</option>
-                <option value="F">女 &#9792;</option>
-            </select>
-            <select id="pLevel">
-                <option value="green">🟢 新手</option>
-                <option value="yellow">🟡 初階</option>
-                <option value="blue">🔵 初中</option>
-                <option value="red">🔴 高手</option>
-            </select>
-            <button type="button" onclick="createPlayer()">新增</button>
-            
-            <!-- 精簡圖示按鈕區 -->
-            <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
-            <button type="button" class="icon-btn reset-btn" onclick="resetCurrentGame()" title="重置球局 (清空所有人，保留戰績)">🧹</button>
-            <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客球員點名名單">👥</button>
+            <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
-            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
-            <button type="button" id="deleteToggleBtn" class="icon-btn delete-toggle-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
     </div>
 
@@ -1050,7 +1054,60 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員資料庫與點名視窗（含分類頁籤、批次多選移區與一鍵全選） -->
+    <!-- ⚙️ 球隊全功能管理選單視窗（點擊左上隊名開啟） -->
+    <div class="modal-overlay" id="adminMenuModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="menuModalTitle">⚙️ 球隊系統管理選單</span>
+                <button class="close-modal-btn" onclick="closeAdminMenuModal()">&times;</button>
+            </div>
+
+            <!-- 1. 新增球員卡片區 -->
+            <div class="menu-section">
+                <div class="menu-section-title">➕ 快速新增臨打球員</div>
+                <div class="menu-add-row">
+                    <input type="text" id="pName" placeholder="輸入球員姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayerFromMenu()">
+                    <select id="pGender">
+                        <option value="M">男 &#9794;</option>
+                        <option value="F">女 &#9792;</option>
+                    </select>
+                    <select id="pLevel">
+                        <option value="green">🟢 新手</option>
+                        <option value="yellow">🟡 初階</option>
+                        <option value="blue">🔵 初中</option>
+                        <option value="red">🔴 高手</option>
+                    </select>
+                    <button type="button" class="save-modal-btn" onclick="createPlayerFromMenu()">新增至休息區</button>
+                </div>
+            </div>
+
+            <!-- 2. 管理功能按鈕網格 -->
+            <div class="menu-section">
+                <div class="menu-section-title">🛠️ 系統功能快捷鍵</div>
+                <div class="menu-grid-btns">
+                    <button type="button" class="menu-action-card" onclick="openRosterModalFromMenu()">
+                        <span>👥 球員名單與出席點名</span>
+                    </button>
+                    <button type="button" class="menu-action-card" onclick="openSettingsModalFromMenu()">
+                        <span>⚙️ 開場 / 關場設定</span>
+                    </button>
+                    <button type="button" class="menu-action-card" style="border-color:#f97316; color:#c2410c;" onclick="resetCurrentGameFromMenu()">
+                        <span>🧹 重置球局 (清空排場板)</span>
+                    </button>
+                    <button type="button" class="menu-action-card" id="menuDeleteToggleBtn" style="border-color:#ef4444; color:#dc2626;" onclick="toggleDeleteModeFromMenu()">
+                        <span>🗑️ 切換球員卡片刪除模式</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closeAdminMenuModal()">關閉選單</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 👥 常客球員資料庫與點名視窗 -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -1299,7 +1356,7 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
-    let currentRosterTab = 'casual'; // 預設點開名單時顯示【臨打】分頁
+    let currentRosterTab = 'casual';
 
     const levelTextMap = {
         green: "新手",
@@ -1350,13 +1407,56 @@
         URL.revokeObjectURL(url);
     }
 
+    // -------------------------------------------------------------
+    // ⚙️ 頂部左上角隊名管理選單視窗控制
+    // -------------------------------------------------------------
+    function openAdminMenuModal() {
+        if (!verifyPassword()) return;
+        document.getElementById('menuModalTitle').innerText = `⚙️ ${currentClubName} - 管理選單`;
+        
+        // 更新刪除模式按鈕文字
+        const btn = document.getElementById('menuDeleteToggleBtn');
+        if (btn) {
+            btn.querySelector('span').innerText = isDeleteMode ? "❌ 關閉球員卡片刪除模式" : "🗑️ 切換球員卡片刪除模式";
+        }
+
+        document.getElementById('adminMenuModal').classList.add('active');
+    }
+
+    function closeAdminMenuModal() {
+        document.getElementById('adminMenuModal').classList.remove('active');
+    }
+
+    function createPlayerFromMenu() {
+        createPlayer();
+        closeAdminMenuModal();
+    }
+
+    function openRosterModalFromMenu() {
+        closeAdminMenuModal();
+        openRosterModal();
+    }
+
+    function openSettingsModalFromMenu() {
+        closeAdminMenuModal();
+        openSettingsModal();
+    }
+
+    function resetCurrentGameFromMenu() {
+        closeAdminMenuModal();
+        resetCurrentGame();
+    }
+
+    function toggleDeleteModeFromMenu() {
+        closeAdminMenuModal();
+        toggleDeleteMode();
+    }
+
     // 🧹 重置球局：一次刪除休息區、等待區與上場區的所有球員，對戰紀錄絕對保留
     function resetCurrentGame() {
         if (!confirm("⚠️ 確定要重置球局嗎？此操作將會刪除排場板上（休息區、上場區、等待區）的所有球員！\n\n（歷史對戰紀錄與常客名單依然會完整保留）")) {
             return;
         }
-
-        if (!verifyPassword()) return;
 
         saveHistoryState();
 
@@ -1523,7 +1623,7 @@
         });
     }
 
-    // 🎯 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
+    // 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
     function batchMoveSelectedRoster() {
         const modal = document.getElementById('rosterModal');
         if (!modal) return;
@@ -1558,7 +1658,7 @@
         if (isFirebaseActive && rosterDbRef) {
             rosterDbRef.update(updateBatch).then(() => {
                 alert(`✅ 已將 ${checkboxes.length} 位球員成功轉移至【${categoryTextMap[newCategory]}】區！`);
-                switchRosterTab(newCategory); // 自動切換至目標分區
+                switchRosterTab(newCategory);
             });
         } else {
             localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
@@ -1607,7 +1707,7 @@
         closeRosterModal();
     }
 
-    // 🎯 修改常客球員資訊 (數字輸入簡化程度選項)
+    // 修改常客球員資訊 (數字輸入簡化程度選項)
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1628,7 +1728,6 @@
         if (newGenderInput === null) return;
         const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
 
-        // 🎯 數字選項提示化
         const currentLevelNum = p.level === 'yellow' ? '2' : (p.level === 'blue' ? '3' : (p.level === 'red' ? '4' : '1'));
         const newLevelInput = prompt("修改羽球程度 (請輸入數字)：\n1 : 🟢 新手\n2 : 🟡 初階\n3 : 🔵 初中\n4 : 🔴 高手", currentLevelNum);
         if (newLevelInput === null) return;
@@ -2246,13 +2345,12 @@
 
     function toggleDeleteMode() {
         if (!isDeleteMode) {
-            if (!verifyPassword()) return;
             isDeleteMode = true;
-            document.getElementById('deleteToggleBtn').classList.add('active');
+            document.getElementById('deleteToggleBtn')?.classList.add('active');
             document.body.classList.add('delete-mode-active');
         } else {
             isDeleteMode = false;
-            document.getElementById('deleteToggleBtn').classList.remove('active');
+            document.getElementById('deleteToggleBtn')?.classList.remove('active');
             document.body.classList.remove('delete-mode-active');
         }
     }
