@@ -564,7 +564,7 @@
             border: 1px solid #cbd5e1;
         }
 
-        /* 👥 常客球員點名視窗分類頁籤與網格優化 */
+        /* 👥 常客球員點名視窗網格與功能按鈕 */
         .roster-tabs-bar {
             display: flex;
             gap: 6px;
@@ -706,7 +706,7 @@
             gap: 6px;
         }
 
-        /* ⚡ 一列式對戰紀錄精簡卡片 */
+        /* 一列式對戰紀錄精簡卡片 */
         .history-item-single-row {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -988,11 +988,6 @@
                 <option value="blue">🔵 初中</option>
                 <option value="red">🔴 高手</option>
             </select>
-            <select id="pCategory">
-                <option value="member">季繳</option>
-                <option value="regular">常客</option>
-                <option value="casual">臨打</option>
-            </select>
             <button type="button" onclick="createPlayer()">新增</button>
             
             <!-- 精簡圖示按鈕區 -->
@@ -1055,7 +1050,7 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員資料庫與點名視窗（含分類頁籤與一鍵全選） -->
+    <!-- 👥 常客球員資料庫與點名視窗（含分類頁籤、批次多選移區與一鍵全選） -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -1072,7 +1067,10 @@
 
             <div class="roster-toolbar">
                 <span id="rosterCountText">此分類共 0 人</span>
-                <button type="button" class="hist-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選 / 取消全選</button>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="hist-act-btn" onclick="batchMoveSelectedRoster()" title="將勾選的球員轉移至其他分區">🏷️ 移動選取球員分區</button>
+                    <button type="button" class="hist-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選 / 取消全選</button>
+                </div>
             </div>
 
             <div class="roster-grid" id="rosterContainer">
@@ -1301,7 +1299,7 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
-    let currentRosterTab = 'member'; //預設選取【季繳】分頁
+    let currentRosterTab = 'casual'; // 預設點開名單時顯示【臨打】分頁
 
     const levelTextMap = {
         green: "新手",
@@ -1450,7 +1448,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與一鍵全選
+    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與複數選取移區功能
     // -------------------------------------------------------------
     function openRosterModal() {
         switchRosterTab(currentRosterTab);
@@ -1479,9 +1477,9 @@
         if (!container) return;
 
         const keys = Object.keys(globalPlayerRoster);
-        // 過濾出目前選取分類的球員 (相容舊資料預設為 member/regular)
+        // 過濾出目前選取分類的球員
         const categoryKeys = keys.filter(k => {
-            const pCat = globalPlayerRoster[k].category || 'member';
+            const pCat = globalPlayerRoster[k].category || 'casual';
             return pCat === currentRosterTab;
         });
 
@@ -1523,6 +1521,50 @@
                 </div>
             `;
         });
+    }
+
+    // 🎯 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
+    function batchMoveSelectedRoster() {
+        const modal = document.getElementById('rosterModal');
+        if (!modal) return;
+
+        const checkboxes = modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            alert("請先勾選要移動分區的球員！");
+            return;
+        }
+
+        if (!verifyPassword()) return;
+
+        const targetCatInput = prompt(`請選擇要將勾選的 ${checkboxes.length} 位球員移動至哪個分區？\n\n輸入選項：\n1 : 季繳 (member)\n2 : 常客 (regular)\n3 : 臨打 (casual)`, "1");
+        if (targetCatInput === null) return;
+
+        let newCategory = "member";
+        const trimmed = targetCatInput.trim().toLowerCase();
+        if (trimmed === '1' || trimmed === 'member' || trimmed === '季繳') newCategory = 'member';
+        else if (trimmed === '2' || trimmed === 'regular' || trimmed === '常客') newCategory = 'regular';
+        else if (trimmed === '3' || trimmed === 'casual' || trimmed === '臨打') newCategory = 'casual';
+
+        const updateBatch = {};
+        checkboxes.forEach(cb => {
+            const key = cb.value;
+            if (globalPlayerRoster[key]) {
+                globalPlayerRoster[key].category = newCategory;
+                globalPlayerRoster[key].updatedAt = Date.now();
+                updateBatch[key] = globalPlayerRoster[key];
+            }
+        });
+
+        if (isFirebaseActive && rosterDbRef) {
+            rosterDbRef.update(updateBatch).then(() => {
+                alert(`✅ 已將 ${checkboxes.length} 位球員成功轉移至【${categoryTextMap[newCategory]}】區！`);
+                switchRosterTab(newCategory); // 自動切換至目標分區
+            });
+        } else {
+            localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
+            alert(`✅ 已將 ${checkboxes.length} 位球員成功轉移至【${categoryTextMap[newCategory]}】區！`);
+            switchRosterTab(newCategory);
+        }
     }
 
     // 針對目前顯示分類進行「全選 / 取消全選」
@@ -1590,9 +1632,9 @@
         if (newLevelInput === null) return;
         const newLevel = ['green','yellow','blue','red'].includes(newLevelInput.trim()) ? newLevelInput.trim() : (p.level || "green");
 
-        const newCatInput = prompt("修改球員分類 (輸入 member:季繳, regular:常客, casual:臨打)：", p.category || "member");
+        const newCatInput = prompt("修改球員分類 (輸入 member:季繳, regular:常客, casual:臨打)：", p.category || "casual");
         if (newCatInput === null) return;
-        const newCategory = ['member','regular','casual'].includes(newCatInput.trim()) ? newCatInput.trim() : (p.category || "member");
+        const newCategory = ['member','regular','casual'].includes(newCatInput.trim()) ? newCatInput.trim() : (p.category || "casual");
 
         const updatedPlayer = {
             name: newName,
@@ -1683,7 +1725,8 @@
         }
     }
 
-    function registerPlayerToRoster(name, gender, level, category = "member") {
+    // 預設新增球員歸類為 casual (臨打)
+    function registerPlayerToRoster(name, gender, level, category = "casual") {
         if (!name) return;
         const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
         if (!safeKey) return;
@@ -1694,7 +1737,7 @@
             name: name.trim(),
             gender: gender,
             level: level || "green",
-            category: existingCategory || "member",
+            category: existingCategory || "casual",
             updatedAt: Date.now()
         };
 
@@ -1783,7 +1826,6 @@
         }
     }
 
-    // ⚡【核心精簡化】：單行一列顯示對戰紀錄，提高畫面閱讀量！
     function renderHistoryRecordsUI() {
         const container = document.getElementById('historyRecordsContainer');
         if (!container) return;
@@ -2362,11 +2404,11 @@
         persistData();
     }
 
+    // 預設新增球員時加入【臨打 (casual)】
     function createPlayer() {
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
         const levelInput = document.getElementById('pLevel');
-        const categoryInput = document.getElementById('pCategory');
         if (!nameInput) return;
 
         const val = nameInput.value.trim();
@@ -2382,7 +2424,8 @@
             rest.appendChild(pElem);
         }
 
-        registerPlayerToRoster(val, genderInput.value, levelInput.value, categoryInput ? categoryInput.value : "member");
+        // 預設將新球員歸類為 casual (臨打)
+        registerPlayerToRoster(val, genderInput.value, levelInput.value, "casual");
 
         nameInput.value = '';
         
@@ -2704,7 +2747,8 @@
                     const pNode = makePlayerNode(item.id, item.name, item.gender, item.level || "green", item.played, item.wins, item.isWinner);
                     zone.appendChild(pNode);
 
-                    registerPlayerToRoster(item.name, item.gender, item.level);
+                    // 預設將舊資料或無分類資料記錄為 casual
+                    registerPlayerToRoster(item.name, item.gender, item.level, "casual");
                 });
             }
         });
