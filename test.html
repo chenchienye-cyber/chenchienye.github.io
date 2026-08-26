@@ -233,6 +233,19 @@
 
         .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 14px; font-weight: 600; }
 
+        /* ⏱️ 上場區即時對戰計時器標籤 */
+        .court-timer-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 1px 5px;
+            border-radius: 6px;
+            font-family: monospace, SFMono-Regular, Consolas, monospace;
+            letter-spacing: 0.5px;
+        }
+
         /* 結束比賽按鈕 */
         .finish-btn {
             background: #10b981;
@@ -1519,6 +1532,28 @@
     }
 
     // -------------------------------------------------------------
+    // ⏱️ 全域上場區即時對戰計時器 (每秒自動更新)
+    // -------------------------------------------------------------
+    setInterval(updateCourtTimers, 1000);
+
+    function updateCourtTimers() {
+        activeCourts.forEach(num => {
+            const timerElem = document.getElementById(`timer-court-${num}`);
+            const courtZone = document.getElementById(`court-${num}`);
+            if (!timerElem) return;
+
+            if (courtZone && courtZone.children.length > 0 && courtStartTimes[num]) {
+                const elapsedSec = Math.floor((Date.now() - courtStartTimes[num]) / 1000);
+                const mins = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+                const secs = String(elapsedSec % 60).padStart(2, '0');
+                timerElem.innerText = `${mins}:${secs}`;
+            } else {
+                timerElem.innerText = '00:00';
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
     // ⚙️ 頂部左上角隊名管理選單視窗控制（關閉時自動重新鎖定密碼）
     // -------------------------------------------------------------
     function openAdminMenuModal() {
@@ -2533,7 +2568,10 @@
                 <div class="slot-item ${isVip ? 'vip-slot' : ''}">
                     <div class="slot-inner">
                         <div class="card-header">
-                            <span>${num} 號場 ${isVip ? '<span style="color:#d97706; font-size:13px;">(VIP)</span>' : ''}</span>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span>${num} 號場 ${isVip ? '<span style="color:#d97706; font-size:13px;">(VIP)</span>' : ''}</span>
+                                <span class="court-timer-badge" id="timer-court-${num}">00:00</span>
+                            </div>
                             <span class="badge" id="b-court-${num}">0</span>
                         </div>
                         <div class="drop-zone" id="court-${num}"></div>
@@ -2556,6 +2594,7 @@
         });
 
         bindDropZones();
+        updateCourtTimers();
     }
 
     function toggleDeleteMode() {
