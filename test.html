@@ -95,6 +95,8 @@
         /* 按鈕風格 */
         .undo-btn { background: #64748b !important; color: white !important; }
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
+        .redo-btn { background: #475569 !important; color: white !important; }
+        .redo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
         .history-btn { background: #0891b2 !important; color: white !important; }
 
         /* 頂部快捷關閉刪除模式按鈕 */
@@ -1018,6 +1020,7 @@
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
+            <button id="redoBtn" class="icon-btn redo-btn" onclick="redo()" title="下一步 (重做)" disabled>➡️ 下一步</button>
             <button type="button" class="icon-btn delete-close-top-btn" onclick="toggleDeleteMode()" title="關閉刪除模式">❌ 關閉刪除模式</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
         </div>
@@ -1394,7 +1397,9 @@
         casual: "臨打"
     };
 
-    const historyStack = [];
+    // 🎯 雙向 Undo / Redo 歷史紀錄堆疊
+    const undoStack = [];
+    const redoStack = [];
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
 
@@ -2435,27 +2440,35 @@
 
     function saveHistoryState() {
         const currentState = getCurrentStateObject();
-        historyStack.push({
+        undoStack.push({
             activeCourts: [...activeCourts],
             store: currentState
         });
-        if (historyStack.length > MAX_HISTORY) {
-            historyStack.shift();
+        if (undoStack.length > MAX_HISTORY) {
+            undoStack.shift();
         }
-        updateUndoButton();
+        redoStack.length = 0; // 當產生新的操作時，清空 Redo 堆疊
+        updateUndoRedoButtons();
     }
 
-    function updateUndoButton() {
-        const btn = document.getElementById('undoBtn');
-        if (btn) {
-            btn.disabled = historyStack.length === 0;
-        }
+    function updateUndoRedoButtons() {
+        const uBtn = document.getElementById('undoBtn');
+        const rBtn = document.getElementById('redoBtn');
+        if (uBtn) uBtn.disabled = (undoStack.length === 0);
+        if (rBtn) rBtn.disabled = (redoStack.length === 0);
     }
 
     function undo() {
-        if (historyStack.length === 0) return;
+        if (undoStack.length === 0) return;
 
-        const previousStateObj = historyStack.pop();
+        // 保存當前狀態至 Redo 堆疊
+        const currentState = getCurrentStateObject();
+        redoStack.push({
+            activeCourts: [...activeCourts],
+            store: currentState
+        });
+
+        const previousStateObj = undoStack.pop();
         if (previousStateObj.activeCourts) {
             activeCourts = previousStateObj.activeCourts;
             buildLayout();
@@ -2464,7 +2477,29 @@
         
         refreshStats();
         persistData();
-        updateUndoButton();
+        updateUndoRedoButtons();
+    }
+
+    function redo() {
+        if (redoStack.length === 0) return;
+
+        // 保存當前狀態至 Undo 堆疊
+        const currentState = getCurrentStateObject();
+        undoStack.push({
+            activeCourts: [...activeCourts],
+            store: currentState
+        });
+
+        const nextStateObj = redoStack.pop();
+        if (nextStateObj.activeCourts) {
+            activeCourts = nextStateObj.activeCourts;
+            buildLayout();
+        }
+        applyStateObject(nextStateObj.store || nextStateObj);
+
+        refreshStats();
+        persistData();
+        updateUndoRedoButtons();
     }
 
     function toggleWinnerCard(elem) {
@@ -3044,10 +3079,21 @@
         document.getElementById('displayClubTitle').innerText = currentClubName;
     }
 
+    // 快捷鍵控制 (Ctrl+Z: 上一步, Ctrl+Y / Cmd+Shift+Z: 下一步)
     window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            undo();
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key.toLowerCase() === 'z') {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    redo();
+                } else {
+                    e.preventDefault();
+                    undo();
+                }
+            } else if (e.key.toLowerCase() === 'y') {
+                e.preventDefault();
+                redo();
+            }
         }
     });
 
