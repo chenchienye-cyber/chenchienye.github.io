@@ -97,6 +97,24 @@
         .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
         .history-btn { background: #0891b2 !important; color: white !important; }
 
+        /* 頂部快捷關閉刪除模式按鈕 */
+        .delete-close-top-btn {
+            display: none;
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
+            animation: pulse 1.5s infinite;
+        }
+        body.delete-mode-active .delete-close-top-btn {
+            display: inline-flex;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
         /* 手機版專屬頁籤導覽列 */
         .mobile-tabs-bar {
             display: none;
@@ -1000,6 +1018,7 @@
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
+            <button type="button" class="icon-btn delete-close-top-btn" onclick="toggleDeleteMode()" title="關閉刪除模式">❌ 關閉刪除模式</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="戰績對戰歷史紀錄與個人勝率">📜 對戰紀錄</button>
         </div>
     </div>
@@ -1551,7 +1570,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、雙向點名（加入 / 取消加入）與複數選取移區功能
+    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與複數選取移區功能
     // -------------------------------------------------------------
     function openRosterModal() {
         switchRosterTab(currentRosterTab);
