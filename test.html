@@ -1570,7 +1570,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與複數選取移區功能
+    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與雙向點名不自動關閉視窗功能
     // -------------------------------------------------------------
     function openRosterModal() {
         switchRosterTab(currentRosterTab);
@@ -1676,7 +1676,7 @@
         }
     }
 
-    // 🎯 雙向點名功能：加入或取消加入今日球局
+    // 🎯 雙向點名功能：加入或取消加入今日球局（不自動關閉視窗，方便連續點名）
     function addSelectedRosterToGame() {
         const modal = document.getElementById('rosterModal');
         if (!modal) return;
@@ -1716,7 +1716,9 @@
 
         refreshStats();
         persistData();
-        closeRosterModal();
+        renderRosterUI(); // 重新渲染視窗內卡片的球局狀態
+        alert("✅ 球局出席狀態已更新！");
+        // 不會呼叫 closeRosterModal()，保持點名視窗開啟
     }
 
     // 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
