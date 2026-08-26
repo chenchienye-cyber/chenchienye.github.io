@@ -1140,7 +1140,7 @@
                     <button class="save-modal-btn outline" onclick="triggerRosterImport()" title="匯入常客名單 JSON 檔">📥 匯入名單</button>
                 </div>
                 <div class="modal-footer-btns">
-                    <button class="save-modal-btn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
+                    <button class="save-modal-btn" id="addSelectedBtn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入今日球局</button>
                     <button class="save-modal-btn secondary" onclick="closeRosterModal()">關閉</button>
                 </div>
             </div>
@@ -1412,7 +1412,7 @@
     }
 
     // -------------------------------------------------------------
-    // ⚙️ 頂部左上角隊名管理選單視窗控制（連續操作不自動關閉）
+    // ⚙️ 頂部左上角隊名管理選單視窗控制（關閉時自動重新鎖定密碼）
     // -------------------------------------------------------------
     function openAdminMenuModal() {
         if (!verifyPassword()) return;
@@ -1428,12 +1428,13 @@
     }
 
     function closeAdminMenuModal() {
+        isAdminUnlocked = false; // 🔒 關閉選單時重置權限，下次開啟需重新輸入密碼！
         document.getElementById('adminMenuModal').classList.remove('active');
     }
 
     function createPlayerFromMenu() {
         createPlayer();
-        // 保持選單開啟，不調用 closeAdminMenuModal()
+        // 保持選單開啟，可連續新增
     }
 
     function openRosterModalFromMenu() {
@@ -1550,7 +1551,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 與複數選取移區功能
+    // 👥 常客球員點名視窗、雙向點名（加入 / 取消加入）與複數選取移區功能
     // -------------------------------------------------------------
     function openRosterModal() {
         switchRosterTab(currentRosterTab);
@@ -1591,6 +1592,7 @@
 
         if (categoryKeys.length === 0) {
             container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            updateRosterSubmitBtnUI();
             return;
         }
 
@@ -1610,11 +1612,11 @@
             const lvlName = levelTextMap[p.level] || '新手';
 
             container.innerHTML += `
-                <div class="roster-item-card" style="${isAlreadyInGame ? 'opacity:0.6;' : ''}">
-                    <input type="checkbox" value="${key}" id="cb_${key}" ${isAlreadyInGame ? 'disabled' : ''}>
+                <div class="roster-item-card" style="${isAlreadyInGame ? 'background:#ecfdf5; border-color:#a7f3d0;' : ''}">
+                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
                     <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div style="font-size:11px; color:#64748b;">[${lvlName}] ${isAlreadyInGame ? '(已在局)' : ''}</div>
+                        <div style="font-size:11px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
                     </label>
                     <div class="roster-action-btns">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
@@ -1623,6 +1625,79 @@
                 </div>
             `;
         });
+
+        updateRosterSubmitBtnUI();
+    }
+
+    // 動態更新底部點名提交按鈕文字與色彩
+    function updateRosterSubmitBtnUI() {
+        const modal = document.getElementById('rosterModal');
+        const submitBtn = document.getElementById('addSelectedBtn');
+        if (!modal || !submitBtn) return;
+
+        const checkedBoxes = Array.from(modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked'));
+        if (checkedBoxes.length === 0) {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+            return;
+        }
+
+        const hasInGame = checkedBoxes.some(cb => cb.dataset.inGame === "true");
+        const hasNotInGame = checkedBoxes.some(cb => cb.dataset.inGame === "false");
+
+        if (hasInGame && hasNotInGame) {
+            submitBtn.innerText = "🔄 批次更新球局狀態";
+            submitBtn.style.background = "#2563eb";
+        } else if (hasInGame) {
+            submitBtn.innerText = "↩️ 取消加入球局";
+            submitBtn.style.background = "#ef4444";
+        } else {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+        }
+    }
+
+    // 🎯 雙向點名功能：加入或取消加入今日球局
+    function addSelectedRosterToGame() {
+        const modal = document.getElementById('rosterModal');
+        if (!modal) return;
+
+        const checkboxes = modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            alert("請先勾選要加入或取消加入球局的球員！");
+            return;
+        }
+
+        saveHistoryState();
+        const rest = document.getElementById('rest');
+
+        checkboxes.forEach(cb => {
+            const key = cb.value;
+            const p = globalPlayerRoster[key];
+            if (!p) return;
+
+            const isAlreadyInGame = cb.dataset.inGame === "true";
+
+            if (isAlreadyInGame) {
+                // ↩️ 取消加入球局：將畫面上所有同名球員移除
+                document.querySelectorAll('.player-card').forEach(card => {
+                    if (card.dataset.name === p.name) {
+                        card.remove();
+                    }
+                });
+            } else {
+                // ☑️ 加入今日球局：新增至休息區
+                if (rest) {
+                    const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+                    const pElem = makePlayerNode(pId, p.name, p.gender, p.level || "green", 0, 0, false);
+                    rest.appendChild(pElem);
+                }
+            }
+        });
+
+        refreshStats();
+        persistData();
+        closeRosterModal();
     }
 
     // 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
@@ -1674,39 +1749,12 @@
         const container = document.getElementById('rosterContainer');
         if (!container) return;
 
-        const checkboxes = Array.from(container.querySelectorAll('input[type="checkbox"]:not(:disabled)'));
+        const checkboxes = Array.from(container.querySelectorAll('input[type="checkbox"]'));
         if (checkboxes.length === 0) return;
 
         const allChecked = checkboxes.every(cb => cb.checked);
         checkboxes.forEach(cb => cb.checked = !allChecked);
-    }
-
-    function addSelectedRosterToGame() {
-        const modal = document.getElementById('rosterModal');
-        if (!modal) return;
-
-        const checkboxes = modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            alert("請先勾選要加入球局的球員！");
-            return;
-        }
-
-        saveHistoryState();
-        const rest = document.getElementById('rest');
-
-        checkboxes.forEach(cb => {
-            const key = cb.value;
-            const p = globalPlayerRoster[key];
-            if (p && rest) {
-                const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
-                const pElem = makePlayerNode(pId, p.name, p.gender, p.level || "green", 0, 0, false);
-                rest.appendChild(pElem);
-            }
-        });
-
-        refreshStats();
-        persistData();
-        closeRosterModal();
+        updateRosterSubmitBtnUI();
     }
 
     // 修改常客球員資訊 (數字輸入簡化程度選項)
