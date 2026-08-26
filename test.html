@@ -308,12 +308,6 @@
             box-sizing: border-box;
         }
 
-        /* 👑 VIP 專屬場地高亮金黃邊框與底色 */
-        .slot-item.vip-slot {
-            border: 2px solid #eab308 !important;
-            background: #fffdf5 !important;
-        }
-
         .slot-inner {
             display: flex;
             flex-direction: column;
@@ -344,12 +338,6 @@
             overflow: hidden;
         }
         .player-card:active { cursor: grabbing; }
-
-        /* 👑 VIP 球員卡片專屬金黃色膠囊邊框 */
-        .player-card[data-category="vip"] {
-            border-color: #f59e0b !important;
-            background: #fffbeb !important;
-        }
 
         /* 觸控拖曳浮動樣式 */
         .player-card.dragging-touch {
@@ -592,35 +580,7 @@
         }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        /* 👑 VIP 專屬機制說明精緻卡片風格 */
-        .vip-info-card {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-left: 4px solid #f59e0b;
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #78350f;
-            line-height: 1.6;
-        }
-        .vip-info-title {
-            font-weight: 700;
-            font-size: 14px;
-            color: #b45309;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .vip-info-list {
-            margin-left: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        /* 8場開關網格與 VIP 開關 */
+        /* 8場開關網格 */
         .court-toggle-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -628,19 +588,13 @@
             margin-bottom: 16px;
         }
 
-        .court-btn-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
         .court-btn {
-            padding: 10px 6px;
+            padding: 12px 6px;
             border-radius: 10px;
             border: 2px solid #cbd5e1;
             background: #f8fafc;
             color: #64748b;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -649,30 +603,13 @@
             gap: 2px;
             transition: all 0.2s;
         }
-        .court-btn .status-text { font-size: 11px; font-weight: 600; }
+        .court-btn .status-text { font-size: 12px; font-weight: 600; }
 
         .court-btn.active {
             background: #f0fdf4;
             border-color: #22c55e;
             color: #15803d;
             box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
-        }
-
-        .court-vip-toggle {
-            font-size: 11px;
-            padding: 3px 6px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #64748b;
-            cursor: pointer;
-            font-weight: 700;
-            text-align: center;
-        }
-        .court-vip-toggle.active {
-            background: #fef3c7;
-            border-color: #f59e0b;
-            color: #b45309;
         }
 
         .modal-footer {
@@ -727,7 +664,7 @@
             padding: 6px;
             border: none;
             background: transparent;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: #64748b;
             border-radius: 6px;
@@ -1179,7 +1116,6 @@
                         <option value="casual">臨打</option>
                         <option value="member">季繳</option>
                         <option value="regular">常客</option>
-                        <option value="vip">👑 VIP</option>
                     </select>
                     <button type="button" class="save-modal-btn" onclick="createPlayerFromMenu()">新增至休息區</button>
                 </div>
@@ -1193,7 +1129,7 @@
                         <span>👥 球員名單與出席點名</span>
                     </button>
                     <button type="button" class="menu-action-card" onclick="openSettingsModalFromMenu()">
-                        <span>⚙️ 開場 / 關場與 VIP 場設定</span>
+                        <span>⚙️ 開場 / 關場設定</span>
                     </button>
                     <button type="button" class="menu-action-card" style="border-color:#f97316; color:#c2410c;" onclick="resetCurrentGameFromMenu()">
                         <span>🧹 重置球局 (清空排場板)</span>
@@ -1219,9 +1155,8 @@
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
             </div>
 
-            <!-- 球員分類頁籤 (1. 👑 VIP 2. 季繳 3. 常客 4. 臨打) -->
+            <!-- 球員分類頁籤 (1. 季繳 2. 常客 3. 臨打) -->
             <div class="roster-tabs-bar">
-                <button class="roster-tab-btn" id="rtab-vip" onclick="switchRosterTab('vip')">👑 VIP</button>
                 <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳</button>
                 <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客</button>
                 <button class="roster-tab-btn active" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打</button>
@@ -1230,7 +1165,6 @@
             <div class="roster-toolbar">
                 <span id="rosterCountText">此分類共 0 人</span>
                 <div style="display:flex; gap:6px;">
-                    <button type="button" class="hist-act-btn" id="vipHelpBtn" style="display:none; background:#fef3c7; color:#b45309;" onclick="openVipInfoModal()">ℹ️ VIP 機制說明</button>
                     <button type="button" class="hist-act-btn" onclick="batchMoveSelectedRoster()" title="將勾選的球員轉移至其他分區">🏷️ 移動選取球員分區</button>
                     <button type="button" class="hist-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選 / 取消全選</button>
                 </div>
@@ -1253,62 +1187,53 @@
         </div>
     </div>
 
-    <!-- 開關場與 VIP 專場設定視窗 -->
+    <!-- 開關場設定視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 開場 / 關場與 VIP 場設定</span>
+                <span>⚙️ 開場 / 關場設定</span>
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
 
-            <!-- VIP 專場運作說明卡片 -->
-            <div class="vip-info-card">
-                <div class="vip-info-title">👑 VIP 雙分身（A / B）「直上直下」無縫輪替機制說明</div>
-                <div class="vip-info-list">
-                    <div><b>⚡ 不降休息區（無縫遞補）</b>：當 VIP 號碼場按下「<b>結束比賽</b>」時：</div>
-                    <div style="margin-left:12px;">• <b>普通球員</b> ➔ 正常移至「休息區」休息。</div>
-                    <div style="margin-left:12px;">• <b>VIP 球員（例如：張三 A）</b> ➔ 不會下場去休息區，而是<b>直接移動到該 VIP 場對應的等待區</b>（例如：等待 A (VIP)）！</div>
-                    <div style="margin-left:12px;">• <b>VIP 備用分身（例如：張三 B）</b> ➔ 會在第一順位<b>直上遞補到 VIP 號碼場</b>繼續打球！</div>
-                    <div><b>🛡️ 防止同場撞車</b>：系統會自動防護，確保 VIP 球員的 A、B 兩個分身不會同時上場。</div>
-                    <div><b>🚨 安全移除防護</b>：若手動移除 VIP 球員，系統會跳出確認視窗，避免誤觸移至休息區。</div>
-                </div>
-            </div>
-
-            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">開放或關閉場地，並可將場地標記為 👑 VIP 專屬場地：</p>
-            <div class="court-toggle-grid" id="settingsCourtGrid">
-                <!-- 動態由 JavaScript 產生 1~8 號場地的狀態與 VIP 開關 -->
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
+            <div class="court-toggle-grid">
+                <button class="court-btn" id="cbtn-1" onclick="toggleCourt(1)">
+                    <span>1 號場</span>
+                    <span class="status-text" id="stext-1">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-2" onclick="toggleCourt(2)">
+                    <span>2 號場</span>
+                    <span class="status-text" id="stext-2">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-3" onclick="toggleCourt(3)">
+                    <span>3 號場</span>
+                    <span class="status-text" id="stext-3">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-4" onclick="toggleCourt(4)">
+                    <span>4 號場</span>
+                    <span class="status-text" id="stext-4">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-5" onclick="toggleCourt(5)">
+                    <span>5 號場</span>
+                    <span class="status-text" id="stext-5">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-6" onclick="toggleCourt(6)">
+                    <span>6 號場</span>
+                    <span class="status-text" id="stext-6">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-7" onclick="toggleCourt(7)">
+                    <span>7 號場</span>
+                    <span class="status-text" id="stext-7">關場</span>
+                </button>
+                <button class="court-btn" id="cbtn-8" onclick="toggleCourt(8)">
+                    <span>8 號場</span>
+                    <span class="status-text" id="stext-8">關場</span>
+                </button>
             </div>
 
             <div class="modal-footer">
                 <div></div>
                 <button class="save-modal-btn" onclick="closeSettingsModal()">完成</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 👑 VIP 專屬機制說明獨立彈出視窗（點擊 VIP 頁籤說明按鈕觸發） -->
-    <div class="modal-overlay" id="vipInfoModal" onclick="closeVipInfoModal(event)">
-        <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 580px;">
-            <div class="modal-header">
-                <span>👑 VIP 雙分身輪替機制詳細說明</span>
-                <button class="close-modal-btn" onclick="closeVipInfoModal()">&times;</button>
-            </div>
-            
-            <div class="vip-info-card" style="margin-bottom:0;">
-                <div class="vip-info-title" style="font-size:16px;">👑 VIP 雙分身（A / B）「直上直下」無縫輪替機制</div>
-                <div class="vip-info-list" style="font-size:14px; margin-top:8px;">
-                    <div><b>⚡ 不降休息區（無縫遞補）</b>：當 VIP 號碼場按下「<b>結束比賽</b>」時：</div>
-                    <div style="margin-left:16px; color:#92400e;">• <b>普通球員</b> ➔ 正常移至「休息區」休息。</div>
-                    <div style="margin-left:16px; color:#92400e;">• <b>VIP 球員（例如：張三 A）</b> ➔ 不會降回休息區，而是<b>直接移動到該 VIP 場對應的等待區</b>（例如：等待 A (VIP)）！</div>
-                    <div style="margin-left:16px; color:#92400e;">• <b>VIP 備用分身（例如：張三 B）</b> ➔ 放在「等待 A (VIP)」預備的另一個分身，會在第一順位<b>直上遞補到 VIP 號碼場</b>！</div>
-                    <div style="margin-top:6px;"><b>🛡️ 防止同場撞車</b>：系統會自動確保 VIP 球員的 A、B 兩個分身不會同時被放在同一個場地上上場打球。</div>
-                    <div style="margin-top:6px;"><b>🚨 安全移除防護</b>：手動移除 VIP 球員時，會跳出 confirmation 視窗確認，防止誤觸將 VIP 移至休息區。</div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <div></div>
-                <button class="save-modal-btn secondary" onclick="closeVipInfoModal()">關閉說明</button>
             </div>
         </div>
     </div>
@@ -1465,7 +1390,6 @@
     // 2. 系統全域變數與對照表
     // -------------------------------------------------------------
     let activeCourts = [1, 2, 3, 4];
-    let vipCourts = []; // 👑 記錄哪些場地被設定為 VIP 專場
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     let isRemoteUpdating = false;
     let selectedPlayerElemForMove = null;
@@ -1489,8 +1413,7 @@
     const categoryTextMap = {
         member: "季繳",
         regular: "常客",
-        casual: "臨打",
-        vip: "👑 VIP"
+        casual: "臨打"
     };
 
     // 🎯 雙向 Undo / Redo 歷史紀錄堆疊
@@ -1594,18 +1517,6 @@
         toggleDeleteMode();
     }
 
-    // 👑 開啟/關閉 VIP 說明視窗
-    function openVipInfoModal() {
-        document.getElementById('vipInfoModal').classList.add('active');
-    }
-
-    function closeVipInfoModal(e) {
-        if (e && e.target !== document.getElementById('vipInfoModal') && !e.target.classList.contains('close-modal-btn')) {
-            return;
-        }
-        document.getElementById('vipInfoModal').classList.remove('active');
-    }
-
     // 🧹 重置球局：一次刪除休息區、等待區與上場區的所有球員，對戰紀錄絕對保留
     function resetCurrentGame() {
         if (!confirm("⚠️ 確定要重置球局嗎？此操作將會刪除排場板上（休息區、上場區、等待區）的所有球員！\n\n（歷史對戰紀錄與常客名單依然會完整保留）")) {
@@ -1704,7 +1615,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👥 常客球員點名視窗、分類頁籤 (VIP/季繳/常客/臨打) 功能
+    // 👥 常客球員點名視窗、分類頁籤 (季繳/常客/臨打) 功能
     // -------------------------------------------------------------
     function openRosterModal() {
         switchRosterTab(currentRosterTab);
@@ -1717,20 +1628,13 @@
 
     function switchRosterTab(categoryKey) {
         currentRosterTab = categoryKey;
-        ['vip', 'member', 'regular', 'casual'].forEach(cat => {
+        ['member', 'regular', 'casual'].forEach(cat => {
             const btn = document.getElementById(`rtab-${cat}`);
             if (btn) {
                 if (cat === categoryKey) btn.classList.add('active');
                 else btn.classList.remove('active');
             }
         });
-
-        // 👑 動態顯示/隱藏 VIP 說明按鈕
-        const vipHelpBtn = document.getElementById('vipHelpBtn');
-        if (vipHelpBtn) {
-            vipHelpBtn.style.display = (categoryKey === 'vip') ? 'inline-flex' : 'none';
-        }
-
         renderRosterUI();
     }
 
@@ -1860,7 +1764,7 @@
         alert("✅ 球局出席狀態已更新！");
     }
 
-    // 複數選取批次移動球員分區功能 (VIP / 季繳 / 常客 / 臨打)
+    // 複數選取批次移動球員分區功能 (季繳 / 常客 / 臨打)
     function batchMoveSelectedRoster() {
         const modal = document.getElementById('rosterModal');
         if (!modal) return;
@@ -1873,15 +1777,14 @@
 
         if (!verifyPassword()) return;
 
-        const targetCatInput = prompt(`請選擇要將勾選的 ${checkboxes.length} 位球員移動至哪個分區？\n\n輸入選項：\n1 : 👑 VIP (vip)\n2 : 💳 季繳 (member)\n3 : 🏸 常客 (regular)\n4 : ⚡ 臨打 (casual)`, "1");
+        const targetCatInput = prompt(`請選擇要將勾選的 ${checkboxes.length} 位球員移動至哪個分區？\n\n輸入選項：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)`, "1");
         if (targetCatInput === null) return;
 
-        let newCategory = "vip";
+        let newCategory = "member";
         const trimmed = targetCatInput.trim().toLowerCase();
-        if (trimmed === '1' || trimmed === 'vip') newCategory = 'vip';
-        else if (trimmed === '2' || trimmed === 'member' || trimmed === '季繳') newCategory = 'member';
-        else if (trimmed === '3' || trimmed === 'regular' || trimmed === '常客') newCategory = 'regular';
-        else if (trimmed === '4' || trimmed === 'casual' || trimmed === '臨打') newCategory = 'casual';
+        if (trimmed === '1' || trimmed === 'member' || trimmed === '季繳') newCategory = 'member';
+        else if (trimmed === '2' || trimmed === 'regular' || trimmed === '常客') newCategory = 'regular';
+        else if (trimmed === '3' || trimmed === 'casual' || trimmed === '臨打') newCategory = 'casual';
 
         const updateBatch = {};
         checkboxes.forEach(cb => {
@@ -1950,16 +1853,15 @@
         else if (levelTrimmed === '3' || levelTrimmed === 'blue' || levelTrimmed === '初中') newLevel = 'blue';
         else if (levelTrimmed === '4' || levelTrimmed === 'red' || levelTrimmed === '高手') newLevel = 'red';
 
-        const currentCatNum = p.category === 'vip' ? '1' : (p.category === 'member' ? '2' : (p.category === 'regular' ? '3' : '4'));
-        const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 👑 VIP (vip)\n2 : 💳 季繳 (member)\n3 : 🏸 常客 (regular)\n4 : ⚡ 臨打 (casual)", currentCatNum);
+        const currentCatNum = p.category === 'member' ? '1' : (p.category === 'regular' ? '2' : '3');
+        const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)", currentCatNum);
         if (newCatInput === null) return;
 
         let newCategory = p.category || "casual";
         const catTrimmed = newCatInput.trim().toLowerCase();
-        if (catTrimmed === '1' || catTrimmed === 'vip') newCategory = 'vip';
-        else if (catTrimmed === '2' || catTrimmed === 'member' || catTrimmed === '季繳') newCategory = 'member';
-        else if (catTrimmed === '3' || catTrimmed === 'regular' || catTrimmed === '常客') newCategory = 'regular';
-        else if (catTrimmed === '4' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
+        if (catTrimmed === '1' || catTrimmed === 'member' || catTrimmed === '季繳') newCategory = 'member';
+        else if (catTrimmed === '2' || catTrimmed === 'regular' || catTrimmed === '常客') newCategory = 'regular';
+        else if (catTrimmed === '3' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
 
         const updatedPlayer = {
             name: newName,
@@ -2375,25 +2277,23 @@
         container.innerHTML = '';
 
         activeCourts.forEach((num) => {
-            const isVip = vipCourts.includes(num);
             const cZone = document.getElementById(`court-${num}`);
             const count = cZone ? cZone.children.length : 0;
             container.innerHTML += `
                 <button class="move-opt-btn" onclick="executeMobileMove('court-${num}')">
-                    <span>🟢 ${num} 號場 ${isVip ? '(VIP)' : ''}</span>
+                    <span>🟢 ${num} 號場</span>
                     <span class="move-opt-count">(${count}人)</span>
                 </button>
             `;
         });
 
         activeCourts.forEach((num, idx) => {
-            const isVip = vipCourts.includes(num);
             const qCode = queueLabels[idx] || num;
             const qZone = document.getElementById(`queue-${qCode}`);
             const count = qZone ? qZone.children.length : 0;
             container.innerHTML += `
                 <button class="move-opt-btn" onclick="executeMobileMove('queue-${qCode}')">
-                    <span>⏳ 等待 ${qCode} ${isVip ? '(VIP)' : ''}</span>
+                    <span>⏳ 等待 ${qCode}</span>
                     <span class="move-opt-count">(${count}人)</span>
                 </button>
             `;
@@ -2418,14 +2318,6 @@
 
     function executeMobileMove(targetZoneId) {
         if (!selectedPlayerElemForMove) return;
-        
-        // 🛡️ 手機點選移動時，若為 VIP 球員要移至休息區，跳出提示視窗
-        if (selectedPlayerElemForMove.dataset.category === 'vip' && targetZoneId === 'rest') {
-            if (!confirm(`確定要將 VIP 球員【${selectedPlayerElemForMove.dataset.name}】移至休息區休息嗎？`)) {
-                closePlayerMoveModal();
-                return;
-            }
-        }
 
         const zone = document.getElementById(targetZoneId);
         if (zone && selectedPlayerElemForMove.parentElement !== zone) {
@@ -2457,7 +2349,7 @@
     }
 
     // -------------------------------------------------------------
-    // 3. 視窗 Modal 控制與開關場 / VIP 專場設定 (支援 8 個場地)
+    // 3. 視窗 Modal 控制與開關場設定 (支援 8 個場地)
     // -------------------------------------------------------------
     function openSettingsModal() {
         updateModalUI();
@@ -2469,25 +2361,18 @@
     }
 
     function updateModalUI() {
-        const grid = document.getElementById('settingsCourtGrid');
-        if (!grid) return;
-
-        grid.innerHTML = '';
         [1, 2, 3, 4, 5, 6, 7, 8].forEach(num => {
-            const isOpen = activeCourts.includes(num);
-            const isVip = vipCourts.includes(num);
-
-            grid.innerHTML += `
-                <div class="court-btn-wrapper">
-                    <button class="court-btn ${isOpen ? 'active' : ''}" onclick="toggleCourt(${num})">
-                        <span>${num} 號場</span>
-                        <span class="status-text">${isOpen ? '🟢 開場' : '⚪ 關場'}</span>
-                    </button>
-                    <button class="court-vip-toggle ${isVip ? 'active' : ''}" onclick="toggleVipCourt(${num})">
-                        ${isVip ? '👑 VIP 場' : '一般場'}
-                    </button>
-                </div>
-            `;
+            const btn = document.getElementById(`cbtn-${num}`);
+            const stext = document.getElementById(`stext-${num}`);
+            if (btn && stext) {
+                if (activeCourts.includes(num)) {
+                    btn.classList.add('active');
+                    stext.innerText = "🟢 開場";
+                } else {
+                    btn.classList.remove('active');
+                    stext.innerText = "⚪ 關場";
+                }
+            }
         });
     }
 
@@ -2533,24 +2418,6 @@
         updateModalUI();
     }
 
-    // 👑 切換場地 VIP 專場狀態
-    function toggleVipCourt(num) {
-        saveHistoryState();
-        if (vipCourts.includes(num)) {
-            vipCourts = vipCourts.filter(n => n !== num);
-        } else {
-            vipCourts.push(num);
-            vipCourts.sort((a, b) => a - b);
-        }
-
-        const currentData = getCurrentStateObject();
-        buildLayout();
-        applyStateObject(currentData);
-        refreshStats();
-        persistData();
-        updateModalUI();
-    }
-
     function buildLayout() {
         const cWrap = document.getElementById('courts-wrapper');
         const qWrap = document.getElementById('queues-wrapper');
@@ -2562,14 +2429,13 @@
 
         activeCourts.forEach((num, index) => {
             const qCode = queueLabels[index] || (index + 1);
-            const isVip = vipCourts.includes(num);
 
             cWrap.innerHTML += `
-                <div class="slot-item ${isVip ? 'vip-slot' : ''}">
+                <div class="slot-item">
                     <div class="slot-inner">
                         <div class="card-header">
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <span>${num} 號場 ${isVip ? '<span style="color:#d97706; font-size:13px;">(VIP)</span>' : ''}</span>
+                                <span>${num} 號場</span>
                                 <span class="court-timer-badge" id="timer-court-${num}">00:00</span>
                             </div>
                             <span class="badge" id="b-court-${num}">0</span>
@@ -2581,10 +2447,10 @@
             `;
 
             qWrap.innerHTML += `
-                <div class="slot-item ${isVip ? 'vip-slot' : ''}">
+                <div class="slot-item">
                     <div class="slot-inner">
                         <div class="card-header">
-                            <span>等待 ${qCode} ${isVip ? '<span style="color:#d97706; font-size:13px;">(VIP)</span>' : ''}</span>
+                            <span>等待 ${qCode}</span>
                             <span class="badge" id="b-queue-${qCode}">0</span>
                         </div>
                         <div class="drop-zone" id="queue-${qCode}"></div>
@@ -2610,12 +2476,6 @@
     }
 
     function deletePlayerNode(elem) {
-        // 🛡️ 刪除模式下移除 VIP 球員，跳出確認視窗
-        if (elem.dataset.category === 'vip') {
-            if (!confirm(`確定要將 VIP 球員【${elem.dataset.name}】從排場板移除嗎？`)) {
-                return;
-            }
-        }
         saveHistoryState();
         elem.remove();
         refreshStats();
@@ -2626,7 +2486,6 @@
         const currentState = getCurrentStateObject();
         undoStack.push({
             activeCourts: [...activeCourts],
-            vipCourts: [...vipCourts],
             store: currentState
         });
         if (undoStack.length > MAX_HISTORY) {
@@ -2649,14 +2508,12 @@
         const currentState = getCurrentStateObject();
         redoStack.push({
             activeCourts: [...activeCourts],
-            vipCourts: [...vipCourts],
             store: currentState
         });
 
         const previousStateObj = undoStack.pop();
         if (previousStateObj.activeCourts) {
             activeCourts = previousStateObj.activeCourts;
-            vipCourts = previousStateObj.vipCourts || [];
             buildLayout();
         }
         applyStateObject(previousStateObj.store || previousStateObj);
@@ -2672,14 +2529,12 @@
         const currentState = getCurrentStateObject();
         undoStack.push({
             activeCourts: [...activeCourts],
-            vipCourts: [...vipCourts],
             store: currentState
         });
 
         const nextStateObj = redoStack.pop();
         if (nextStateObj.activeCourts) {
             activeCourts = nextStateObj.activeCourts;
-            vipCourts = nextStateObj.vipCourts || [];
             buildLayout();
         }
         applyStateObject(nextStateObj.store || nextStateObj);
@@ -2705,7 +2560,7 @@
     }
 
     // -------------------------------------------------------------
-    // 👑 結束比賽：VIP 雙分身自動直上直下輪替邏輯
+    // 結束比賽：精準計算比賽時間並寫入紀錄
     // -------------------------------------------------------------
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
@@ -2728,11 +2583,6 @@
         const winners = [];
         const losers = [];
 
-        // 判斷當前場地對應的等待區 ID
-        const courtIndex = activeCourts.indexOf(courtNum);
-        const currentQCode = queueLabels[courtIndex] || courtNum;
-        const matchingQueueZone = document.getElementById(`queue-${currentQCode}`);
-
         courtPlayers.forEach(pNode => {
             let played = parseInt(pNode.dataset.played || 0) + 1;
             let wins = parseInt(pNode.dataset.wins || 0);
@@ -2750,13 +2600,7 @@
             pNode.classList.remove('is-winner');
 
             updatePlayerCardUI(pNode);
-
-            // 👑【VIP 輪替核心】：若是 VIP 球員且場地有對應等待區，自動回到 VIP 等待區，不退回休息區！
-            if (pNode.dataset.category === 'vip' && matchingQueueZone) {
-                matchingQueueZone.appendChild(pNode);
-            } else {
-                rest.appendChild(pNode);
-            }
+            rest.appendChild(pNode);
         });
 
         // 寫入對戰紀錄
@@ -2792,29 +2636,27 @@
             }
         }
 
-        // 👑【直上直下遞補】：由對應等待區遞補上場
-        const queueCurr = document.getElementById(`queue-${currentQCode}`);
-        if (queueCurr) {
-            while (queueCurr.firstChild) {
-                court.appendChild(queueCurr.firstChild);
+        // 遞補模式：由「等待 A」優先遞補上場
+        const queueA = document.getElementById('queue-A');
+        if (queueA) {
+            while (queueA.firstChild) {
+                court.appendChild(queueA.firstChild);
             }
             if (court.children.length > 0) {
                 courtStartTimes[courtNum] = Date.now();
             }
         }
 
-        // 非 VIP 一般場地進行隊列推移 (B->A, C->B, D->C...)
-        if (!vipCourts.includes(courtNum)) {
-            for (let i = 0; i < queueLabels.length - 1; i++) {
-                const currCode = queueLabels[i];
-                const nextCode = queueLabels[i + 1];
-                const currQ = document.getElementById(`queue-${currCode}`);
-                const nextQ = document.getElementById(`queue-${nextCode}`);
+        // 隊列推移 (B->A, C->B, D->C...)
+        for (let i = 0; i < queueLabels.length - 1; i++) {
+            const currCode = queueLabels[i];
+            const nextCode = queueLabels[i + 1];
+            const currQ = document.getElementById(`queue-${currCode}`);
+            const nextQ = document.getElementById(`queue-${nextCode}`);
 
-                if (currQ && nextQ) {
-                    while (nextQ.firstChild) {
-                        currQ.appendChild(nextQ.firstChild);
-                    }
+            if (currQ && nextQ) {
+                while (nextQ.firstChild) {
+                    currQ.appendChild(nextQ.firstChild);
                 }
             }
         }
@@ -2871,7 +2713,7 @@
         div.innerHTML = `
             <div class="player-main">
                 <div class="player-name-row">
-                    <span class="player-name-text">${category === 'vip' ? '👑 ' : ''}${name}</span>
+                    <span class="player-name-text">${name}</span>
                     <span class="winner-tag">勝</span>
                 </div>
                 <div class="player-sub">
@@ -2917,13 +2759,6 @@
 
                 const pId = e.dataTransfer.getData('text/plain');
                 const elem = document.getElementById(pId);
-
-                // 🛡️ 手機/電腦拖曳時，若是 VIP 球員且要拉往休息區，提示確認視窗
-                if (elem && elem.dataset.category === 'vip' && zone.id === 'rest') {
-                    if (!confirm(`確定要將 VIP 球員【${elem.dataset.name}】移至休息區休息嗎？`)) {
-                        return;
-                    }
-                }
 
                 if (elem && elem.parentElement !== zone) {
                     saveHistoryState();
@@ -3064,15 +2899,6 @@
             resetCardStyle();
 
             if (!isDeleteMode && wasDragging && touchTargetZone && elem.parentElement !== touchTargetZone) {
-                // 🛡️ 觸控移動 VIP 至休息區確認
-                if (elem.dataset.category === 'vip' && touchTargetZone.id === 'rest') {
-                    if (!confirm(`確定要將 VIP 球員【${elem.dataset.name}】移至休息區休息嗎？`)) {
-                        touchTargetZone = null;
-                        elem.dataset.isDragging = "false";
-                        return;
-                    }
-                }
-
                 saveHistoryState();
 
                 if (!touchTargetZone.id.startsWith('court-')) {
@@ -3197,7 +3023,6 @@
         const store = getCurrentStateObject();
         const payload = {
             activeCourts: activeCourts,
-            vipCourts: vipCourts,
             store: store
         };
 
@@ -3220,7 +3045,6 @@
                     isRemoteUpdating = true;
                     if (data.activeCourts && Array.isArray(data.activeCourts)) {
                         activeCourts = data.activeCourts;
-                        vipCourts = data.vipCourts || [];
                         buildLayout();
                     }
                     applyStateObject(data.store || data);
@@ -3272,7 +3096,6 @@
                 const data = JSON.parse(raw);
                 if (data.activeCourts && Array.isArray(data.activeCourts)) {
                     activeCourts = data.activeCourts;
-                    vipCourts = data.vipCourts || [];
                     buildLayout();
                     applyStateObject(data.store);
                 } else {
