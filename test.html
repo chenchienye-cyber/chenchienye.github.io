@@ -1330,10 +1330,14 @@
     const matchedConfig = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
     let currentAdminPassword = matchedConfig.pwd;
     let currentClubName = matchedConfig.name;
+    let isAdminUnlocked = false; // 全域記錄管理權限解鎖狀態
 
     function verifyPassword() {
+        if (isAdminUnlocked) return true; // 若已通過解鎖，直接回傳 true 免再次輸入
+
         const input = prompt("🔐 請輸入管理員密碼：");
         if (input === currentAdminPassword) {
+            isAdminUnlocked = true; // 記住權限解鎖狀態
             return true;
         } else {
             alert("❌ 密碼錯誤，無法執行此操作！");
@@ -1408,7 +1412,7 @@
     }
 
     // -------------------------------------------------------------
-    // ⚙️ 頂部左上角隊名管理選單視窗控制
+    // ⚙️ 頂部左上角隊名管理選單視窗控制（連續操作不自動關閉）
     // -------------------------------------------------------------
     function openAdminMenuModal() {
         if (!verifyPassword()) return;
@@ -1429,26 +1433,22 @@
 
     function createPlayerFromMenu() {
         createPlayer();
-        closeAdminMenuModal();
+        // 保持選單開啟，不調用 closeAdminMenuModal()
     }
 
     function openRosterModalFromMenu() {
-        closeAdminMenuModal();
         openRosterModal();
     }
 
     function openSettingsModalFromMenu() {
-        closeAdminMenuModal();
         openSettingsModal();
     }
 
     function resetCurrentGameFromMenu() {
-        closeAdminMenuModal();
         resetCurrentGame();
     }
 
     function toggleDeleteModeFromMenu() {
-        closeAdminMenuModal();
         toggleDeleteMode();
     }
 
@@ -1457,6 +1457,8 @@
         if (!confirm("⚠️ 確定要重置球局嗎？此操作將會刪除排場板上（休息區、上場區、等待區）的所有球員！\n\n（歷史對戰紀錄與常客名單依然會完整保留）")) {
             return;
         }
+
+        if (!verifyPassword()) return;
 
         saveHistoryState();
 
