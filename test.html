@@ -32,7 +32,7 @@
             gap: 8px;
         }
 
-        /* 📜 全域可滾動區域：自訂高對比、永遠顯眼好按的拉條 (Scrollbar) */
+        /* 📜 自訂休息區高對比、永遠顯眼好按的拉條 (Scrollbar) */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -251,7 +251,7 @@
             border-color: #2563eb;
         }
 
-        /* 📱 休息區網格：平板與電腦版預設為四排 (4 欄) */
+        /* 📱 休息區網格：僅休息區獨享四排與直立滾動拉條 */
         .rest-zone {
             flex: 1;
             display: grid !important;
@@ -259,7 +259,7 @@
             gap: 4px !important;
             align-content: start;
             padding: 4px 6px 4px 4px !important;
-            overflow-y: scroll !important; /* 永遠保持拉條顯示 */
+            overflow-y: scroll !important; /* 休息區永遠保持拉條顯示 */
         }
 
         .rest-zone .player-card {
@@ -268,15 +268,14 @@
             padding: 4px !important;
         }
 
-        /* 右半部主區域 */
+        /* 右半部主區域：還原為固定格式無拉條 */
         .right-column { 
             display: flex; 
             flex-direction: column; 
             gap: 8px; 
             height: 100%;
             min-height: 0;
-            overflow-y: scroll !important; /* 永遠保持主區域拉條顯示 */
-            padding-right: 2px;
+            overflow: hidden;
         }
 
         .card { 
@@ -329,6 +328,8 @@
             border: 2px solid #cbd5e1;
             background: #ffffff;
             margin-bottom: 4px;
+            flex: 1;
+            min-height: 0;
         }
         .area-section.high-level {
             border-color: #f87171 !important;
@@ -349,6 +350,7 @@
             border-radius: 8px;
             color: #1e293b;
             background: #f1f5f9;
+            flex-shrink: 0;
         }
         .area-section.high-level .area-title-bar {
             background: #fee2e2;
@@ -411,7 +413,7 @@
         .finish-btn:hover { background: #059669; }
         .finish-btn:active { transform: scale(0.98); }
 
-        /* 拖曳目標區：永遠顯示獨立拉條 */
+        /* 拖曳目標區：還原為乾淨固定格子，不顯示多餘拉條 */
         .drop-zone { 
             flex: 1;
             min-height: 0; 
@@ -425,7 +427,7 @@
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
-            overflow-y: scroll !important;
+            overflow: hidden;
         }
         .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
 
@@ -1306,7 +1308,7 @@
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器） -->
+        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器，還原為固定格式） -->
         <div class="right-column" id="mainRightColumn">
             <!-- 動態由 JavaScript 產生獨立分區（高手區 / 新手友善區 / 一般區） -->
         </div>
@@ -2819,7 +2821,7 @@
         updateModalUI();
     }
 
-    // 🏟️ 重新建造獨立分區版面（高手區、新手友善區與一般區獨立渲染）
+    // 🏟️ 重新建造獨立分區版面（高手區、新手友善區與一般區獨立渲染，還原為固定格式）
     function buildLayout() {
         const rightCol = document.getElementById('mainRightColumn');
         if (!rightCol) return;
