@@ -31,6 +31,24 @@
             padding: 8px 8px calc(24px + env(safe-area-inset-bottom, 0px)) 8px;
             gap: 8px;
         }
+
+        /* 📜 全域可滾動區域：自訂高對比、永遠顯眼好按的拉條 (Scrollbar) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
         
         /* 頂部 Header */
         .top-bar { 
@@ -151,46 +169,114 @@
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
         }
 
-        /* 主版面 */
+        /* 📱 主版面：平板/電腦比例優化 (休息區加大以承載四排) */
         .main-layout {
             display: grid;
-            grid-template-columns: minmax(210px, 260px) 1fr;
+            grid-template-columns: minmax(360px, 420px) 1fr;
             gap: 8px;
             flex: 1;
             min-height: 0;
         }
 
-        /* 休息區卡片 */
+        /* 🔍 休息區卡片與搜尋工具列 */
         .rest-card { 
             display: flex; 
             flex-direction: column; 
             padding: 8px !important; 
             height: 100%;
             min-height: 0;
+            gap: 6px;
         }
 
+        .rest-filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px;
+            flex-shrink: 0;
+        }
+
+        .rest-search-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .rest-search-input {
+            flex: 1;
+            padding: 4px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            background: white;
+        }
+
+        .rest-sort-select {
+            padding: 4px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 11px;
+            outline: none;
+            background: white;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .rest-level-pills {
+            display: flex;
+            gap: 3px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .level-pill-btn {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .level-pill-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+
+        /* 📱 休息區網格：平板與電腦版預設為四排 (4 欄) */
         .rest-zone {
             flex: 1;
             display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 5px !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 4px !important;
             align-content: start;
-            padding: 4px !important;
-            overflow-y: auto;
+            padding: 4px 6px 4px 4px !important;
+            overflow-y: scroll !important; /* 永遠保持拉條顯示 */
         }
 
         .rest-zone .player-card {
             min-width: 0 !important;
             width: 100% !important;
+            padding: 4px !important;
         }
 
-        /* 右半部 */
+        /* 右半部主區域 */
         .right-column { 
             display: flex; 
             flex-direction: column; 
             gap: 8px; 
             height: 100%;
             min-height: 0;
+            overflow-y: scroll !important; /* 永遠保持主區域拉條顯示 */
+            padding-right: 2px;
         }
 
         .card { 
@@ -205,7 +291,7 @@
         }
         
         .card-header { 
-            font-size: 17px; 
+            font-size: 16px; 
             font-weight: 700; 
             color: #334155; 
             margin-bottom: 4px; 
@@ -231,7 +317,66 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; }
+
+        /* 🏟️ 獨立分區容器樣式 (高手區 / 新手友善區 / 一般區) */
+        .area-section {
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            margin-bottom: 4px;
+        }
+        .area-section.high-level {
+            border-color: #f87171 !important;
+            background: #fff8f8 !important;
+        }
+        .area-section.friendly-level {
+            border-color: #4ade80 !important;
+            background: #f0fdf4 !important;
+        }
+
+        .area-title-bar {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: #1e293b;
+            background: #f1f5f9;
+        }
+        .area-section.high-level .area-title-bar {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .area-section.friendly-level .area-title-bar {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* 🎯 場地限制標籤 */
+        .court-limit-tag {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .court-limit-tag.high {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+        .court-limit-tag.friendly {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
 
         /* ⏱️ 上場區即時對戰計時器標籤 */
         .court-timer-badge {
@@ -266,7 +411,7 @@
         .finish-btn:hover { background: #059669; }
         .finish-btn:active { transform: scale(0.98); }
 
-        /* 拖曳目標區 */
+        /* 拖曳目標區：永遠顯示獨立拉條 */
         .drop-zone { 
             flex: 1;
             min-height: 0; 
@@ -280,7 +425,7 @@
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
-            overflow-y: auto;
+            overflow-y: scroll !important;
         }
         .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
 
@@ -292,11 +437,10 @@
             width: 100%;
             flex: 1;
             min-height: 0;
-            overflow: hidden;
         }
 
         .slot-item { 
-            background: #f8fafc; 
+            background: #ffffff; 
             border: 1px solid #e2e8f0; 
             border-radius: 8px; 
             padding: 5px; 
@@ -406,7 +550,7 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #1e293b;
             gap: 2px;
@@ -441,18 +585,18 @@
             font-weight: 600;
             white-space: nowrap;
             display: flex;
-            gap: 4px;
+            gap: 2px;
             align-items: center;
             width: 100%;
         }
 
         .level-badge {
-            padding: 1px 5px;
+            padding: 1px 4px;
             border-radius: 4px;
             font-weight: 600;
-            font-size: 10px;
+            font-size: 9px;
             color: #ffffff !important;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             display: inline-block;
         }
@@ -580,27 +724,75 @@
         }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        /* 8場開關網格 */
+        /* 🔄 排隊模式選擇控制卡片 */
+        .queue-mode-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .queue-mode-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e40af;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .queue-mode-sub {
+            font-size: 11px;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+        .queue-mode-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* 8場開關與程度限制設定網格 */
         .court-toggle-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-bottom: 16px;
+            max-height: 50vh;
+            overflow-y: scroll !important;
+            padding-right: 2px;
+        }
+
+        .court-setting-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .court-btn {
-            padding: 12px 6px;
-            border-radius: 10px;
+            padding: 8px 6px;
+            border-radius: 8px;
             border: 2px solid #cbd5e1;
-            background: #f8fafc;
+            background: #ffffff;
             color: #64748b;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 2px;
             transition: all 0.2s;
         }
         .court-btn .status-text { font-size: 12px; font-weight: 600; }
@@ -609,7 +801,34 @@
             background: #f0fdf4;
             border-color: #22c55e;
             color: #15803d;
-            box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
+        }
+
+        .court-limit-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: #ffffff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .court-limit-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .court-limit-row select {
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            font-size: 12px;
+            outline: none;
+            background: white;
         }
 
         .modal-footer {
@@ -692,7 +911,7 @@
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 8px;
             max-height: 50vh;
-            overflow-y: auto;
+            overflow-y: scroll !important;
             padding: 4px;
             margin-bottom: 12px;
         }
@@ -783,7 +1002,7 @@
 
         .history-list-container {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll !important;
             margin-bottom: 12px;
             display: flex;
             flex-direction: column;
@@ -898,7 +1117,7 @@
             gap: 8px;
             margin-top: 12px;
             max-height: 60vh;
-            overflow-y: auto;
+            overflow-y: scroll !important;
             padding-right: 2px;
         }
         .move-opt-btn {
@@ -961,12 +1180,15 @@
                 min-height: 0;
             }
 
+            .rest-zone {
+                grid-template-columns: repeat(2, 1fr) !important; /* 📱 手機版維持雙排避免太擠 */
+            }
+
             body[data-mobile-tab="rest"] .right-column { display: none !important; }
             body[data-mobile-tab="courts"] .rest-card { display: none !important; }
-            body[data-mobile-tab="courts"] .right-column .card:last-child { display: none !important; }
+            body[data-mobile-tab="courts"] .right-column .area-section:not(:first-child) { display: none !important; }
             
             body[data-mobile-tab="queues"] .rest-card { display: none !important; }
-            body[data-mobile-tab="queues"] .right-column .card:first-child { display: none !important; }
 
             .sub-grid-row {
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -1006,7 +1228,7 @@
             }
 
             .court-toggle-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
 
             .roster-grid {
@@ -1054,38 +1276,39 @@
 
     <!-- 主版面 -->
     <div class="main-layout">
-        <!-- 休息區 -->
+        <!-- 休息區 (包含搜尋列與四排卡片顯示) -->
         <div class="card rest-card">
             <div class="card-header">
                 <span>&#9208; 休息區</span>
                 <span class="badge" id="b-rest">0</span>
             </div>
+
+            <!-- 🔍 休息區即時搜尋與程度膠囊過濾欄位 -->
+            <div class="rest-filter-bar">
+                <div class="rest-search-row">
+                    <input type="text" id="restSearchInput" class="rest-search-input" placeholder="🔍 搜尋球員姓名..." oninput="filterAndSortRestZone()">
+                    <select id="restSortSelect" class="rest-sort-select" onchange="filterAndSortRestZone()">
+                        <option value="default">排序: 加入順序</option>
+                        <option value="level">排序: 程度高➔低</option>
+                        <option value="played">排序: 打場數少➔多</option>
+                        <option value="name">排序: 姓名 A-Z</option>
+                    </select>
+                </div>
+                <div class="rest-level-pills">
+                    <button class="level-pill-btn active" onclick="setRestLevelFilter('all', this)">全部</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('green', this)">🟢新手</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('yellow', this)">🟡初階</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('blue', this)">🔵初中</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('red', this)">🔴高手</button>
+                </div>
+            </div>
+
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域 -->
-        <div class="right-column">
-            <!-- 上場區 -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="header-title-group">
-                        <span>&#128994; 上場區</span>
-                        <span class="header-note">(先點選 <span class="note-highlight-red">勝場球員</span> 再按 <span class="note-highlight-green">結束比賽</span>)</span>
-                    </div>
-                </div>
-                <div class="sub-grid-row" id="courts-wrapper"></div>
-            </div>
-
-            <!-- 等待區 -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="header-title-group">
-                        <span>&#8987; 等待區</span>
-                        <span class="header-note">(依序遞補上場 A→B→C→D)</span>
-                    </div>
-                </div>
-                <div class="sub-grid-row" id="queues-wrapper"></div>
-            </div>
+        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器） -->
+        <div class="right-column" id="mainRightColumn">
+            <!-- 動態由 JavaScript 產生獨立分區（高手區 / 新手友善區 / 一般區） -->
         </div>
     </div>
 
@@ -1129,7 +1352,7 @@
                         <span>👥 球員名單與出席點名</span>
                     </button>
                     <button type="button" class="menu-action-card" onclick="openSettingsModalFromMenu()">
-                        <span>⚙️ 開場 / 關場設定</span>
+                        <span>⚙️ 開場 / 關場與程度限制設定</span>
                     </button>
                     <button type="button" class="menu-action-card" style="border-color:#f97316; color:#c2410c;" onclick="resetCurrentGameFromMenu()">
                         <span>🧹 重置球局 (清空排場板)</span>
@@ -1187,48 +1410,28 @@
         </div>
     </div>
 
-    <!-- 開關場設定視窗 -->
+    <!-- 開關場與排隊 / 程度限制設定視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 開場 / 關場設定</span>
+                <span>⚙️ 開場 / 關場與程度限制設定</span>
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
 
-            <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
-            <div class="court-toggle-grid">
-                <button class="court-btn" id="cbtn-1" onclick="toggleCourt(1)">
-                    <span>1 號場</span>
-                    <span class="status-text" id="stext-1">關場</span>
+            <!-- 🔄 排隊隊列遞補模式選擇卡片 -->
+            <div class="queue-mode-card">
+                <div class="queue-mode-title">
+                    <span>🔄 排隊隊列遞補模式</span>
+                    <span class="queue-mode-sub" id="queueModeSubText">自動推移：結束比賽後，等待區 B➔A, C➔B 全場平移</span>
+                </div>
+                <button class="queue-mode-btn" id="queueModeToggleBtn" onclick="toggleQueueMode()">
+                    🔄 自動推移遞補
                 </button>
-                <button class="court-btn" id="cbtn-2" onclick="toggleCourt(2)">
-                    <span>2 號場</span>
-                    <span class="status-text" id="stext-2">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-3" onclick="toggleCourt(3)">
-                    <span>3 號場</span>
-                    <span class="status-text" id="stext-3">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-4" onclick="toggleCourt(4)">
-                    <span>4 號場</span>
-                    <span class="status-text" id="stext-4">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-5" onclick="toggleCourt(5)">
-                    <span>5 號場</span>
-                    <span class="status-text" id="stext-5">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-6" onclick="toggleCourt(6)">
-                    <span>6 號場</span>
-                    <span class="status-text" id="stext-6">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-7" onclick="toggleCourt(7)">
-                    <span>7 號場</span>
-                    <span class="status-text" id="stext-7">關場</span>
-                </button>
-                <button class="court-btn" id="cbtn-8" onclick="toggleCourt(8)">
-                    <span>8 號場</span>
-                    <span class="status-text" id="stext-8">關場</span>
-                </button>
+            </div>
+
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 10px;">設定開放場地與個別場地的程度限制功能：</p>
+            <div class="court-toggle-grid" id="settingsCourtGrid">
+                <!-- 動態由 JavaScript 產生 1~8 號場地的狀態與程度限制開關 -->
             </div>
 
             <div class="modal-footer">
@@ -1390,6 +1593,10 @@
     // 2. 系統全域變數與對照表
     // -------------------------------------------------------------
     let activeCourts = [1, 2, 3, 4];
+    let queueMode = 'shift'; // 🔄 'shift': 自動推移遞補（預設）, 'direct': 單場直上直下
+    let courtLevelLimits = {}; // 🎯 記錄各場地的程度限制
+    let currentRestLevelFilter = 'all'; // 🔍 休息區當前過濾膠囊狀態
+    
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     let isRemoteUpdating = false;
     let selectedPlayerElemForMove = null;
@@ -1408,6 +1615,13 @@
         yellow: "初階",
         blue: "初中",
         red: "高手"
+    };
+
+    const levelRankMap = {
+        green: 1,
+        yellow: 2,
+        blue: 3,
+        red: 4
     };
 
     const categoryTextMap = {
@@ -1452,6 +1666,92 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    // -------------------------------------------------------------
+    // 🔍 休息區即時搜尋、程度過濾膠囊與自動排序邏輯
+    // -------------------------------------------------------------
+    function setRestLevelFilter(levelKey, btnElem) {
+        currentRestLevelFilter = levelKey;
+        document.querySelectorAll('.level-pill-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnElem) btnElem.classList.add('active');
+        filterAndSortRestZone();
+    }
+
+    function filterAndSortRestZone() {
+        const restZone = document.getElementById('rest');
+        if (!restZone) return;
+
+        const searchKeyword = (document.getElementById('restSearchInput')?.value || '').trim().toLowerCase();
+        const sortType = document.getElementById('restSortSelect')?.value || 'default';
+
+        const cards = Array.from(restZone.querySelectorAll('.player-card'));
+
+        // 1. 即時過濾（關鍵字 + 程度膠囊）
+        cards.forEach(card => {
+            const pName = (card.dataset.name || '').toLowerCase();
+            const pLevel = card.dataset.level || 'green';
+
+            const matchKeyword = !searchKeyword || pName.includes(searchKeyword);
+            const matchLevel = (currentRestLevelFilter === 'all') || (pLevel === currentRestLevelFilter);
+
+            if (matchKeyword && matchLevel) {
+                card.style.display = 'inline-flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // 2. 自動排序邏輯
+        if (sortType !== 'default') {
+            cards.sort((a, b) => {
+                if (sortType === 'level') {
+                    const rA = levelRankMap[a.dataset.level || 'green'] || 1;
+                    const rB = levelRankMap[b.dataset.level || 'green'] || 1;
+                    return rB - rA; // 高度級在前
+                } else if (sortType === 'played') {
+                    const pA = parseInt(a.dataset.played || 0);
+                    const pB = parseInt(b.dataset.played || 0);
+                    return pA - pB; // 打場數少者在前
+                } else if (sortType === 'name') {
+                    return (a.dataset.name || '').localeCompare(b.dataset.name || '', 'zh-TW');
+                }
+                return 0;
+            });
+
+            // 重新追加節點實現順序排序
+            cards.forEach(card => restZone.appendChild(card));
+        }
+    }
+
+    // -------------------------------------------------------------
+    // 🎯 智慧程度限制驗證輔助函式
+    // -------------------------------------------------------------
+    function checkPlayerLevelAllowed(courtNum, playerLevel) {
+        const limit = courtLevelLimits[courtNum];
+        if (!limit || !limit.enabled) return { allowed: true };
+
+        const pRank = levelRankMap[playerLevel || 'green'] || 1;
+
+        if (limit.type === 'high') {
+            const minRank = levelRankMap[limit.minLevel || 'blue'] || 3;
+            if (pRank < minRank) {
+                return {
+                    allowed: false,
+                    msg: `⚠️ ${courtNum} 號場為【高手區】，限制 ${levelTextMap[limit.minLevel || 'blue']} 程度以上加入！`
+                };
+            }
+        } else if (limit.type === 'friendly') {
+            const maxRank = levelRankMap[limit.maxLevel || 'yellow'] || 2;
+            if (pRank > maxRank) {
+                return {
+                    allowed: false,
+                    msg: `⚠️ ${courtNum} 號場為【新手友善區】，限制 ${levelTextMap[limit.maxLevel || 'yellow']} 程度以下加入！`
+                };
+            }
+        }
+
+        return { allowed: true };
     }
 
     // -------------------------------------------------------------
@@ -1758,6 +2058,7 @@
             }
         });
 
+        filterAndSortRestZone();
         refreshStats();
         persistData();
         renderRosterUI();
@@ -2277,11 +2578,18 @@
         container.innerHTML = '';
 
         activeCourts.forEach((num) => {
+            const limit = courtLevelLimits[num];
+            let limitNote = '';
+            if (limit && limit.enabled) {
+                if (limit.type === 'high') limitNote = ' (高手區)';
+                else if (limit.type === 'friendly') limitNote = ' (友善區)';
+            }
+
             const cZone = document.getElementById(`court-${num}`);
             const count = cZone ? cZone.children.length : 0;
             container.innerHTML += `
                 <button class="move-opt-btn" onclick="executeMobileMove('court-${num}')">
-                    <span>🟢 ${num} 號場</span>
+                    <span>🟢 ${num} 號場${limitNote}</span>
                     <span class="move-opt-count">(${count}人)</span>
                 </button>
             `;
@@ -2319,6 +2627,17 @@
     function executeMobileMove(targetZoneId) {
         if (!selectedPlayerElemForMove) return;
 
+        // 🎯 驗證場地程度限制
+        if (targetZoneId.startsWith('court-')) {
+            const cNum = parseInt(targetZoneId.split('-')[1]);
+            const check = checkPlayerLevelAllowed(cNum, selectedPlayerElemForMove.dataset.level);
+            if (!check.allowed) {
+                alert(check.msg);
+                closePlayerMoveModal();
+                return;
+            }
+        }
+
         const zone = document.getElementById(targetZoneId);
         if (zone && selectedPlayerElemForMove.parentElement !== zone) {
             saveHistoryState();
@@ -2344,12 +2663,13 @@
 
             refreshStats();
             persistData();
+            filterAndSortRestZone();
         }
         closePlayerMoveModal();
     }
 
     // -------------------------------------------------------------
-    // 3. 視窗 Modal 控制與開關場設定 (支援 8 個場地)
+    // 3. 視窗 Modal 控制與開關場 / 排隊模式 / 程度限制設定 (支援 8 個場地)
     // -------------------------------------------------------------
     function openSettingsModal() {
         updateModalUI();
@@ -2361,19 +2681,100 @@
     }
 
     function updateModalUI() {
-        [1, 2, 3, 4, 5, 6, 7, 8].forEach(num => {
-            const btn = document.getElementById(`cbtn-${num}`);
-            const stext = document.getElementById(`stext-${num}`);
-            if (btn && stext) {
-                if (activeCourts.includes(num)) {
-                    btn.classList.add('active');
-                    stext.innerText = "🟢 開場";
-                } else {
-                    btn.classList.remove('active');
-                    stext.innerText = "⚪ 關場";
-                }
+        // 🔄 更新排隊模式控制按鈕狀態
+        const modeBtn = document.getElementById('queueModeToggleBtn');
+        const modeSub = document.getElementById('queueModeSubText');
+        if (modeBtn && modeSub) {
+            if (queueMode === 'direct') {
+                modeBtn.innerText = "⬆️ 單場直上直下";
+                modeBtn.style.background = "#059669";
+                modeSub.innerText = "單場直上：結束比賽後，僅正下方等待區直接補上，後方隊列不推移";
+            } else {
+                modeBtn.innerText = "🔄 自動推移遞補";
+                modeBtn.style.background = "#2563eb";
+                modeSub.innerText = "自動推移：結束比賽後，等待區 B➔A, C➔B 全場推移遞補";
             }
+        }
+
+        const grid = document.getElementById('settingsCourtGrid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        [1, 2, 3, 4, 5, 6, 7, 8].forEach(num => {
+            const isOpen = activeCourts.includes(num);
+            const limit = courtLevelLimits[num] || { enabled: false, type: 'high', minLevel: 'blue', maxLevel: 'yellow' };
+
+            grid.innerHTML += `
+                <div class="court-setting-box">
+                    <button class="court-btn ${isOpen ? 'active' : ''}" onclick="toggleCourt(${num})">
+                        <span>${num} 號場</span>
+                        <span class="status-text">${isOpen ? '🟢 開場' : '⚪ 關場'}</span>
+                    </button>
+                    <div class="court-limit-group">
+                        <div class="court-limit-row">
+                            <span>🎯 程度限制</span>
+                            <input type="checkbox" id="climit_enable_${num}" ${limit.enabled ? 'checked' : ''} onchange="updateCourtLimitSetting(${num})">
+                        </div>
+                        <div class="court-limit-row" style="display:${limit.enabled ? 'flex' : 'none'};" id="climit_type_row_${num}">
+                            <span>類型</span>
+                            <select id="climit_type_${num}" onchange="updateCourtLimitSetting(${num})">
+                                <option value="high" ${limit.type === 'high' ? 'selected' : ''}>高手區 (含以上)</option>
+                                <option value="friendly" ${limit.type === 'friendly' ? 'selected' : ''}>新手友善區 (含以下)</option>
+                            </select>
+                        </div>
+                        <div class="court-limit-row" style="display:${limit.enabled ? 'flex' : 'none'};" id="climit_lvl_row_${num}">
+                            <span>程度門檻</span>
+                            <select id="climit_lvl_${num}" onchange="updateCourtLimitSetting(${num})">
+                                ${limit.type === 'high' ? `
+                                    <option value="yellow" ${limit.minLevel === 'yellow' ? 'selected' : ''}>初階以上</option>
+                                    <option value="blue" ${limit.minLevel === 'blue' ? 'selected' : ''}>初中以上</option>
+                                    <option value="red" ${limit.minLevel === 'red' ? 'selected' : ''}>高手限制</option>
+                                ` : `
+                                    <option value="green" ${limit.maxLevel === 'green' ? 'selected' : ''}>僅限新手</option>
+                                    <option value="yellow" ${limit.maxLevel === 'yellow' ? 'selected' : ''}>初階以下</option>
+                                    <option value="blue" ${limit.maxLevel === 'blue' ? 'selected' : ''}>初中以下</option>
+                                `}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
+    }
+
+    // 🎯 更新單一場地的程度限制設定
+    function updateCourtLimitSetting(num) {
+        saveHistoryState();
+        const enabledElem = document.getElementById(`climit_enable_${num}`);
+        const typeElem = document.getElementById(`climit_type_${num}`);
+        const lvlElem = document.getElementById(`climit_lvl_${num}`);
+
+        const enabled = enabledElem ? enabledElem.checked : false;
+        const type = typeElem ? typeElem.value : 'high';
+        const lvlVal = lvlElem ? lvlElem.value : (type === 'high' ? 'blue' : 'yellow');
+
+        courtLevelLimits[num] = {
+            enabled: enabled,
+            type: type,
+            minLevel: (type === 'high') ? lvlVal : 'blue',
+            maxLevel: (type === 'friendly') ? lvlVal : 'yellow'
+        };
+
+        buildLayout();
+        updateModalUI();
+        persistData();
+    }
+
+    // 🔄 切換排隊遞補模式 (shift 模式 vs direct 單場直上模式)
+    function toggleQueueMode() {
+        saveHistoryState();
+        if (queueMode === 'shift') {
+            queueMode = 'direct';
+        } else {
+            queueMode = 'shift';
+        }
+        updateModalUI();
+        persistData();
     }
 
     function toggleCourt(num) {
@@ -2418,46 +2819,118 @@
         updateModalUI();
     }
 
+    // 🏟️ 重新建造獨立分區版面（高手區、新手友善區與一般區獨立渲染）
     function buildLayout() {
-        const cWrap = document.getElementById('courts-wrapper');
-        const qWrap = document.getElementById('queues-wrapper');
-        
-        if (!cWrap || !qWrap) return;
+        const rightCol = document.getElementById('mainRightColumn');
+        if (!rightCol) return;
 
-        cWrap.innerHTML = '';
-        qWrap.innerHTML = '';
+        rightCol.innerHTML = '';
+
+        // 分類場地：high (高手區), friendly (新手友善區), normal (一般區)
+        const highCourts = [];
+        const friendlyCourts = [];
+        const normalCourts = [];
 
         activeCourts.forEach((num, index) => {
+            const limit = courtLevelLimits[num];
             const qCode = queueLabels[index] || (index + 1);
+            const item = { num, index, qCode, limit };
 
-            cWrap.innerHTML += `
-                <div class="slot-item">
-                    <div class="slot-inner">
-                        <div class="card-header">
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <span>${num} 號場</span>
-                                <span class="court-timer-badge" id="timer-court-${num}">00:00</span>
-                            </div>
-                            <span class="badge" id="b-court-${num}">0</span>
-                        </div>
-                        <div class="drop-zone" id="court-${num}"></div>
-                    </div>
-                    <button class="finish-btn" onclick="finishMatch(${num})">結束比賽</button>
-                </div>
-            `;
-
-            qWrap.innerHTML += `
-                <div class="slot-item">
-                    <div class="slot-inner">
-                        <div class="card-header">
-                            <span>等待 ${qCode}</span>
-                            <span class="badge" id="b-queue-${qCode}">0</span>
-                        </div>
-                        <div class="drop-zone" id="queue-${qCode}"></div>
-                    </div>
-                </div>
-            `;
+            if (limit && limit.enabled) {
+                if (limit.type === 'high') highCourts.push(item);
+                else if (limit.type === 'friendly') friendlyCourts.push(item);
+                else normalCourts.push(item);
+            } else {
+                normalCourts.push(item);
+            }
         });
+
+        // 渲染獨立區域 HTML
+        const renderSection = (title, iconClass, items, cssClass) => {
+            if (items.length === 0) return;
+
+            let sectionHtml = `
+                <div class="area-section ${cssClass}">
+                    <div class="area-title-bar">
+                        <span>${title} (${items.length} 場)</span>
+                    </div>
+                    
+                    <!-- 該區上場區 -->
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <div class="header-title-group">
+                                <span>🟢 上場區</span>
+                            </div>
+                        </div>
+                        <div class="sub-grid-row">
+            `;
+
+            items.forEach(obj => {
+                let limitTagHtml = '';
+                if (obj.limit && obj.limit.enabled) {
+                    if (obj.limit.type === 'high') limitTagHtml = `<span class="court-limit-tag high">${levelTextMap[obj.limit.minLevel || 'blue']}↑</span>`;
+                    else if (obj.limit.type === 'friendly') limitTagHtml = `<span class="court-limit-tag friendly">${levelTextMap[obj.limit.maxLevel || 'yellow']}↓</span>`;
+                }
+
+                sectionHtml += `
+                    <div class="slot-item">
+                        <div class="slot-inner">
+                            <div class="card-header">
+                                <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                                    <span>${obj.num} 號場</span>
+                                    ${limitTagHtml}
+                                    <span class="court-timer-badge" id="timer-court-${obj.num}">00:00</span>
+                                </div>
+                                <span class="badge" id="b-court-${obj.num}">0</span>
+                            </div>
+                            <div class="drop-zone" id="court-${obj.num}"></div>
+                        </div>
+                        <button class="finish-btn" onclick="finishMatch(${obj.num})">結束比賽</button>
+                    </div>
+                `;
+            });
+
+            sectionHtml += `
+                        </div>
+                    </div>
+
+                    <!-- 該區對應等待區 -->
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <div class="header-title-group">
+                                <span>⏳ 等待區</span>
+                            </div>
+                        </div>
+                        <div class="sub-grid-row">
+            `;
+
+            items.forEach(obj => {
+                sectionHtml += `
+                    <div class="slot-item">
+                        <div class="slot-inner">
+                            <div class="card-header">
+                                <span>等待 ${obj.qCode}</span>
+                                <span class="badge" id="b-queue-${obj.qCode}">0</span>
+                            </div>
+                            <div class="drop-zone" id="queue-${obj.qCode}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            sectionHtml += `
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            rightCol.innerHTML += sectionHtml;
+        };
+
+        // 依序建造：高手區 ➔ 新手友善區 ➔ 一般區
+        renderSection('🔥 高手專屬區域', 'high', highCourts, 'high-level');
+        renderSection('🌱 新手友善區域', 'friendly', friendlyCourts, 'friendly-level');
+        renderSection('🏸 一般區域', 'normal', normalCourts, 'normal-level');
 
         bindDropZones();
         updateCourtTimers();
@@ -2480,12 +2953,15 @@
         elem.remove();
         refreshStats();
         persistData();
+        filterAndSortRestZone();
     }
 
     function saveHistoryState() {
         const currentState = getCurrentStateObject();
         undoStack.push({
             activeCourts: [...activeCourts],
+            queueMode: queueMode,
+            courtLevelLimits: JSON.parse(JSON.stringify(courtLevelLimits)),
             store: currentState
         });
         if (undoStack.length > MAX_HISTORY) {
@@ -2508,18 +2984,23 @@
         const currentState = getCurrentStateObject();
         redoStack.push({
             activeCourts: [...activeCourts],
+            queueMode: queueMode,
+            courtLevelLimits: JSON.parse(JSON.stringify(courtLevelLimits)),
             store: currentState
         });
 
         const previousStateObj = undoStack.pop();
         if (previousStateObj.activeCourts) {
             activeCourts = previousStateObj.activeCourts;
+            queueMode = previousStateObj.queueMode || 'shift';
+            courtLevelLimits = previousStateObj.courtLevelLimits || {};
             buildLayout();
         }
         applyStateObject(previousStateObj.store || previousStateObj);
         
         refreshStats();
         persistData();
+        filterAndSortRestZone();
         updateUndoRedoButtons();
     }
 
@@ -2529,18 +3010,23 @@
         const currentState = getCurrentStateObject();
         undoStack.push({
             activeCourts: [...activeCourts],
+            queueMode: queueMode,
+            courtLevelLimits: JSON.parse(JSON.stringify(courtLevelLimits)),
             store: currentState
         });
 
         const nextStateObj = redoStack.pop();
         if (nextStateObj.activeCourts) {
             activeCourts = nextStateObj.activeCourts;
+            queueMode = nextStateObj.queueMode || 'shift';
+            courtLevelLimits = nextStateObj.courtLevelLimits || {};
             buildLayout();
         }
         applyStateObject(nextStateObj.store || nextStateObj);
 
         refreshStats();
         persistData();
+        filterAndSortRestZone();
         updateUndoRedoButtons();
     }
 
@@ -2560,7 +3046,7 @@
     }
 
     // -------------------------------------------------------------
-    // 結束比賽：精準計算比賽時間並寫入紀錄
+    // 結束比賽：精準計算比賽時間並寫入紀錄（支援過濾程度不符球員遞補）
     // -------------------------------------------------------------
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
@@ -2636,31 +3122,42 @@
             }
         }
 
-        // 遞補模式：由「等待 A」優先遞補上場
-        const queueA = document.getElementById('queue-A');
-        if (queueA) {
-            while (queueA.firstChild) {
-                court.appendChild(queueA.firstChild);
-            }
+        // 🔄 遞補/直上邏輯：找出當前場地正對應的等待區卡片，並過濾程度限制
+        const courtIndex = activeCourts.indexOf(courtNum);
+        const currentQCode = queueLabels[courtIndex] || (courtIndex + 1);
+        const targetQueue = document.getElementById(`queue-${currentQCode}`);
+
+        if (targetQueue) {
+            const queuePlayers = Array.from(targetQueue.children);
+            queuePlayers.forEach(pNode => {
+                const check = checkPlayerLevelAllowed(courtNum, pNode.dataset.level);
+                if (check.allowed) {
+                    court.appendChild(pNode);
+                }
+            });
+
             if (court.children.length > 0) {
                 courtStartTimes[courtNum] = Date.now();
             }
         }
 
-        // 隊列推移 (B->A, C->B, D->C...)
-        for (let i = 0; i < queueLabels.length - 1; i++) {
-            const currCode = queueLabels[i];
-            const nextCode = queueLabels[i + 1];
-            const currQ = document.getElementById(`queue-${currCode}`);
-            const nextQ = document.getElementById(`queue-${nextCode}`);
+        // 🔄 若為預設的 shift (自動推移遞補模式)，進行後方隊列推移 (B->A, C->B...)
+        if (queueMode === 'shift') {
+            for (let i = 0; i < queueLabels.length - 1; i++) {
+                const currCode = queueLabels[i];
+                const nextCode = queueLabels[i + 1];
+                const currQ = document.getElementById(`queue-${currCode}`);
+                const nextQ = document.getElementById(`queue-${nextCode}`);
 
-            if (currQ && nextQ) {
-                while (nextQ.firstChild) {
-                    currQ.appendChild(nextQ.firstChild);
+                if (currQ && nextQ) {
+                    while (nextQ.firstChild) {
+                        currQ.appendChild(nextQ.firstChild);
+                    }
                 }
             }
         }
 
+        filterAndSortRestZone();
         refreshStats();
         persistData();
     }
@@ -2690,6 +3187,7 @@
 
         nameInput.value = '';
         
+        filterAndSortRestZone();
         refreshStats();
         persistData();
     }
@@ -2760,6 +3258,16 @@
                 const pId = e.dataTransfer.getData('text/plain');
                 const elem = document.getElementById(pId);
 
+                // 🎯 拖曳至上場區驗證程度限制
+                if (elem && zone.id.startsWith('court-')) {
+                    const cNum = parseInt(zone.id.split('-')[1]);
+                    const check = checkPlayerLevelAllowed(cNum, elem.dataset.level);
+                    if (!check.allowed) {
+                        alert(check.msg);
+                        return;
+                    }
+                }
+
                 if (elem && elem.parentElement !== zone) {
                     saveHistoryState();
                     
@@ -2783,6 +3291,7 @@
                         delete courtStartTimes[oldCNum];
                     }
 
+                    filterAndSortRestZone();
                     refreshStats();
                     persistData();
                 }
@@ -2899,6 +3408,18 @@
             resetCardStyle();
 
             if (!isDeleteMode && wasDragging && touchTargetZone && elem.parentElement !== touchTargetZone) {
+                // 🎯 觸控拖曳至上場區驗證程度限制
+                if (touchTargetZone.id.startsWith('court-')) {
+                    const cNum = parseInt(touchTargetZone.id.split('-')[1]);
+                    const check = checkPlayerLevelAllowed(cNum, elem.dataset.level);
+                    if (!check.allowed) {
+                        alert(check.msg);
+                        touchTargetZone = null;
+                        elem.dataset.isDragging = "false";
+                        return;
+                    }
+                }
+
                 saveHistoryState();
 
                 if (!touchTargetZone.id.startsWith('court-')) {
@@ -2922,6 +3443,7 @@
                 }
 
                 touchTargetZone = null;
+                filterAndSortRestZone();
                 refreshStats();
                 persistData();
             }
@@ -3015,6 +3537,8 @@
                 });
             }
         });
+
+        filterAndSortRestZone();
     }
 
     function persistData() {
@@ -3023,6 +3547,8 @@
         const store = getCurrentStateObject();
         const payload = {
             activeCourts: activeCourts,
+            queueMode: queueMode,
+            courtLevelLimits: courtLevelLimits,
             store: store
         };
 
@@ -3045,6 +3571,8 @@
                     isRemoteUpdating = true;
                     if (data.activeCourts && Array.isArray(data.activeCourts)) {
                         activeCourts = data.activeCourts;
+                        queueMode = data.queueMode || 'shift';
+                        courtLevelLimits = data.courtLevelLimits || {};
                         buildLayout();
                     }
                     applyStateObject(data.store || data);
@@ -3096,6 +3624,8 @@
                 const data = JSON.parse(raw);
                 if (data.activeCourts && Array.isArray(data.activeCourts)) {
                     activeCourts = data.activeCourts;
+                    queueMode = data.queueMode || 'shift';
+                    courtLevelLimits = data.courtLevelLimits || {};
                     buildLayout();
                     applyStateObject(data.store);
                 } else {
