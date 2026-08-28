@@ -15,6 +15,15 @@
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         input, select, button { user-select: auto; -webkit-user-select: auto; }
         
+        /* 隱藏的原生檔案選擇框 */
+        .file-input-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+
         /* 全域預設 */
         html, body {
             width: 100vw;
@@ -63,7 +72,7 @@
             gap: 8px; 
         }
         
-        /* 動態球隊隊名樣式（修復 iPadOS 透明 Bug） */
+        /* 動態球隊隊名樣式 */
         .site-title { 
             font-size: 18px; 
             font-weight: 700; 
@@ -73,7 +82,7 @@
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            color: #ea580c; /* 👈 iPadOS 降級保底顯色 */
+            color: #ea580c;
             cursor: pointer;
             transition: transform 0.1s;
         }
@@ -262,7 +271,7 @@
             border-color: #2563eb;
         }
 
-        /* 📱 休息區網格：順暢滑動與滾動拉條 */
+        /* 📱 休息區網格：雙排直立滾動拉條 */
         .rest-zone {
             flex: 1;
             display: grid !important;
@@ -341,11 +350,6 @@
             background: #fee2e2;
             color: #dc2626;
             border: 1px solid #fca5a5;
-        }
-        .court-limit-tag.friendly {
-            background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #86efac;
         }
 
         /* ⏱️ 上場區即時對戰計時器標籤 */
@@ -470,7 +474,6 @@
             gap: 2px;
         }
 
-        /* ✂️ 姓名列 */
         .player-name-row {
             display: flex;
             justify-content: space-between;
@@ -506,7 +509,6 @@
             display: inline-block;
         }
 
-        /* 副資訊列 */
         .player-sub {
             font-size: 9.5px;
             color: #475569;
@@ -775,7 +777,7 @@
 </head>
 <body data-mobile-tab="courts">
 
-    <!-- 隱藏的檔案選擇輸入框 -->
+    <!-- 隱藏原生的檔案選擇輸入框，避免顯示在網頁頂部 -->
     <input type="file" id="rosterFileInput" class="file-input-hidden" accept=".json" onchange="handleRosterFileImport(event)">
     <input type="file" id="historyFileInput" class="file-input-hidden" accept=".json" onchange="handleHistoryFileImport(event)">
 
@@ -1240,11 +1242,11 @@
         document.getElementById('adminMenuModal').classList.remove('active');
     }
 
-    function createPlayerFromMenu() { createPlayer(); }
-    function openRosterModalFromMenu() { openRosterModal(); }
-    function openSettingsModalFromMenu() { openSettingsModal(); }
-    function resetCurrentGameFromMenu() { resetCurrentGame(); }
-    function toggleDeleteModeFromMenu() { toggleDeleteMode(); }
+    function createPlayerFromMenu() { createPlayer(); closeAdminMenuModal(); }
+    function openRosterModalFromMenu() { closeAdminMenuModal(); openRosterModal(); }
+    function openSettingsModalFromMenu() { closeAdminMenuModal(); openSettingsModal(); }
+    function resetCurrentGameFromMenu() { closeAdminMenuModal(); resetCurrentGame(); }
+    function toggleDeleteModeFromMenu() { closeAdminMenuModal(); toggleDeleteMode(); }
 
     function resetCurrentGame() {
         if (!confirm("⚠️ 確定要重置排場板嗎？")) return;
@@ -1912,7 +1914,6 @@
         });
     }
 
-    /* 🛠️ 改善觸控拖曳與滑動相容性 */
     function bindTouchEvents(elem) {
         let startX = 0, startY = 0, clickTimer = null, clickCount = 0;
 
