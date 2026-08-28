@@ -32,7 +32,7 @@
             gap: 8px;
         }
 
-        /* 📜 自訂休息區高對比、永遠顯眼好按的拉條 (Scrollbar) */
+        /* 📜 休息區拉條專用樣式 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -169,7 +169,7 @@
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
         }
 
-        /* 📱 主版面：還原適中比例 (確保超過 5 面場時上場區空間足夠) */
+        /* 📱 主版面：恢復適中比例 (休息區兩排，給予右側充分空間) */
         .main-layout {
             display: grid;
             grid-template-columns: minmax(210px, 260px) 1fr;
@@ -251,7 +251,7 @@
             border-color: #2563eb;
         }
 
-        /* 📱 休息區網格：還原為標準 2 排 (2 欄) */
+        /* 📱 休息區網格：還原為標準 2 排 (2 欄)，獨享拉條 */
         .rest-zone {
             flex: 1;
             display: grid !important;
@@ -259,7 +259,7 @@
             gap: 4px !important;
             align-content: start;
             padding: 4px 6px 4px 4px !important;
-            overflow-y: scroll !important; /* 休息區獨享直立滾動拉條 */
+            overflow-y: auto !important;
         }
 
         .rest-zone .player-card {
@@ -318,49 +318,6 @@
 
         .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 600; }
 
-        /* 🏟️ 獨立分區容器樣式 (高手區 / 新手友善區 / 一般區) */
-        .area-section {
-            border-radius: 12px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            border: 2px solid #cbd5e1;
-            background: #ffffff;
-            margin-bottom: 4px;
-            flex: 1;
-            min-height: 0;
-        }
-        .area-section.high-level {
-            border-color: #f87171 !important;
-            background: #fff8f8 !important;
-        }
-        .area-section.friendly-level {
-            border-color: #4ade80 !important;
-            background: #f0fdf4 !important;
-        }
-
-        .area-title-bar {
-            font-size: 15px;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 8px;
-            color: #1e293b;
-            background: #f1f5f9;
-            flex-shrink: 0;
-        }
-        .area-section.high-level .area-title-bar {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .area-section.friendly-level .area-title-bar {
-            background: #dcfce7;
-            color: #166534;
-        }
-
         /* 🎯 場地限制標籤 */
         .court-limit-tag {
             font-size: 10px;
@@ -413,7 +370,7 @@
         .finish-btn:hover { background: #059669; }
         .finish-btn:active { transform: scale(0.98); }
 
-        /* 拖曳目標區 */
+        /* 拖曳目標區：固定樣式，無拉條 */
         .drop-zone { 
             flex: 1;
             min-height: 0; 
@@ -439,6 +396,7 @@
             width: 100%;
             flex: 1;
             min-height: 0;
+            overflow: hidden;
         }
 
         .slot-item { 
@@ -769,7 +727,7 @@
             gap: 10px;
             margin-bottom: 16px;
             max-height: 50vh;
-            overflow-y: scroll !important;
+            overflow-y: auto;
             padding-right: 2px;
         }
 
@@ -913,7 +871,7 @@
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 8px;
             max-height: 50vh;
-            overflow-y: scroll !important;
+            overflow-y: auto;
             padding: 4px;
             margin-bottom: 12px;
         }
@@ -1004,7 +962,7 @@
 
         .history-list-container {
             flex: 1;
-            overflow-y: scroll !important;
+            overflow-y: auto;
             margin-bottom: 12px;
             display: flex;
             flex-direction: column;
@@ -1119,7 +1077,7 @@
             gap: 8px;
             margin-top: 12px;
             max-height: 60vh;
-            overflow-y: scroll !important;
+            overflow-y: auto;
             padding-right: 2px;
         }
         .move-opt-btn {
@@ -1183,12 +1141,12 @@
             }
 
             .rest-zone {
-                grid-template-columns: repeat(2, 1fr) !important; /* 📱 手機版維持雙排避免太擠 */
+                grid-template-columns: repeat(2, 1fr) !important; /* 📱 手機版維持雙排 */
             }
 
             body[data-mobile-tab="rest"] .right-column { display: none !important; }
             body[data-mobile-tab="courts"] .rest-card { display: none !important; }
-            body[data-mobile-tab="courts"] .right-column .area-section:not(:first-child) { display: none !important; }
+            body[data-mobile-tab="courts"] .right-column .card:last-child { display: none !important; }
             
             body[data-mobile-tab="queues"] .rest-card { display: none !important; }
 
@@ -1308,9 +1266,29 @@
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器，還原為固定格式無滾動拉條） -->
+        <!-- 右側主區域（包含經典上場區與等待區） -->
         <div class="right-column" id="mainRightColumn">
-            <!-- 動態由 JavaScript 產生獨立分區（高手區 / 新手友善區 / 一般區） -->
+            <!-- 上場區 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#128994; 上場區</span>
+                        <span class="header-note">(先點選 <span class="note-highlight-red">勝場球員</span> 再按 <span class="note-highlight-green">結束比賽</span>)</span>
+                    </div>
+                </div>
+                <div class="sub-grid-row" id="courts-wrapper"></div>
+            </div>
+
+            <!-- 等待區 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#8987; 等待區</span>
+                        <span class="header-note">(依序遞補上場 A→B→C→D)</span>
+                    </div>
+                </div>
+                <div class="sub-grid-row" id="queues-wrapper"></div>
+            </div>
         </div>
     </div>
 
@@ -1659,7 +1637,6 @@
     // JSON 檔案下載通用輔助函式
     function downloadJSONFile(dataObj, filename) {
         const jsonStr = JSON.stringify(dataObj, null, 2);
-        const blob = new Blob meStr = JSON.stringify(dataObj, null, 2);
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -2822,124 +2799,60 @@
         updateModalUI();
     }
 
-    // 🏟️ 重新建造獨立分區版面（高手區、新手友善區與一般區獨立渲染，還原為固定格式）
+    // 🏟️ 重新建造主版面（修復轉譯錯誤，確保隊名與上場/等待區 100% 正確顯示）
     function buildLayout() {
-        // 確保頂部球隊名稱不空白
         const titleElem = document.getElementById('displayClubTitle');
-        if (titleElem && (!titleElem.innerText || titleElem.innerText === '載入中...')) {
+        if (titleElem) {
             titleElem.innerText = currentClubName;
         }
 
-        const rightCol = document.getElementById('mainRightColumn');
-        if (!rightCol) return;
+        const cWrap = document.getElementById('courts-wrapper');
+        const qWrap = document.getElementById('queues-wrapper');
+        
+        if (!cWrap || !qWrap) return;
 
-        rightCol.innerHTML = '';
-
-        // 分類場地：high (高手區), friendly (新手友善區), normal (一般區)
-        const highCourts = [];
-        const friendlyCourts = [];
-        const normalCourts = [];
+        cWrap.innerHTML = '';
+        qWrap.innerHTML = '';
 
         activeCourts.forEach((num, index) => {
-            const limit = courtLevelLimits[num];
             const qCode = queueLabels[index] || (index + 1);
-            const item = { num, index, qCode, limit };
-
+            const limit = courtLevelLimits[num];
+            
+            let limitTagHtml = '';
             if (limit && limit.enabled) {
-                if (limit.type === 'high') highCourts.push(item);
-                else if (limit.type === 'friendly') friendlyCourts.push(item);
-                else normalCourts.push(item);
-            } else {
-                normalCourts.push(item);
+                if (limit.type === 'high') limitTagHtml = `<span class="court-limit-tag high">${levelTextMap[limit.minLevel || 'blue']}↑</span>`;
+                else if (limit.type === 'friendly') limitTagHtml = `<span class="court-limit-tag friendly">${levelTextMap[limit.maxLevel || 'yellow']}↓</span>`;
             }
-        });
 
-        // 渲染獨立區域 HTML
-        const renderSection = (title, iconClass, items, cssClass) => {
-            if (items.length === 0) return;
-
-            let sectionHtml = `
-                <div class="area-section ${cssClass}">
-                    <div class="area-title-bar">
-                        <span>${title} (${items.length} 場)</span>
-                    </div>
-                    
-                    <!-- 該區上場區 -->
-                    <div class="card" style="margin-bottom:0;">
+            cWrap.innerHTML += `
+                <div class="slot-item">
+                    <div class="slot-inner">
                         <div class="card-header">
-                            <div class="header-title-group">
-                                <span>🟢 上場區</span>
+                            <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                                <span>${num} 號場</span>
+                                ${limitTagHtml}
+                                <span class="court-timer-badge" id="timer-court-${num}">00:00</span>
                             </div>
+                            <span class="badge" id="b-court-${num}">0</span>
                         </div>
-                        <div class="sub-grid-row">
-            `;
-
-            items.forEach(obj => {
-                let limitTagHtml = '';
-                if (obj.limit && obj.limit.enabled) {
-                    if (obj.limit.type === 'high') limitTagHtml = `<span class="court-limit-tag high">${levelTextMap[obj.limit.minLevel || 'blue']}↑</span>`;
-                    else if (obj.limit.type === 'friendly') limitTagHtml = `<span class="court-limit-tag friendly">${levelTextMap[obj.limit.maxLevel || 'yellow']}↓</span>`;
-                }
-
-                sectionHtml += `
-                    <div class="slot-item">
-                        <div class="slot-inner">
-                            <div class="card-header">
-                                <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                                    <span>${obj.num} 號場</span>
-                                    ${limitTagHtml}
-                                    <span class="court-timer-badge" id="timer-court-${obj.num}">00:00</span>
-                                </div>
-                                <span class="badge" id="b-court-${obj.num}">0</span>
-                            </div>
-                            <div class="drop-zone" id="court-${obj.num}"></div>
-                        </div>
-                        <button class="finish-btn" onclick="finishMatch(${obj.num})">結束比賽</button>
+                        <div class="drop-zone" id="court-${num}"></div>
                     </div>
-                `;
-            });
-
-            sectionHtml += `
-                        </div>
-                    </div>
-
-                    <!-- 該區對應等待區 -->
-                    <div class="card" style="margin-bottom:0;">
-                        <div class="card-header">
-                            <div class="header-title-group">
-                                <span>⏳ 等待區</span>
-                            </div>
-                        </div>
-                        <div class="sub-grid-row">
-            `;
-
-            items.forEach(obj => {
-                sectionHtml += `
-                    <div class="slot-item">
-                        <div class="slot-inner">
-                            <div class="card-header">
-                                <span>等待 ${obj.qCode}</span>
-                                <span class="badge" id="b-queue-${obj.qCode}">0</span>
-                            </div>
-                            <div class="drop-zone" id="queue-${obj.qCode}"></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            sectionHtml += `
-                        </div>
-                    </div>
+                    <button class="finish-btn" onclick="finishMatch(${num})">結束比賽</button>
                 </div>
             `;
 
-            rightCol.innerHTML += sectionHtml;
-        };
-
-        // 依序建造：高手區 ➔ 新手友善區 ➔ 一般區
-        renderSection('🔥 高手專屬區域', 'high', highCourts, 'high-level');
-        renderSection('🌱 新手友善區域', 'friendly', friendlyCourts, 'friendly-level');
-        renderSection('🏸 一般區域', 'normal', normalCourts, 'normal-level');
+            qWrap.innerHTML += `
+                <div class="slot-item">
+                    <div class="slot-inner">
+                        <div class="card-header">
+                            <span>等待 ${qCode}</span>
+                            <span class="badge" id="b-queue-${qCode}">0</span>
+                        </div>
+                        <div class="drop-zone" id="queue-${qCode}"></div>
+                    </div>
+                </div>
+            `;
+        });
 
         bindDropZones();
         updateCourtTimers();
@@ -3571,7 +3484,10 @@
     }
 
     function restoreData() {
-        document.getElementById('displayClubTitle').innerText = currentClubName;
+        const titleElem = document.getElementById('displayClubTitle');
+        if (titleElem) {
+            titleElem.innerText = currentClubName;
+        }
 
         if (isFirebaseActive && dbRef) {
             dbRef.on('value', (snapshot) => {
@@ -3627,6 +3543,11 @@
     }
 
     function restoreLocalFallback() {
+        const titleElem = document.getElementById('displayClubTitle');
+        if (titleElem) {
+            titleElem.innerText = currentClubName;
+        }
+
         const raw = localStorage.getItem(`handsome10_badminton_data_${clubId}`);
         if (raw) {
             try {
@@ -3659,8 +3580,6 @@
                 globalPlayerRoster = JSON.parse(rawRoster) || {};
             } catch(e){}
         }
-
-        document.getElementById('displayClubTitle').innerText = currentClubName;
     }
 
     // 快捷鍵控制 (Ctrl+Z: 上一步, Ctrl+Y / Cmd+Shift+Z: 下一步)
@@ -3682,6 +3601,10 @@
     });
 
     window.onload = () => {
+        const titleElem = document.getElementById('displayClubTitle');
+        if (titleElem) {
+            titleElem.innerText = currentClubName;
+        }
         buildLayout();
         restoreData();
     };
