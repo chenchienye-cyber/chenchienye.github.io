@@ -169,10 +169,10 @@
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
         }
 
-        /* 📱 主版面：平板/電腦比例優化 (休息區加大以承載四排) */
+        /* 📱 主版面：還原適中比例 (確保超過 5 面場時上場區空間足夠) */
         .main-layout {
             display: grid;
-            grid-template-columns: minmax(360px, 420px) 1fr;
+            grid-template-columns: minmax(210px, 260px) 1fr;
             gap: 8px;
             flex: 1;
             min-height: 0;
@@ -251,15 +251,15 @@
             border-color: #2563eb;
         }
 
-        /* 📱 休息區網格：僅休息區獨享四排與直立滾動拉條 */
+        /* 📱 休息區網格：還原為標準 2 排 (2 欄) */
         .rest-zone {
             flex: 1;
             display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
+            grid-template-columns: repeat(2, 1fr) !important;
             gap: 4px !important;
             align-content: start;
             padding: 4px 6px 4px 4px !important;
-            overflow-y: scroll !important; /* 休息區永遠保持拉條顯示 */
+            overflow-y: scroll !important; /* 休息區獨享直立滾動拉條 */
         }
 
         .rest-zone .player-card {
@@ -268,7 +268,7 @@
             padding: 4px !important;
         }
 
-        /* 右半部主區域：還原為固定格式無拉條 */
+        /* 右半部主區域 */
         .right-column { 
             display: flex; 
             flex-direction: column; 
@@ -413,7 +413,7 @@
         .finish-btn:hover { background: #059669; }
         .finish-btn:active { transform: scale(0.98); }
 
-        /* 拖曳目標區：還原為乾淨固定格子，不顯示多餘拉條 */
+        /* 拖曳目標區 */
         .drop-zone { 
             flex: 1;
             min-height: 0; 
@@ -1278,7 +1278,7 @@
 
     <!-- 主版面 -->
     <div class="main-layout">
-        <!-- 休息區 (包含搜尋列與四排卡片顯示) -->
+        <!-- 休息區 (包含搜尋列與卡片雙排顯示) -->
         <div class="card rest-card">
             <div class="card-header">
                 <span>&#9208; 休息區</span>
@@ -1308,7 +1308,7 @@
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器，還原為固定格式） -->
+        <!-- 右側主區域（支援高手區 / 新手友善區獨立容器，還原為固定格式無滾動拉條） -->
         <div class="right-column" id="mainRightColumn">
             <!-- 動態由 JavaScript 產生獨立分區（高手區 / 新手友善區 / 一般區） -->
         </div>
@@ -1659,6 +1659,7 @@
     // JSON 檔案下載通用輔助函式
     function downloadJSONFile(dataObj, filename) {
         const jsonStr = JSON.stringify(dataObj, null, 2);
+        const blob = new Blob meStr = JSON.stringify(dataObj, null, 2);
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -2823,6 +2824,12 @@
 
     // 🏟️ 重新建造獨立分區版面（高手區、新手友善區與一般區獨立渲染，還原為固定格式）
     function buildLayout() {
+        // 確保頂部球隊名稱不空白
+        const titleElem = document.getElementById('displayClubTitle');
+        if (titleElem && (!titleElem.innerText || titleElem.innerText === '載入中...')) {
+            titleElem.innerText = currentClubName;
+        }
+
         const rightCol = document.getElementById('mainRightColumn');
         if (!rightCol) return;
 
