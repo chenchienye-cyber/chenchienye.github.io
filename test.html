@@ -2,16 +2,16 @@
 <!--
     ==================================================
     羽球排場系統 (Badminton Court Board)
-    Version: v1.0.3
+    Version: v1.0.5
     Last Updated: 2026-08-31
-    Features: 管理選單字體與跑版修復/10吋平板響應式/8場單排自適應/點選移動
+    Features: 常客編輯刪除/戰績修改刪除/球員卡比例與字體優化/10吋平板適配
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>羽球排場系統 v1.0.3</title>
+    <title>羽球排場系統 v1.0.5</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -45,22 +45,22 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 6px;
-            gap: 6px;
+            padding: 8px;
+            gap: 8px;
         }
 
-        /* 📜 高對比輕量拉條 */
+        /* 📜 高對比拉條 */
         ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb {
             background: #94a3b8;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         
         /* 頂部 Header */
@@ -69,17 +69,16 @@
             justify-content: space-between; 
             align-items: center; 
             background: #ffffff; 
-            padding: 4px 10px; 
+            padding: 6px 12px; 
             border-radius: 10px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 38px;
+            height: 42px;
             gap: 8px; 
         }
         
-        /* 動態球隊隊名樣式 */
         .site-title { 
-            font-size: 17px; 
+            font-size: 18px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
@@ -101,38 +100,37 @@
         }
 
         .site-title-badge {
-            font-size: 10px;
+            font-size: 11px;
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #cbd5e1;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 4px;
             -webkit-text-fill-color: #475569;
             font-family: sans-serif;
         }
 
         .version-tag {
-            font-size: 9px;
+            font-size: 10px;
             background: #2563eb;
             color: #ffffff;
-            padding: 1px 4px;
-            border-radius: 3px;
+            padding: 1px 5px;
+            border-radius: 4px;
             font-weight: 700;
             -webkit-text-fill-color: #ffffff;
             font-family: monospace;
         }
         
-        .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
+        .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
 
-        /* 按鈕通用樣式 */
         .icon-btn {
-            padding: 3px 8px !important;
-            font-size: 12px !important;
+            padding: 4px 10px !important;
+            font-size: 13px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 4px;
             border-radius: 6px;
             border: none;
             cursor: pointer;
@@ -155,7 +153,6 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-        /* 手機版專屬頁籤導覽列 */
         .mobile-tabs-bar {
             display: none;
             background: #ffffff;
@@ -183,24 +180,24 @@
             color: #ffffff;
         }
 
-        /* 📱 主版面 */
+        /* 📱 主版面：適用於 10 吋平板 */
         .main-layout {
             display: grid;
-            grid-template-columns: 210px 1fr;
-            gap: 6px;
+            grid-template-columns: 230px 1fr; /* 放大休息區寬度，讓卡片更好讀 */
+            gap: 8px;
             flex: 1;
             min-height: 0;
-            height: calc(100vh - 50px);
+            height: calc(100vh - 58px);
         }
 
         /* 🔍 左側休息區 */
         .rest-card { 
             display: flex; 
             flex-direction: column; 
-            padding: 6px !important; 
+            padding: 8px !important; 
             height: 100%;
             min-height: 0;
-            gap: 4px;
+            gap: 6px;
             overflow: hidden;
             background: #ffffff;
             border-radius: 10px;
@@ -210,37 +207,37 @@
         .rest-filter-bar {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 4px;
+            padding: 6px;
             flex-shrink: 0;
         }
 
         .rest-search-row {
             display: flex;
-            gap: 3px;
+            gap: 4px;
             align-items: center;
         }
 
         .rest-search-input {
             flex: 1;
-            padding: 3px 5px;
+            padding: 4px 6px;
             border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 11px;
+            border-radius: 5px;
+            font-size: 12px;
             outline: none;
             background: white;
             min-width: 0;
         }
 
         .rest-sort-select {
-            max-width: 75px;
-            padding: 2px;
+            max-width: 80px;
+            padding: 3px;
             border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 10px;
+            border-radius: 5px;
+            font-size: 11px;
             outline: none;
             background: white;
             font-weight: 600;
@@ -250,7 +247,7 @@
 
         .rest-level-pills {
             display: flex;
-            gap: 2px;
+            gap: 3px;
             overflow-x: auto;
             padding-bottom: 1px;
         }
@@ -259,9 +256,9 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 1px 4px;
+            padding: 2px 5px;
             border-radius: 8px;
             cursor: pointer;
             white-space: nowrap;
@@ -276,7 +273,7 @@
             flex: 1;
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 4px !important;
+            gap: 5px !important;
             align-content: start;
             padding: 2px 3px 4px 2px !important;
             overflow-y: auto !important;
@@ -288,7 +285,7 @@
         .right-column { 
             display: grid;
             grid-template-rows: 1fr 1fr;
-            gap: 6px; 
+            gap: 8px; 
             height: 100%;
             min-height: 0;
             overflow: hidden;
@@ -297,7 +294,7 @@
         .card { 
             background: #ffffff; 
             border-radius: 10px; 
-            padding: 6px; 
+            padding: 8px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
@@ -307,10 +304,10 @@
         }
         
         .card-header { 
-            font-size: 13px; 
+            font-size: 14px; 
             font-weight: 700; 
             color: #334155; 
-            margin-bottom: 3px; 
+            margin-bottom: 4px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -320,11 +317,11 @@
         .header-title-group {
             display: flex;
             align-items: baseline;
-            gap: 4px;
+            gap: 6px;
         }
 
         .header-note {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             color: #64748b;
         }
@@ -332,12 +329,12 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
         .court-limit-badge {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 0px 3px;
+            padding: 1px 4px;
             border-radius: 3px;
             white-space: nowrap;
         }
@@ -345,13 +342,13 @@
         .court-limit-badge.friendly { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
         .court-timer-badge {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
             color: #dc2626;
             background: #fef2f2;
             border: 1px solid #fca5a5;
-            padding: 0px 3px;
-            border-radius: 3px;
+            padding: 1px 4px;
+            border-radius: 4px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
         }
 
@@ -359,13 +356,13 @@
             background: #10b981;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 3px 2px;
-            font-size: 11px;
+            border-radius: 5px;
+            padding: 4px 2px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            margin-top: 2px;
+            margin-top: 3px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -375,12 +372,12 @@
             flex: 1;
             min-height: 0; 
             border: 1.5px dashed #cbd5e1; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             background: #fafafa; 
-            padding: 2px; 
+            padding: 3px; 
             display: flex; 
             flex-direction: column; 
-            gap: 2px; 
+            gap: 3px; 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -392,7 +389,7 @@
         .sub-grid-row {
             display: grid;
             grid-template-columns: repeat(var(--court-count, 4), 1fr);
-            gap: 4px;
+            gap: 6px;
             width: 100%;
             flex: 1;
             min-height: 0;
@@ -404,14 +401,14 @@
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
             border-radius: 6px; 
-            padding: 3px; 
+            padding: 4px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
             min-height: 0;
             box-sizing: border-box;
-            min-width: 68px;
+            min-width: 72px;
         }
 
         .slot-inner {
@@ -422,12 +419,12 @@
             overflow: hidden;
         }
 
-        /* 球員卡片 */
+        /* 🛠️ 球員卡片比例與字體優化 */
         .player-card { 
-            padding: 4px 4px; 
+            padding: 5px 6px; 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
             display: inline-flex; 
             flex-direction: column;
@@ -463,7 +460,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            gap: 1px;
+            gap: 2px;
         }
 
         .player-name-row {
@@ -471,10 +468,10 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: var(--p-name-size, 12px);
+            font-size: var(--p-name-size, 13px);
             font-weight: 700;
             color: #1e293b;
-            gap: 1px;
+            gap: 2px;
             line-height: 1.2;
         }
 
@@ -482,16 +479,16 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 4.5em;
+            max-width: 5em;
             flex: 1;
         }
 
         .winner-tag {
             display: none;
-            font-size: 8px;
+            font-size: 9px;
             background: #10b981;
             color: white;
-            padding: 0px 2px;
+            padding: 0px 3px;
             border-radius: 2px;
             font-weight: bold;
             flex-shrink: 0;
@@ -500,22 +497,22 @@
         .player-card.is-winner .winner-tag { display: inline-block; }
 
         .player-sub {
-            font-size: var(--p-sub-size, 9px);
+            font-size: var(--p-sub-size, 10px);
             color: #475569;
             font-weight: 600;
             white-space: nowrap;
             display: flex;
-            gap: 2px;
+            gap: 3px;
             align-items: center;
             width: 100%;
             line-height: 1.2;
         }
 
         .level-badge {
-            padding: 1px 3px;
+            padding: 1px 4px;
             border-radius: 3px;
             font-weight: 600;
-            font-size: var(--p-badge-size, 8px);
+            font-size: var(--p-badge-size, 9px);
             color: #ffffff !important;
             display: inline-block;
             line-height: 1.1;
@@ -548,8 +545,8 @@
             background: #ffffff;
             border-radius: 12px;
             width: 100%;
-            max-width: 600px;
-            padding: 14px;
+            max-width: 620px;
+            padding: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
             max-height: 85vh;
@@ -575,7 +572,6 @@
 
         .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
 
-        /* 🛠️ 管理選單內部元件優化（修復跑版與字體大小） */
         .menu-section { 
             background: #f8fafc; 
             border: 1px solid #e2e8f0; 
@@ -584,7 +580,7 @@
             margin-bottom: 10px; 
         }
         .menu-section-title { 
-            font-size: 13px; 
+            font-size: 12px; 
             font-weight: 700; 
             color: #334155; 
             margin-bottom: 6px; 
@@ -650,7 +646,7 @@
 
         .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 8px; }
         .modal-footer-btns { display: flex; gap: 4px; align-items: center; }
-        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
@@ -658,13 +654,52 @@
         .roster-tab-btn { flex: 1; padding: 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 4px; max-height: 45vh; overflow-y: auto; padding: 2px; margin-bottom: 8px; }
-        .roster-item-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px; display: flex; align-items: center; gap: 4px; }
+        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; color: #64748b; }
 
-        .history-list-container { flex: 1; overflow-y: auto; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
-        .history-item-single-row { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 4px 6px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+        /* 👥 常客球員點名列表 */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; max-height: 45vh; overflow-y: auto; padding: 2px; margin-bottom: 8px; }
+        .roster-item-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
+        .roster-item-card input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+        .roster-info { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
+        .roster-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .roster-action-btns { display: flex; gap: 3px; align-items: center; flex-shrink: 0; }
+        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 3px 5px; font-size: 11px; cursor: pointer; font-weight: 700; }
+        .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
 
-        /* 📱 手機版 RWD 切換 */
+        /* 📜 質感歷史對戰紀錄與編輯/刪除按鈕 */
+        .history-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; }
+        .history-tab-btn { flex: 1; padding: 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
+        .history-tab-btn.active { background: #ffffff; color: #0f172a; }
+
+        .history-list-container { flex: 1; overflow-y: auto; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .history-item-single-row { 
+            background: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            padding: 6px 8px; 
+            font-size: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 6px; 
+        }
+        .hist-row-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow: hidden; }
+        .hist-time-tag { color: #475569; font-weight: 700; font-size: 11px; flex-shrink: 0; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
+        .hist-teams-compact { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; }
+        .winner-text { color: #059669; font-weight: 700; }
+        .loser-text { color: #dc2626; font-weight: 600; }
+
+        .hist-act-btn { border: none; background: #e2e8f0; color: #334155; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .hist-act-btn.del { background: #fee2e2; color: #dc2626; }
+
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .stats-table th, .stats-table td { padding: 6px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .stats-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
+
+        .personal-summary-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px; margin-bottom: 8px; display: flex; justify-content: space-around; align-items: center; text-align: center; }
+        .p-sum-num { font-size: 15px; font-weight: 700; color: #15803d; }
+        .p-sum-label { font-size: 10px; color: #64748b; }
+
         @media (max-width: 768px) {
             .main-layout { grid-template-columns: 1fr !important; }
             .mobile-tabs-bar { display: flex; }
@@ -686,7 +721,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">羽球排場系統</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v1.0.3</span>
+            <span class="version-tag">v1.0.5</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -696,7 +731,7 @@
         </div>
     </div>
 
-    <!-- 📱 手機專屬頁籤分頁導覽列 -->
+    <!-- 📱 手機頁籤導覽列 -->
     <div class="mobile-tabs-bar">
         <button class="mobile-tab-btn active" id="mtab-courts" onclick="switchMobileTab('courts')">
             🟢 上場區 (<span id="mb-courts-count">0</span>)
@@ -711,14 +746,13 @@
 
     <!-- 主版面 -->
     <div class="main-layout">
-        <!-- 休息區 (搜尋列 + 雙排卡片) -->
+        <!-- 休息區 -->
         <div class="card rest-card">
             <div class="card-header">
                 <span>&#9208; 休息區</span>
                 <span class="badge" id="b-rest">0</span>
             </div>
 
-            <!-- 🔍 休息區即時搜尋列 -->
             <div class="rest-filter-bar">
                 <div class="rest-search-row">
                     <input type="text" id="restSearchInput" class="rest-search-input" placeholder="🔍 搜尋球員..." oninput="filterAndSortRestZone()">
@@ -741,7 +775,7 @@
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域（上場區與等待區上下各占 50%） -->
+        <!-- 右側主區域 -->
         <div class="right-column" id="mainRightColumn">
             <!-- 🟢 上場區 -->
             <div class="card">
@@ -767,7 +801,7 @@
         </div>
     </div>
 
-    <!-- ⚙️ 球隊管理選單視窗 (已優化字體與按鈕排版) -->
+    <!-- ⚙️ 管理選單視窗 -->
     <div class="modal-overlay" id="adminMenuModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -815,7 +849,7 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員名單視窗 -->
+    <!-- 👥 常客球員點名視窗 (包含編輯與刪除) -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -852,7 +886,7 @@
         </div>
     </div>
 
-    <!-- ⚙️ 開關場與程度限制視窗 -->
+    <!-- ⚙️ 開關場視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -879,7 +913,7 @@
         </div>
     </div>
 
-    <!-- 📜 歷史戰績對戰紀錄視窗 -->
+    <!-- 📜 歷史戰績紀錄視窗 (包含修改與刪除按鈕) -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -903,7 +937,7 @@
         </div>
     </div>
 
-    <!-- 👤 雙擊個人戰績視窗 -->
+    <!-- 👤 個人戰績履歷視窗 -->
     <div class="modal-overlay" id="personalDetailModal" onclick="closePersonalDetailModal(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -918,6 +952,7 @@
                 <div class="p-sum-item"><span class="p-sum-num" style="color:#0284c7;" id="pd-winrate">0%</span><span class="p-sum-label">勝率</span></div>
             </div>
 
+            <p style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">⚔️ 親自參戰歷史紀錄：</p>
             <div class="history-list-container" id="pd-matchLogsContainer"></div>
 
             <div class="modal-footer">
@@ -927,7 +962,7 @@
         </div>
     </div>
 
-    <!-- 📱 手機移動小視窗 -->
+    <!-- 📱 手機移動視窗 -->
     <div class="modal-overlay" id="playerMoveModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -1137,7 +1172,7 @@
         if (!verifyPassword()) return;
         document.getElementById('menuModalTitle').innerText = `⚙️ ${currentClubName} - 管理選單`;
         const btn = document.getElementById('menuDeleteToggleBtn');
-        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉球員刪除模式" : "🗑️ 切換球員卡片刪除模式";
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員卡片刪除模式";
         document.getElementById('adminMenuModal').classList.add('active');
     }
 
@@ -1153,7 +1188,7 @@
     function toggleDeleteModeFromMenu() { 
         toggleDeleteMode(); 
         const btn = document.getElementById('menuDeleteToggleBtn');
-        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉球員卡片刪除模式" : "🗑️ 切換球員卡片刪除模式";
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員卡片刪除模式";
     }
 
     function resetCurrentGame() {
@@ -1205,12 +1240,17 @@
             container.innerHTML = '';
             [...personalLogs].reverse().forEach(item => {
                 const isWon = item.winners && item.winners.includes(playerName);
+                const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+                const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
+                const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
+
                 container.innerHTML += `
                     <div class="history-item-single-row" style="border-left: 3px solid ${isWon ? '#10b981' : '#ef4444'};">
                         <div class="hist-row-info">
-                            <span class="hist-time-tag">📅 ${item.startTime || ''} (${item.court ? item.court + '場' : ''})</span>
+                            <span class="hist-time-tag">📅 ${item.startTime || item.time || ''} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
                             <div class="hist-teams-compact">
-                                <span class="winner-text">🏆 勝: ${item.winners ? item.winners.join('&') : ''}</span>
+                                <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                                <span class="loser-text">🛡️ 敗: ${losersStr}</span>
                             </div>
                         </div>
                     </div>
@@ -1238,17 +1278,22 @@
         renderRosterUI();
     }
 
+    /* 👥 渲染球員名單（含✏️編輯與🗑️刪除按鈕） */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
+        const countTextElem = document.getElementById('rosterCountText');
         if (!container) return;
 
         const keys = Object.keys(globalPlayerRoster);
         const categoryKeys = keys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
 
-        document.getElementById('rosterCountText').innerText = `此分類共 ${categoryKeys.length} 人`;
+        if (countTextElem) {
+            countTextElem.innerText = `此分類【${categoryTextMap[currentRosterTab]}】共 ${categoryKeys.length} 人`;
+        }
 
         if (categoryKeys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無球員紀錄</p>`;
+            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            updateRosterSubmitBtnUI();
             return;
         }
 
@@ -1261,17 +1306,53 @@
         categoryKeys.forEach(key => {
             const p = globalPlayerRoster[key];
             const isAlreadyInGame = currentActiveNames.includes(p.name);
+            const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
+            const lvlName = levelTextMap[p.level] || '新手';
+
             container.innerHTML += `
                 <div class="roster-item-card" style="${isAlreadyInGame ? 'background:#ecfdf5; border-color:#a7f3d0;' : ''}">
-                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}">
-                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;">
-                        <div class="roster-name">${p.name}</div>
-                        <div style="font-size:10px; color:#64748b;">[${levelTextMap[p.level] || '新手'}]</div>
+                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
+                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
+                        <div class="roster-name">${p.name} ${genderSymbol}</div>
+                        <div style="font-size:10px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
                     </label>
-                    <button type="button" class="roster-act-btn del" onclick="deletePlayerFromRoster('${key}', event)">🗑️</button>
+                    <div class="roster-action-btns">
+                        <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
+                        <button type="button" class="roster-act-btn del" onclick="deletePlayerFromRoster('${key}', event)" title="刪除球員">🗑️</button>
+                    </div>
                 </div>
             `;
         });
+
+        updateRosterSubmitBtnUI();
+    }
+
+    /* 🔘 動態判斷點名提交按鈕文字 (加入球局 / ↩️ 取消加入球局) */
+    function updateRosterSubmitBtnUI() {
+        const modal = document.getElementById('rosterModal');
+        const submitBtn = document.getElementById('addSelectedBtn');
+        if (!modal || !submitBtn) return;
+
+        const checkedBoxes = Array.from(modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked'));
+        if (checkedBoxes.length === 0) {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+            return;
+        }
+
+        const hasInGame = checkedBoxes.some(cb => cb.dataset.inGame === "true");
+        const hasNotInGame = checkedBoxes.some(cb => cb.dataset.inGame === "false");
+
+        if (hasInGame && hasNotInGame) {
+            submitBtn.innerText = "🔄 批次更新球局狀態";
+            submitBtn.style.background = "#2563eb";
+        } else if (hasInGame) {
+            submitBtn.innerText = "↩️ 取消加入球局";
+            submitBtn.style.background = "#ef4444";
+        } else {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+        }
     }
 
     function addSelectedRosterToGame() {
@@ -1303,6 +1384,71 @@
         renderRosterUI();
     }
 
+    /* ✏️ 編輯球員名單資料 */
+    function editPlayerFromRoster(key, e) {
+        if (e) e.stopPropagation();
+        const p = globalPlayerRoster[key];
+        if (!p) return;
+        if (!verifyPassword()) return;
+
+        const oldName = p.name;
+        const newNameInput = prompt("修改球員姓名：", oldName);
+        if (newNameInput === null) return;
+        const newName = newNameInput.trim();
+        if (!newName) { alert("球員姓名不能為空！"); return; }
+
+        const newGenderInput = prompt("修改球員性別 (輸入 M 為男，F 為女)：", p.gender);
+        if (newGenderInput === null) return;
+        const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
+
+        const currentLevelNum = p.level === 'yellow' ? '2' : (p.level === 'blue' ? '3' : (p.level === 'red' ? '4' : '1'));
+        const newLevelInput = prompt("修改羽球程度 (請輸入數字)：\n1 : 🟢 新手\n2 : 🟡 初階\n3 : 🔵 初中\n4 : 🔴 高手", currentLevelNum);
+        if (newLevelInput === null) return;
+
+        let newLevel = p.level || "green";
+        const levelTrimmed = newLevelInput.trim().toLowerCase();
+        if (levelTrimmed === '1' || levelTrimmed === 'green' || levelTrimmed === '新手') newLevel = 'green';
+        else if (levelTrimmed === '2' || levelTrimmed === 'yellow' || levelTrimmed === '初階') newLevel = 'yellow';
+        else if (levelTrimmed === '3' || levelTrimmed === 'blue' || levelTrimmed === '初中') newLevel = 'blue';
+        else if (levelTrimmed === '4' || levelTrimmed === 'red' || levelTrimmed === '高手') newLevel = 'red';
+
+        const currentCatNum = p.category === 'member' ? '1' : (p.category === 'regular' ? '2' : '3');
+        const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)", currentCatNum);
+        if (newCatInput === null) return;
+
+        let newCategory = p.category || "casual";
+        const catTrimmed = newCatInput.trim().toLowerCase();
+        if (catTrimmed === '1' || catTrimmed === 'member' || catTrimmed === '季繳') newCategory = 'member';
+        else if (catTrimmed === '2' || catTrimmed === 'regular' || catTrimmed === '常客') newCategory = 'regular';
+        else if (catTrimmed === '3' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
+
+        const updatedPlayer = { name: newName, gender: newGender, level: newLevel, category: newCategory, updatedAt: Date.now() };
+        const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
+
+        document.querySelectorAll('.player-card').forEach(card => {
+            if (card.dataset.name === oldName) {
+                card.dataset.name = newName;
+                card.dataset.gender = newGender;
+                card.dataset.level = newLevel;
+                card.dataset.category = newCategory;
+                const nameTextElem = card.querySelector('.player-name-text');
+                if (nameTextElem) nameTextElem.innerText = newName;
+                updatePlayerCardUI(card);
+            }
+        });
+
+        if (isFirebaseActive && rosterDbRef) {
+            if (newSafeKey !== key) rosterDbRef.child(key).remove();
+            rosterDbRef.child(newSafeKey).set(updatedPlayer).then(() => { persistData(); });
+        } else {
+            if (newSafeKey !== key) delete globalPlayerRoster[key];
+            globalPlayerRoster[newSafeKey] = updatedPlayer;
+            localStorage.setItem(`handsome10_player_roster_${clubId}`, JSON.stringify(globalPlayerRoster));
+            renderRosterUI();
+            persistData();
+        }
+    }
+
     function batchMoveSelectedRoster() {
         const checkboxes = document.querySelectorAll('#rosterModal .roster-grid input[type="checkbox"]:checked');
         if (checkboxes.length === 0) return;
@@ -1328,6 +1474,7 @@
         if (checkboxes.length === 0) return;
         const allChecked = checkboxes.every(cb => cb.checked);
         checkboxes.forEach(cb => cb.checked = !allChecked);
+        updateRosterSubmitBtnUI();
     }
 
     function deletePlayerFromRoster(key, e) {
@@ -1369,6 +1516,7 @@
         else renderPlayerStatsUI();
     }
 
+    /* 📜 渲染對戰歷史紀錄（包含 ✏️修改 與 🗑️刪除 按鈕） */
     function renderHistoryRecordsUI() {
         const container = document.getElementById('historyRecordsContainer');
         if (!container) return;
@@ -1379,17 +1527,56 @@
         container.innerHTML = '';
         keys.reverse().forEach((key) => {
             const item = rawHistoryLogs[key];
+            const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+            const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
+            const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
+
             container.innerHTML += `
                 <div class="history-item-single-row">
                     <div class="hist-row-info">
-                        <span class="hist-time-tag">📅 ${item.startTime || ''} (${item.court ? item.court + '號場' : ''})</span>
+                        <span class="hist-time-tag">📅 ${item.startTime || item.time || ''} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
                         <div class="hist-teams-compact">
-                            <span class="winner-text">🏆 勝: ${item.winners ? item.winners.join('&') : ''}</span>
+                            <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                            <span class="loser-text">🛡️ 敗: ${losersStr}</span>
                         </div>
+                    </div>
+                    <div style="display:flex; gap:3px;">
+                        <button class="hist-act-btn" onclick="editHistoryRecord('${key}')" title="修改勝敗名單">✏️</button>
+                        <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')" title="刪除紀錄">🗑️</button>
                     </div>
                 </div>
             `;
         });
+    }
+
+    /* ✏️ 修改對戰歷史紀錄（允許修改勝方與敗方） */
+    function editHistoryRecord(key) {
+        const item = rawHistoryLogs[key];
+        if (!item) return;
+        if (!verifyPassword()) return;
+
+        const oldWinners = item.winners ? item.winners.join(',') : '';
+        const oldLosers = item.losers ? item.losers.join(',') : '';
+
+        const newWinnersStr = prompt("修改【勝方球員】姓名 (多位請用逗號分開)：", oldWinners);
+        if (newWinnersStr === null) return;
+
+        const newLosersStr = prompt("修改【敗方球員】姓名 (多位請用逗號分開)：", oldLosers);
+        if (newLosersStr === null) return;
+
+        const updatedRecord = {
+            ...item,
+            winners: newWinnersStr.split(',').map(s => s.trim()).filter(Boolean),
+            losers: newLosersStr.split(',').map(s => s.trim()).filter(Boolean)
+        };
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).set(updatedRecord);
+        } else {
+            rawHistoryLogs[key] = updatedRecord;
+            localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
     }
 
     function renderPlayerStatsUI() {
@@ -1417,6 +1604,19 @@
         });
         html += '</tbody></table>';
         container.innerHTML = html;
+    }
+
+    function deleteHistoryRecord(key) {
+        if (!confirm("確定要刪除這筆對戰紀錄嗎？")) return;
+        if (!verifyPassword()) return;
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).remove();
+        } else {
+            delete rawHistoryLogs[key];
+            localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
     }
 
     function exportHistoryJSON() { downloadJSONFile(rawHistoryLogs, `history_${clubId}.json`); }
@@ -1555,7 +1755,7 @@
         updateModalUI();
     }
 
-    /* 🏟️ 重新建造主版面（維持單排 + 精簡程度標籤） */
+    /* 🏟️ 重新建造主版面（動態字體與自適應欄寬） */
     function buildLayout() {
         const titleElem = document.getElementById('displayClubTitle');
         if (titleElem) titleElem.innerText = currentClubName;
@@ -1569,17 +1769,17 @@
         document.documentElement.style.setProperty('--court-count', courtCount);
         
         if (courtCount >= 7) {
-            document.documentElement.style.setProperty('--p-name-size', '11px');
-            document.documentElement.style.setProperty('--p-sub-size', '8px');
-            document.documentElement.style.setProperty('--p-badge-size', '7px');
-        } else if (courtCount >= 5) {
             document.documentElement.style.setProperty('--p-name-size', '12px');
-            document.documentElement.style.setProperty('--p-sub-size', '8.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '7.5px');
-        } else {
-            document.documentElement.style.setProperty('--p-name-size', '13px');
+            document.documentElement.style.setProperty('--p-sub-size', '9px');
+            document.documentElement.style.setProperty('--p-badge-size', '8px');
+        } else if (courtCount >= 5) {
+            document.documentElement.style.setProperty('--p-name-size', '12.5px');
             document.documentElement.style.setProperty('--p-sub-size', '9.5px');
             document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+        } else {
+            document.documentElement.style.setProperty('--p-name-size', '13.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '10px');
+            document.documentElement.style.setProperty('--p-badge-size', '9px');
         }
 
         cWrap.innerHTML = '';
@@ -1721,7 +1921,31 @@
         });
 
         if (winners.length > 0 || losers.length > 0) {
+            const endTimeObj = new Date();
+            const startMs = courtStartTimes[courtNum] || endTimeObj.getTime();
+            const startTimeObj = new Date(startMs);
+            const durationMs = Math.max(0, endTimeObj.getTime() - startMs);
+            const durationMins = Math.max(1, Math.round(durationMs / (1000 * 60)));
+
+            const matchLog = {
+                time: formatTimeNoSeconds(startTimeObj),
+                startTime: formatTimeNoSeconds(startTimeObj),
+                endTime: formatHourMinOnly(endTimeObj),
+                durationMins: durationMins,
+                court: courtNum,
+                winners: winners,
+                losers: losers
+            };
+
             delete courtStartTimes[courtNum];
+
+            if (isFirebaseActive && historyDbRef) {
+                historyDbRef.push(matchLog);
+            } else {
+                const autoKey = 'log_' + Date.now();
+                rawHistoryLogs[autoKey] = matchLog;
+                localStorage.setItem(`handsome10_history_logs_${clubId}`, JSON.stringify(rawHistoryLogs));
+            }
         }
 
         const courtIndex = activeCourts.indexOf(courtNum);
