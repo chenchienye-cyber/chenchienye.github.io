@@ -2,16 +2,16 @@
 <!--
     ==================================================
     羽球排場系統 (Badminton Court Board)
-    Version: v1.0.6
+    Version: v1.0.7
     Last Updated: 2026-08-31
-    Features: 個人戰績榜以勝場排序/場地程度選單恢復/球員卡勝率顯示/10吋平板適配
+    Features: 修正等待區A遞補卡住BUG/精準場地與等待區對應/10吋平板適配
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>羽球排場系統 v1.0.6</title>
+    <title>羽球排場系統 v1.0.7</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -23,7 +23,6 @@
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         input, select, button { user-select: auto; -webkit-user-select: auto; }
         
-        /* 隱藏的原生檔案選擇框 */
         .file-input-hidden {
             display: none !important;
             visibility: hidden !important;
@@ -32,7 +31,6 @@
             left: -9999px !important;
         }
 
-        /* 全域預設 */
         html, body {
             width: 100vw;
             height: 100vh;
@@ -49,7 +47,6 @@
             gap: 8px;
         }
 
-        /* 📜 高對比拉條 */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -63,7 +60,6 @@
             border-radius: 4px;
         }
         
-        /* 頂部 Header */
         .top-bar { 
             display: flex; 
             justify-content: space-between; 
@@ -416,7 +412,6 @@
             overflow: hidden;
         }
 
-        /* 🛠️ 球員卡片 */
         .player-card { 
             padding: 5px 6px; 
             background: #ffffff; 
@@ -519,7 +514,6 @@
         .level-badge.blue { background-color: #0284c7; }
         .level-badge.red { background-color: #dc2626; }
 
-        /* Modal 視窗 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -569,66 +563,13 @@
 
         .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
 
-        .menu-section { 
-            background: #f8fafc; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 8px; 
-            padding: 10px; 
-            margin-bottom: 10px; 
-        }
-        .menu-section-title { 
-            font-size: 12px; 
-            font-weight: 700; 
-            color: #334155; 
-            margin-bottom: 6px; 
-        }
-        .menu-add-row { 
-            display: flex; 
-            gap: 6px; 
-            align-items: center; 
-            flex-wrap: wrap; 
-        }
-        .menu-add-row input { 
-            flex: 1.5; 
-            min-width: 110px; 
-            padding: 6px 8px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 13px; 
-            outline: none; 
-            height: 34px;
-        }
-        .menu-add-row select { 
-            flex: 1;
-            padding: 6px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            background: white; 
-            outline: none; 
-            height: 34px;
-            font-weight: 600;
-        }
-        .menu-grid-btns { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 8px; 
-        }
-        .menu-action-card { 
-            background: #ffffff; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 8px; 
-            padding: 10px 8px; 
-            font-size: 13px; 
-            font-weight: 700; 
-            color: #1e293b; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            transition: all 0.2s;
-        }
+        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .menu-section-title { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+        .menu-add-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .menu-add-row input { flex: 1.5; min-width: 110px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; height: 34px; }
+        .menu-add-row select { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: white; outline: none; height: 34px; font-weight: 600; }
+        .menu-grid-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 8px; font-size: 13px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
         .queue-mode-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -636,10 +577,9 @@
         .queue-mode-sub { font-size: 9px; color: #3b82f6; }
         .queue-mode-btn { background: #2563eb; color: white; border: none; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-        /* ⚙️ 開關場與程度限制視窗樣式 (恢復選單) */
-        .court-toggle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; max-height: 48vh; overflow-y: auto; padding-right: 2px; }
-        .court-setting-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; }
-        .court-btn { padding: 6px 6px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .court-toggle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; max-height: 45vh; overflow-y: auto; }
+        .court-setting-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 6px; display: flex; flex-direction: column; gap: 3px; }
+        .court-btn { padding: 5px 4px; border-radius: 5px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; }
         .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
 
         .court-limit-group { display: flex; flex-direction: column; gap: 4px; background: #ffffff; padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
@@ -664,7 +604,7 @@
         .roster-info { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
         .roster-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .roster-action-btns { display: flex; gap: 3px; align-items: center; flex-shrink: 0; }
-        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 2px 5px; font-size: 11px; cursor: pointer; font-weight: 700; }
+        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 2px 5px; font-size: 10px; cursor: pointer; font-weight: 700; }
         .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
 
         .history-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; }
@@ -692,7 +632,6 @@
         .hist-act-btn { border: none; background: #e2e8f0; color: #334155; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
         .hist-act-btn.del { background: #fee2e2; color: #dc2626; }
 
-        /* 📊 個人戰績榜表格 (含總場次與勝場) */
         .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .stats-table th, .stats-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         .stats-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
@@ -713,7 +652,6 @@
 </head>
 <body data-mobile-tab="courts">
 
-    <!-- 隱藏檔案上傳標籤 -->
     <input type="file" id="rosterFileInput" class="file-input-hidden" accept=".json" onchange="handleRosterFileImport(event)">
     <input type="file" id="historyFileInput" class="file-input-hidden" accept=".json" onchange="handleHistoryFileImport(event)">
 
@@ -722,7 +660,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">羽球排場系統</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v1.0.6</span>
+            <span class="version-tag">v1.0.7</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -887,7 +825,7 @@
         </div>
     </div>
 
-    <!-- ⚙️ 開關場與程度限制視窗 (含完整的門檻選單) -->
+    <!-- ⚙️ 開關場視窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -905,7 +843,6 @@
                 </button>
             </div>
 
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">設定開放場地與個別場地的程度限制功能：</p>
             <div class="court-toggle-grid" id="settingsCourtGrid"></div>
 
             <div class="modal-footer">
@@ -1247,7 +1184,7 @@
                 const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
 
                 container.innerHTML += `
-                    <div class="history-item-single-row" style="border-left: 3px solid ${isWon ? '#10b981' : '#ef4444'};">
+                    <div class="history-item-single-row" style="border-left: 4px solid ${isWon ? '#10b981' : '#ef4444'};">
                         <div class="hist-row-info">
                             <span class="hist-time-tag">📅 ${item.startTime || item.time || ''} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
                             <div class="hist-teams-compact">
@@ -1576,26 +1513,14 @@
         }
     }
 
-    /* 📊 個人戰績榜：新增【總場次】與【勝場】，並改以【總勝場數】最高排序 */
     function renderPlayerStatsUI() {
         const container = document.getElementById('historyRecordsContainer');
         if (!container) return;
 
         const statsMap = {};
         Object.values(rawHistoryLogs).forEach(log => {
-            if (Array.isArray(log.winners)) {
-                log.winners.forEach(name => {
-                    if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 };
-                    statsMap[name].played++;
-                    statsMap[name].wins++;
-                });
-            }
-            if (Array.isArray(log.losers)) {
-                log.losers.forEach(name => {
-                    if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 };
-                    statsMap[name].played++;
-                });
-            }
+            if (Array.isArray(log.winners)) log.winners.forEach(name => { if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 }; statsMap[name].played++; statsMap[name].wins++; });
+            if (Array.isArray(log.losers)) log.losers.forEach(name => { if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 }; statsMap[name].played++; });
         });
 
         const playerList = Object.keys(statsMap).map(name => {
@@ -1605,7 +1530,6 @@
 
         if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無統計資料</p>'; return; }
 
-        // 🏆 排名規則：1. 勝場數最多者第一  2. 勝場相同時以勝率高者優先
         playerList.sort((a, b) => b.wins - a.wins || b.rate - a.rate || a.played - b.played);
 
         let html = `
@@ -1724,7 +1648,6 @@
     function openSettingsModal() { updateModalUI(); document.getElementById('settingsModal').classList.add('active'); }
     function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('active'); }
 
-    /* ⚙️ 開關場與程度限制視窗 (恢復程度門檻下拉選單) */
     function updateModalUI() {
         const modeBtn = document.getElementById('queueModeToggleBtn');
         const modeSub = document.getElementById('queueModeSubText');
@@ -1837,6 +1760,20 @@
 
         const courtCount = activeCourts.length;
         document.documentElement.style.setProperty('--court-count', courtCount);
+        
+        if (courtCount >= 7) {
+            document.documentElement.style.setProperty('--p-name-size', '12px');
+            document.documentElement.style.setProperty('--p-sub-size', '9px');
+            document.documentElement.style.setProperty('--p-badge-size', '8px');
+        } else if (courtCount >= 5) {
+            document.documentElement.style.setProperty('--p-name-size', '12.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+        } else {
+            document.documentElement.style.setProperty('--p-name-size', '13.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '10px');
+            document.documentElement.style.setProperty('--p-badge-size', '9px');
+        }
 
         cWrap.innerHTML = '';
         qWrap.innerHTML = '';
@@ -1946,6 +1883,7 @@
         elem.dataset.selectedWin = elem.classList.contains('is-winner') ? "true" : "false";
     }
 
+    /* 🛠️ 結束比賽：精準連動「場地對應等待區」並算回「比賽歷時（分鐘）」 */
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
@@ -2004,9 +1942,9 @@
             }
         }
 
-        const courtIndex = activeCourts.indexOf(courtNum);
-        const currentQCode = queueLabels[courtIndex] || (courtIndex + 1);
-        const targetQueue = document.getElementById(`queue-${currentQCode}`);
+        /* 🎯 精準尋找該場地絕對對應的等待區 (如 1號場對應等待區 A) */
+        const targetQCode = queueLabels[courtNum - 1] || courtNum;
+        const targetQueue = document.getElementById(`queue-${targetQCode}`);
 
         if (targetQueue) {
             Array.from(targetQueue.children).forEach(pNode => {
@@ -2059,7 +1997,6 @@
         persistData();
     }
 
-    /* 📈 製作球員卡片 (含勝率 % 顯示) */
     function makePlayerNode(id, name, gender, level = "green", category = "casual", played = 0, wins = 0, isWinner = false) {
         const div = document.createElement('div');
         div.className = 'player-card' + (isWinner ? ' is-winner' : '');
@@ -2093,7 +2030,6 @@
         return div;
     }
 
-    /* 📈 更新球員卡片 UI (同步更新勝率 %) */
     function updatePlayerCardUI(elem) {
         const played = parseInt(elem.dataset.played || 0);
         const wins = parseInt(elem.dataset.wins || 0);
