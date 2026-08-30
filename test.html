@@ -2,16 +2,16 @@
 <!--
     ==================================================
     羽球排場系統 (Badminton Court Board)
-    Version: v1.0.2
-    Last Updated: 2026-08-30
-    Features: 10吋平板響應式最佳化/8場單排自適應/精簡程度標記/點選移動
+    Version: v1.0.3
+    Last Updated: 2026-08-31
+    Features: 管理選單字體與跑版修復/10吋平板響應式/8場單排自適應/點選移動
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>羽球排場系統 v1.0.2</title>
+    <title>羽球排場系統 v1.0.3</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -32,7 +32,7 @@
             left: -9999px !important;
         }
 
-        /* 全域預設：嚴格限制 100vw / 100vh 避免平板跑版溢出 */
+        /* 全域預設 */
         html, body {
             width: 100vw;
             height: 100vh;
@@ -183,7 +183,7 @@
             color: #ffffff;
         }
 
-        /* 📱 主版面：適用於 10 吋平板直/橫屏 */
+        /* 📱 主版面 */
         .main-layout {
             display: grid;
             grid-template-columns: 210px 1fr;
@@ -272,7 +272,6 @@
             border-color: #2563eb;
         }
 
-        /* 休息區卡片容器（雙排獨立滾動） */
         .rest-zone {
             flex: 1;
             display: grid !important;
@@ -335,7 +334,6 @@
 
         .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 8px; font-size: 10px; font-weight: 600; }
 
-        /* 精簡場地程度限制標籤 (直接融入場地標頭) */
         .court-limit-badge {
             font-size: 9px;
             font-weight: 700;
@@ -391,7 +389,6 @@
         }
         .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
 
-        /* 📐 上場區 & 等待區：8場強制保持「單排一字排開」 */
         .sub-grid-row {
             display: grid;
             grid-template-columns: repeat(var(--court-count, 4), 1fr);
@@ -425,7 +422,7 @@
             overflow: hidden;
         }
 
-        /* 🛠️ 球員卡片適高與自適應文字大小 */
+        /* 球員卡片 */
         .player-card { 
             padding: 4px 4px; 
             background: #ffffff; 
@@ -528,7 +525,7 @@
         .level-badge.blue { background-color: #0284c7; }
         .level-badge.red { background-color: #dc2626; }
 
-        /* Modal 視窗 */
+        /* Modal 視窗全域設定 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -558,6 +555,7 @@
             max-height: 85vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
@@ -571,19 +569,74 @@
             color: #1e293b;
             margin-bottom: 8px;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
             flex-shrink: 0;
         }
 
         .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
 
-        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
-        .menu-section-title { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px; }
-        .menu-add-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-        .menu-add-row input { flex: 1; min-width: 90px; padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; outline: none; }
-        .menu-add-row select { padding: 5px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; background: white; outline: none; }
-        .menu-grid-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 8px; font-size: 12px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        /* 🛠️ 管理選單內部元件優化（修復跑版與字體大小） */
+        .menu-section { 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+        }
+        .menu-section-title { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: #334155; 
+            margin-bottom: 6px; 
+        }
+        .menu-add-row { 
+            display: flex; 
+            gap: 6px; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        .menu-add-row input { 
+            flex: 1.5; 
+            min-width: 110px; 
+            padding: 6px 8px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            outline: none; 
+            height: 34px;
+        }
+        .menu-add-row select { 
+            flex: 1;
+            padding: 6px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            background: white; 
+            outline: none; 
+            height: 34px;
+            font-weight: 600;
+        }
+        .menu-grid-btns { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 8px; 
+        }
+        .menu-action-card { 
+            background: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            padding: 10px 8px; 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: #1e293b; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            transition: all 0.2s;
+        }
+        .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
         .queue-mode-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .queue-mode-title { font-size: 11px; font-weight: 700; color: #1e40af; }
@@ -596,7 +649,8 @@
         .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
 
         .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 8px; }
-        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .modal-footer-btns { display: flex; gap: 4px; align-items: center; }
+        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
@@ -610,7 +664,7 @@
         .history-list-container { flex: 1; overflow-y: auto; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
         .history-item-single-row { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 4px 6px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
 
-        /* 📱 手機版 RWD 觸控介面切換 */
+        /* 📱 手機版 RWD 切換 */
         @media (max-width: 768px) {
             .main-layout { grid-template-columns: 1fr !important; }
             .mobile-tabs-bar { display: flex; }
@@ -632,7 +686,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">羽球排場系統</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v1.0.2</span>
+            <span class="version-tag">v1.0.3</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -713,7 +767,7 @@
         </div>
     </div>
 
-    <!-- ⚙️ 球隊管理選單視窗 -->
+    <!-- ⚙️ 球隊管理選單視窗 (已優化字體與按鈕排版) -->
     <div class="modal-overlay" id="adminMenuModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -740,7 +794,7 @@
                         <option value="member">季繳</option>
                         <option value="regular">常客</option>
                     </select>
-                    <button type="button" class="save-modal-btn" onclick="createPlayerFromMenu()">新增至休息區</button>
+                    <button type="button" class="save-modal-btn" style="height:34px;" onclick="createPlayerFromMenu()">新增至休息區</button>
                 </div>
             </div>
 
@@ -1083,7 +1137,7 @@
         if (!verifyPassword()) return;
         document.getElementById('menuModalTitle').innerText = `⚙️ ${currentClubName} - 管理選單`;
         const btn = document.getElementById('menuDeleteToggleBtn');
-        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員刪除模式";
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉球員刪除模式" : "🗑️ 切換球員卡片刪除模式";
         document.getElementById('adminMenuModal').classList.add('active');
     }
 
@@ -1099,7 +1153,7 @@
     function toggleDeleteModeFromMenu() { 
         toggleDeleteMode(); 
         const btn = document.getElementById('menuDeleteToggleBtn');
-        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員刪除模式";
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉球員卡片刪除模式" : "🗑️ 切換球員卡片刪除模式";
     }
 
     function resetCurrentGame() {
