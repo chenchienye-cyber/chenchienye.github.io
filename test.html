@@ -2,16 +2,16 @@
 <!--
     ==================================================
     羽球排場系統 (Badminton Court Board)
-    Version: v2.0.0
+    Version: v2.0.2
     Last Updated: 2026-08-31
-    Features: 新增中階(紅)/高手改黑色/等待區遞補優化/10吋平板適配
+    Features: 上場區計時器高對比色彩優化/全場佇列平移遞補/10吋平板適配
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>羽球排場系統 v2.0.0</title>
+    <title>羽球排場系統 v2.0.2</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -250,7 +250,7 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
             padding: 2px 5px;
             border-radius: 8px;
@@ -272,6 +272,7 @@
             padding: 2px 3px 4px 2px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y !important;
             min-height: 0;
         }
 
@@ -334,15 +335,17 @@
         .court-limit-badge.high { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
         .court-limit-badge.friendly { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
+        /* ⏱️ 上場區計時器：高對比顯眼樣式 */
         .court-timer-badge {
             font-size: 11px;
             font-weight: 700;
-            color: #dc2626;
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            padding: 1px 4px;
+            color: #ffffff;
+            background: #dc2626;
+            padding: 1px 5px;
             border-radius: 4px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
+            box-shadow: 0 1px 2px rgba(220, 38, 38, 0.3);
+            letter-spacing: 0.5px;
         }
 
         .finish-btn {
@@ -412,7 +415,6 @@
             overflow: hidden;
         }
 
-        /* 🛠️ 球員卡片 */
         .player-card { 
             padding: 5px 6px; 
             background: #ffffff; 
@@ -424,7 +426,7 @@
             align-items: flex-start;
             gap: 2px;
             cursor: pointer;
-            touch-action: pan-y;
+            touch-action: pan-y !important;
             min-width: 0;
             width: 100%;
             box-sizing: border-box;
@@ -501,7 +503,6 @@
             line-height: 1.2;
         }
 
-        /* 🎨 程度標籤顏色更新：紅色(中階)、黑色(高手) */
         .level-badge {
             padding: 1px 4px;
             border-radius: 3px;
@@ -514,8 +515,8 @@
         .level-badge.green { background-color: #16a34a; }
         .level-badge.yellow { background-color: #eab308; }
         .level-badge.blue { background-color: #0284c7; }
-        .level-badge.red { background-color: #dc2626; } /* 🔴 中階 */
-        .level-badge.black { background-color: #0f172a; } /* ⬛ 高手 */
+        .level-badge.red { background-color: #dc2626; }
+        .level-badge.black { background-color: #0f172a; }
 
         .modal-overlay {
             display: none;
@@ -566,66 +567,13 @@
 
         .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
 
-        .menu-section { 
-            background: #f8fafc; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 8px; 
-            padding: 10px; 
-            margin-bottom: 10px; 
-        }
-        .menu-section-title { 
-            font-size: 12px; 
-            font-weight: 700; 
-            color: #334155; 
-            margin-bottom: 6px; 
-        }
-        .menu-add-row { 
-            display: flex; 
-            gap: 6px; 
-            align-items: center; 
-            flex-wrap: wrap; 
-        }
-        .menu-add-row input { 
-            flex: 1.5; 
-            min-width: 110px; 
-            padding: 6px 8px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 13px; 
-            outline: none; 
-            height: 34px;
-        }
-        .menu-add-row select { 
-            flex: 1;
-            padding: 6px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            background: white; 
-            outline: none; 
-            height: 34px;
-            font-weight: 600;
-        }
-        .menu-grid-btns { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 8px; 
-        }
-        .menu-action-card { 
-            background: #ffffff; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 8px; 
-            padding: 10px 8px; 
-            font-size: 13px; 
-            font-weight: 700; 
-            color: #1e293b; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            transition: all 0.2s;
-        }
+        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .menu-section-title { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+        .menu-add-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .menu-add-row input { flex: 1.5; min-width: 110px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; height: 34px; }
+        .menu-add-row select { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: white; outline: none; height: 34px; font-weight: 600; }
+        .menu-grid-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 8px; font-size: 13px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
         .queue-mode-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -716,7 +664,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">羽球排場系統</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v2.0.0</span>
+            <span class="version-tag">v2.0.2</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -758,7 +706,6 @@
                         <option value="name">姓名</option>
                     </select>
                 </div>
-                <!-- 🎨 休息區程度過濾膠囊新增🔴中階與⬛高手 -->
                 <div class="rest-level-pills">
                     <button class="level-pill-btn active" onclick="setRestLevelFilter('all', this)">全部</button>
                     <button class="level-pill-btn" onclick="setRestLevelFilter('green', this)">🟢新手</button>
@@ -814,7 +761,6 @@
                         <option value="M">男 &#9794;</option>
                         <option value="F">女 &#9792;</option>
                     </select>
-                    <!-- 🎨 下拉選單補上🔴中階與⬛高手 -->
                     <select id="pLevel">
                         <option value="green">🟢 新手</option>
                         <option value="yellow">🟡 初階</option>
@@ -1049,7 +995,6 @@
     let currentHistoryTab = 'logs';
     let currentRosterTab = 'casual';
 
-    /* 🎨 程度名稱與權重對照表 (新增中階，高手維持黑色) */
     const levelTextMap = { green: "新手", yellow: "初階", blue: "初中", red: "中階", black: "高手" };
     const levelRankMap = { green: 1, yellow: 2, blue: 3, red: 4, black: 5 };
     const categoryTextMap = { member: "季繳", regular: "常客", casual: "臨打" };
@@ -1382,7 +1327,6 @@
         renderRosterUI();
     }
 
-    /* 🎨 修改球員名單程度選項（新增🔴中階與⬛高手） */
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1711,7 +1655,6 @@
     function openSettingsModal() { updateModalUI(); document.getElementById('settingsModal').classList.add('active'); }
     function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('active'); }
 
-    /* ⚙️ 開關場與程度限制視窗 (含完整的門檻選單選項：新增中階/高手) */
     function updateModalUI() {
         const modeBtn = document.getElementById('queueModeToggleBtn');
         const modeSub = document.getElementById('queueModeSubText');
@@ -1949,7 +1892,7 @@
         elem.dataset.selectedWin = elem.classList.contains('is-winner') ? "true" : "false";
     }
 
-    /* 🎯 結束比賽：修復為「任意場地結束皆由等待區 A (隊頭) 優先上場遞補，後方順暢平移 (B➔A, C➔B)」 */
+    /* 🎯 結束比賽：任意場地結束接由等待區 A 優先上場遞補，後方全場平移 (B➔A, C➔B) */
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
@@ -2008,7 +1951,7 @@
             }
         }
 
-        /* 🎯 關鍵修復：從隊頭「等待區 A」抓取球員補充至該結束比賽的場地 */
+        /* 🎯 從隊頭「等待區 A」抓取球員補充至該結束比賽的場地 */
         const headQueue = document.getElementById('queue-A');
         if (headQueue) {
             const queuePlayers = Array.from(headQueue.children);
@@ -2260,8 +2203,10 @@
         elem.ontouchmove = (e) => {
             if (isDeleteMode) return;
             const touch = e.touches[0];
-            
-            if (Math.abs(touch.clientX - startX) > 8 || Math.abs(touch.clientY - startY) > 8) {
+            const deltaX = Math.abs(touch.clientX - startX);
+            const deltaY = Math.abs(touch.clientY - startY);
+
+            if (deltaX > 10 && deltaX > deltaY) {
                 elem.dataset.isDragging = "true";
             }
 
