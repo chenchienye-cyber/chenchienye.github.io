@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<!--
+    ==================================================
+    深夜羽球專用排場系統 (Badminton Court Board)
+    File Name: midnight.html
+    Version: v3.0.0-NIGHT
+    Last Updated: 2026-09-01
+    Club: 深夜羽球 (Password: 888)
+    Firebase Node: clubs/midnight
+    Features:
+      1. 共用 Firebase 配置，透過 clubs/midnight 獨立隔離
+      2. 程度數字代碼 (1:初階 2:初中 3:中階 4:團主)
+      3. 點選移動功能 (點名牌 -> 點目標區域)
+      4. 休息區上下自然滾動瀏覽 / 左右滑動拖曳卡片
+      5. iPad 10.5 吋 100dvh 動態滿版適配
+    ==================================================
+-->
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>深夜羽球 - 排場系統 v3.0.0-NIGHT</title>
+    <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- 引入 Firebase 即時雲端資料庫 SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
+        input, select, button { user-select: auto; -webkit-user-select: auto; }
+        
+        .file-input-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100dvh;
+            max-height: 100dvh;
+            overflow: hidden;
+            background-color: #f1f5f9; 
+            color: #0f172a; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        
+        /* 頂部 Header */
+        .top-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #ffffff; 
+            padding: 3px 10px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
+            flex-shrink: 0;
+            height: 36px;
+            gap: 6px; 
+        }
+        
+        .site-title { 
+            font-size: 16px; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            color: #ea580c;
+            cursor: pointer;
+        }
+        .site-title:active { transform: scale(0.98); }
+
+        @supports (-webkit-background-clip: text) {
+            .site-title {
+                background: linear-gradient(135deg, #ff6b6b 0%, #fa8231 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+        }
+
+        .version-tag {
+            font-size: 9px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-weight: 700;
+            -webkit-text-fill-color: #38bdf8;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
+        .action-area input { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; outline: none; }
+        .action-area select { padding: 4px 5px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; background: white; outline: none; font-weight: 600; }
+        .action-area button { padding: 4px 8px; background: #2563eb; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+        .icon-btn {
+            padding: 2px 7px !important;
+            font-size: 11.5px !important;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .undo-btn { background: #64748b !important; color: white !important; }
+        .undo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
+        .redo-btn { background: #475569 !important; color: white !important; }
+        .redo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
+        .history-btn { background: #0891b2 !important; color: white !important; }
+        .roster-btn { background: #8b5cf6 !important; color: white !important; }
+        .settings-btn { background: #475569 !important; color: white !important; }
+
+        .delete-close-top-btn {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
+            transition: all 0.2s ease-in-out;
+        }
+        .delete-close-top-btn.active {
+            background: #991b1b !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+        .mobile-tabs-bar {
+            display: none;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 3px;
+            gap: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+
+        .mobile-tab-btn {
+            flex: 1;
+            padding: 5px 4px;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .mobile-tab-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        /* 📱 主版面：滿版不溢出 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 215px 1fr;
+            gap: 5px;
+            flex: 1;
+            min-height: 0;
+            height: calc(100dvh - 44px);
+            max-height: calc(100dvh - 44px);
+        }
+
+        .rest-card { 
+            display: flex; 
+            flex-direction: column; 
+            padding: 5px !important; 
+            height: 100%;
+            min-height: 0;
+            gap: 4px;
+            overflow: hidden;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .rest-filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+
+        .rest-search-row {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .rest-search-input {
+            flex: 1;
+            padding: 3px 5px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 11px;
+            outline: none;
+            background: white;
+            min-width: 0;
+        }
+
+        .rest-sort-select {
+            max-width: 70px;
+            padding: 2px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 10px;
+            outline: none;
+            background: white;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+        }
+
+        .rest-level-pills {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            padding-bottom: 1px;
+        }
+
+        .level-pill-btn {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 3px;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .level-pill-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+
+        /* 📜 休息區：支援上下自然滾動瀏覽 */
+        .rest-zone {
+            flex: 1;
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 4px !important;
+            align-content: start;
+            padding: 2px 2px 4px 2px !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y !important;
+            min-height: 0;
+        }
+
+        .right-column { 
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 5px; 
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .card { 
+            background: #ffffff; 
+            border-radius: 8px; 
+            padding: 5px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .card-header { 
+            font-size: 12.5px; 
+            font-weight: 700; 
+            color: #334155; 
+            margin-bottom: 2px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .header-note {
+            font-size: 9.5px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .note-highlight-red { color: #ef4444; font-weight: 700; }
+        .note-highlight-green { color: #10b981; font-weight: 700; }
+
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 4px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+
+        .court-header-title {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1px;
+            line-height: 1.1;
+        }
+
+        .court-title-row-top {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        .court-timer-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #2563eb;
+            background: transparent;
+            border: 1px solid #bfdbfe;
+            padding: 0px 3px;
+            border-radius: 3px;
+            font-family: monospace, SFMono-Regular, Consolas, monospace;
+            letter-spacing: 0.3px;
+            line-height: 1.1;
+        }
+
+        .finish-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 2px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 2px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .finish-btn:hover { background: #059669; }
+
+        .drop-zone { 
+            flex: 1;
+            min-height: 0; 
+            border: 1.5px dashed #cbd5e1; 
+            border-radius: 5px; 
+            background: #fafafa; 
+            padding: 2px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2px; 
+            align-content: flex-start; 
+            align-items: stretch;
+            transition: all 0.2s; 
+            overflow-y: auto;
+            cursor: pointer;
+        }
+        .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
+
+        .sub-grid-row {
+            display: grid;
+            grid-template-columns: repeat(var(--court-count, 4), 1fr);
+            gap: 4px;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .slot-item { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 5px; 
+            padding: 3px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
+            min-width: 65px;
+        }
+
+        .slot-inner {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* 球員名牌卡片 */
+        .player-card { 
+            padding: 3px 4px; 
+            background: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 4px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+            display: inline-flex; 
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1px;
+            cursor: pointer;
+            touch-action: pan-y !important;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.15s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* 👆 點選選取高亮狀態 */
+        .player-card.is-selected {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 2px #2563eb, 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+            background: #eff6ff !important;
+        }
+
+        .player-card[data-gender="M"] { border-left: 3px solid #2563eb; }
+        .player-card[data-gender="F"] { border-left: 3px solid #ec4899; }
+
+        .player-card.is-winner {
+            background: #d1fae5 !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 1.5px #10b981;
+        }
+
+        body.delete-mode-active .player-card {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            animation: shake 0.3s infinite alternate;
+        }
+        body.delete-mode-active .player-card::after {
+            content: "\274C";
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: #ef4444;
+            color: white;
+            font-size: 8px;
+            border-radius: 50%;
+            width: 13px;
+            height: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes shake { 0% { transform: rotate(-1deg); } 100% { transform: rotate(1deg); } }
+
+        .player-main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            gap: 1px;
+        }
+
+        .player-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-size: var(--p-name-size, 12.5px);
+            font-weight: 700;
+            color: #1e293b;
+            gap: 1px;
+            line-height: 1.1;
+        }
+
+        .player-name-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 4.5em;
+            flex: 1;
+        }
+
+        .winner-tag {
+            display: none;
+            font-size: 8px;
+            background: #10b981;
+            color: white;
+            padding: 0px 2px;
+            border-radius: 2px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .player-card.is-winner .winner-tag { display: inline-block; }
+
+        .player-sub {
+            font-size: var(--p-sub-size, 9.5px);
+            color: #475569;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            gap: 2px;
+            align-items: center;
+            width: 100%;
+            line-height: 1.1;
+        }
+
+        /* 🎨 程度標籤樣式 (1:初階藍, 2:初中綠, 3:中階黃, 4:團主黑) */
+        .level-badge {
+            padding: 0px 3px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: var(--p-badge-size, 8.5px);
+            color: #ffffff !important;
+            display: inline-block;
+            line-height: 1.1;
+        }
+        .level-badge.blue { background-color: #0284c7; }
+        .level-badge.green { background-color: #16a34a; }
+        .level-badge.yellow { background-color: #eab308; }
+        .level-badge.black { background-color: #0f172a; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+        .modal-overlay.active { display: flex; }
+
+        #rosterModal, #settingsModal, #historyModal, #personalDetailModal, #playerMoveModal { z-index: 2100 !important; }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            padding: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: modalIn 0.2s ease-out;
+            max-height: 85dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
+
+        .court-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; max-height: 45dvh; overflow-y: auto; }
+        .court-btn { padding: 8px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 6px; }
+        .modal-footer-btns { display: flex; gap: 4px; align-items: center; }
+        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+        .save-modal-btn.secondary { background: #64748b; }
+        .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; max-height: 45dvh; overflow-y: auto; padding: 2px; margin-bottom: 6px; }
+        .roster-item-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px; display: flex; align-items: center; gap: 4px; }
+        .roster-info { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
+        .roster-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 2px 4px; font-size: 10px; cursor: pointer; font-weight: 700; }
+        .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
+
+        .history-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; }
+        .history-tab-btn { flex: 1; padding: 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
+        .history-tab-btn.active { background: #ffffff; color: #0f172a; }
+
+        .history-list-container { flex: 1; overflow-y: auto; margin-bottom: 6px; display: flex; flex-direction: column; gap: 5px; }
+        .history-item-single-row { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; font-size: 11.5px; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+        .hist-time-tag { color: #475569; font-weight: 700; font-size: 10.5px; flex-shrink: 0; background: #e2e8f0; padding: 1px 3px; border-radius: 3px; }
+
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .stats-table th, .stats-table td { padding: 5px 6px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .stats-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
+
+        .personal-summary-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px; margin-bottom: 6px; display: flex; justify-content: space-around; align-items: center; text-align: center; }
+        .p-sum-num { font-size: 14px; font-weight: 700; color: #15803d; }
+        .p-sum-label { font-size: 9.5px; color: #64748b; }
+
+        @media (max-width: 768px) {
+            .main-layout { grid-template-columns: 1fr !important; }
+            .mobile-tabs-bar { display: flex; }
+            body[data-mobile-tab="rest"] .right-column { display: none !important; }
+            body[data-mobile-tab="courts"] .rest-card { display: none !important; }
+            body[data-mobile-tab="queues"] .rest-card { display: none !important; }
+            .sub-grid-row { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+    </style>
+</head>
+<body data-mobile-tab="courts">
+
+    <input type="file" id="rosterFileInput" class="file-input-hidden" accept=".json" onchange="handleRosterFileImport(event)">
+    <input type="file" id="historyFileInput" class="file-input-hidden" accept=".json" onchange="handleHistoryFileImport(event)">
+
+    <!-- 頂部 Header -->
+    <div class="top-bar">
+        <div class="site-title" id="displayClubTitle">
+            深夜羽球
+            <span class="version-tag">v3.0.0-NIGHT</span>
+        </div>
+        <div class="action-area">
+            <!-- 🔢 程度數字代碼: 1=初階, 2=初中, 3=中階, 4=團主 -->
+            <input type="text" id="pName" placeholder="姓名" autocomplete="off" style="width: 80px;" onkeydown="if(event.key==='Enter') createPlayer()">
+            <select id="pGender">
+                <option value="M">男 ♂</option>
+                <option value="F">女 ♀</option>
+            </select>
+            <select id="pLevel" title="程度代碼: 1=初階, 2=初中, 3=中階, 4=團主">
+                <option value="blue">1: 🔵 初階</option>
+                <option value="green">2: 🟢 初中</option>
+                <option value="yellow">3: 🟡 中階</option>
+                <option value="black">4: ⬛ 團主</option>
+            </select>
+            <button type="button" onclick="createPlayer()">新增</button>
+            
+            <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
+            <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客點名名單">👥</button>
+            <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="對戰紀錄與勝率榜">📜 對戰紀錄</button>
+            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
+            <button type="button" id="deleteToggleBtn" class="icon-btn delete-close-top-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
+        </div>
+    </div>
+
+    <!-- 📱 手機頁籤導覽列 -->
+    <div class="mobile-tabs-bar">
+        <button class="mobile-tab-btn active" id="mtab-courts" onclick="switchMobileTab('courts')">
+            🟢 上場區 (<span id="mb-courts-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" id="mtab-queues" onclick="switchMobileTab('queues')">
+            ⏳ 等待區 (<span id="mb-queues-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" id="mtab-rest" onclick="switchMobileTab('rest')">
+            ⏸️ 休息區 (<span id="mb-rest-count">0</span>)
+        </button>
+    </div>
+
+    <!-- 主版面 -->
+    <div class="main-layout">
+        <!-- 休息區 -->
+        <div class="card rest-card">
+            <div class="card-header">
+                <span>&#9208; 休息區</span>
+                <span class="badge" id="b-rest">0</span>
+            </div>
+
+            <div class="rest-filter-bar">
+                <div class="rest-search-row">
+                    <input type="text" id="restSearchInput" class="rest-search-input" placeholder="🔍 搜尋姓名或輸入1~4..." oninput="filterAndSortRestZone()">
+                    <select id="restSortSelect" class="rest-sort-select" onchange="filterAndSortRestZone()">
+                        <option value="default">預設</option>
+                        <option value="level">程度</option>
+                        <option value="played">場數</option>
+                        <option value="name">姓名</option>
+                    </select>
+                </div>
+                <div class="rest-level-pills">
+                    <button class="level-pill-btn active" onclick="setRestLevelFilter('all', this)">全部</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('blue', this)">1:🔵初階</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('green', this)">2:🟢初中</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('yellow', this)">3:🟡中階</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('black', this)">4:⬛團主</button>
+                </div>
+            </div>
+
+            <div class="drop-zone rest-zone" id="rest"></div>
+        </div>
+
+        <!-- 右側主區域 -->
+        <div class="right-column" id="mainRightColumn">
+            <!-- 🟢 上場區 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#128994; 上場區</span>
+                        <span class="header-note">(先點選 <span class="note-highlight-red">勝場球員</span> 再按 <span class="note-highlight-green">結束比賽</span>)</span>
+                    </div>
+                </div>
+                <div class="sub-grid-row" id="courts-wrapper"></div>
+            </div>
+
+            <!-- ⏳ 等待區 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="header-title-group">
+                        <span>&#8987; 等待區</span>
+                        <span class="header-note">(依序遞補上場 A→B→C→D)</span>
+                    </div>
+                </div>
+                <div class="sub-grid-row" id="queues-wrapper"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 👥 常客球員點名視窗 -->
+    <div class="modal-overlay" id="rosterModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>👥 常客名單與出席點名</span>
+                <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
+            </div>
+
+            <div class="roster-grid" id="rosterContainer"></div>
+
+            <div class="modal-footer">
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn outline" onclick="exportRosterJSON()">📤 匯出名單</button>
+                    <button class="save-modal-btn outline" onclick="triggerRosterImport()">📥 匯入名單</button>
+                </div>
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn" id="addSelectedBtn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
+                    <button class="save-modal-btn secondary" onclick="closeRosterModal()">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚙️ 開關場視窗 -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>⚙️ 開場 / 關場設定 (深夜羽球專用)</span>
+                <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
+            </div>
+
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
+            <div class="court-toggle-grid" id="settingsCourtGrid"></div>
+
+            <div class="modal-footer">
+                <div></div>
+                <button class="save-modal-btn" onclick="closeSettingsModal()">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📜 歷史戰績紀錄視窗 -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>📜 戰績歷史與勝率統計</span>
+                <button class="close-modal-btn" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            
+            <div class="history-tabs-bar">
+                <button class="history-tab-btn active" id="htab-logs" onclick="switchHistoryTab('logs')">⚔️ 對戰紀錄</button>
+                <button class="history-tab-btn" id="htab-stats" onclick="switchHistoryTab('stats')">📊 個人戰績榜</button>
+            </div>
+
+            <div class="history-list-container" id="historyRecordsContainer"></div>
+            <div class="modal-footer">
+                <div class="modal-footer-btns">
+                    <button class="save-modal-btn outline" onclick="exportHistoryJSON()">📤 匯出戰績</button>
+                    <button class="save-modal-btn outline" onclick="triggerHistoryImport()">📥 匯入戰績</button>
+                </div>
+                <button class="save-modal-btn secondary" onclick="closeHistoryModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 👤 個人戰績履歷視窗 -->
+    <div class="modal-overlay" id="personalDetailModal" onclick="closePersonalDetailModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span id="pDetailModalTitle">👤 球員戰績履歷</span>
+                <button class="close-modal-btn" onclick="closePersonalDetailModal()">&times;</button>
+            </div>
+            
+            <div class="personal-summary-box">
+                <div class="p-sum-item"><span class="p-sum-num" id="pd-played">0</span><span class="p-sum-label">總打場數</span></div>
+                <div class="p-sum-item"><span class="p-sum-num" style="color:#10b981;" id="pd-wins">0</span><span class="p-sum-label">勝場</span></div>
+                <div class="p-sum-item"><span class="p-sum-num" style="color:#ef4444;" id="pd-losses">0</span><span class="p-sum-label">敗場</span></div>
+                <div class="p-sum-item"><span class="p-sum-num" style="color:#0284c7;" id="pd-winrate">0%</span><span class="p-sum-label">勝率</span></div>
+            </div>
+
+            <p style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 3px;">⚔️ 親自參戰歷史紀錄：</p>
+            <div class="history-list-container" id="pd-matchLogsContainer"></div>
+
+            <div class="modal-footer">
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closePersonalDetailModal()">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📱 手機移動視窗 -->
+    <div class="modal-overlay" id="playerMoveModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="moveModalTitle">移動球員</span>
+                <button class="close-modal-btn" onclick="closePlayerMoveModal()">&times;</button>
+            </div>
+            <div class="move-option-grid" id="moveOptionsContainer"></div>
+            <div class="modal-footer" style="margin-top:10px;">
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closePlayerMoveModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // -------------------------------------------------------------
+    // 4. 專屬設定：深夜羽球專用獨立分流 (固定隊名: 深夜羽球, 密碼: 888)
+    // -------------------------------------------------------------
+    const currentClubName = "深夜羽球";
+    const currentAdminPassword = "888";
+    const customStoragePrefix = "midnight_"; // 專用獨立 LocalStorage 前綴
+
+    // 💡 共用原 Firebase 專案，但在資料庫內部固定分流至 clubs/midnight 節點
+    const firebaseConfig = {
+        apiKey: "AIzaSyDPgUmF2FPMpFxgjcLodCvI0GmFsB3cdQU",
+        authDomain: "night-badminton.firebaseapp.com",
+        databaseURL: "https://night-badminton-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "night-badminton",
+        storageBucket: "night-badminton.firebasestorage.app",
+        messagingSenderId: "271123971372",
+        appId: "1:271123971372:web:fd58c8dbcff6bcc1cd4089",
+        measurementId: "G-8TPKR4K690"
+    };
+
+    let isFirebaseActive = false;
+    let baseClubRef = null;
+    let dbRef = null;
+    let historyDbRef = null;
+    let rosterDbRef = null;
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+        // 🎯 核心隔離節點：所有深夜羽球資料獨立存放於此
+        baseClubRef = firebase.database().ref("clubs/midnight");
+        dbRef = baseClubRef.child("badminton_supper_club");
+        historyDbRef = baseClubRef.child("badminton_match_records");
+        rosterDbRef = baseClubRef.child("badminton_player_roster");
+        isFirebaseActive = true;
+    } catch (e) {
+        console.error("Firebase 初始化失敗：", e);
+    }
+
+    function verifyPassword() {
+        const input = prompt("🔐 請輸入管理員密碼：");
+        if (input === currentAdminPassword) {
+            return true;
+        } else {
+            alert("❌ 密碼錯誤！");
+            return false;
+        }
+    }
+
+    let activeCourts = [1, 2, 3, 4];
+    let queueMode = 'shift';
+    let currentRestLevelFilter = 'all';
+    let currentlySelectedPlayerElem = null; // 👆 點選移動機制
+
+    const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    let isRemoteUpdating = false;
+    let selectedPlayerElemForMove = null;
+    const courtStartTimes = {};
+
+    let rawHistoryLogs = {}; 
+    let globalPlayerRoster = {}; 
+    let currentHistoryTab = 'logs';
+
+    /* 🎨 1. 程度分級數字對照 (1:初階, 2:初中, 3:中階, 4:團主) */
+    const levelTextMap = {
+        blue: "初階",
+        green: "初中",
+        yellow: "中階",
+        black: "團主"
+    };
+
+    const levelRankMap = {
+        blue: 1,
+        green: 2,
+        yellow: 3,
+        black: 4
+    };
+
+    const undoStack = [];
+    const MAX_HISTORY = 20;
+    let isDeleteMode = false;
+
+    function formatTimeNoSeconds(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const hh = String(dateObj.getHours()).padStart(2, '0');
+        const mm = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${y}/${m}/${d} ${hh}:${mm}`;
+    }
+
+    function formatHourMinOnly(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const hh = String(dateObj.getHours()).padStart(2, '0');
+        const mm = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+    }
+
+    function downloadJSONFile(dataObj, filename) {
+        const jsonStr = JSON.stringify(dataObj, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function setRestLevelFilter(levelKey, btnElem) {
+        currentRestLevelFilter = levelKey;
+        document.querySelectorAll('.level-pill-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnElem) btnElem.classList.add('active');
+        filterAndSortRestZone();
+    }
+
+    /* 🔍 3. 休息區搜尋與程度過濾 (支援數字 1~4 快速過濾) */
+    function filterAndSortRestZone() {
+        const restZone = document.getElementById('rest');
+        if (!restZone) return;
+
+        const searchKeyword = (document.getElementById('restSearchInput')?.value || '').trim().toLowerCase();
+        const sortType = document.getElementById('restSortSelect')?.value || 'default';
+        const cards = Array.from(restZone.querySelectorAll('.player-card'));
+
+        const numLevelMap = { '1': 'blue', '2': 'green', '3': 'yellow', '4': 'black' };
+
+        cards.forEach(card => {
+            const pName = (card.dataset.name || '').toLowerCase();
+            const pLevel = card.dataset.level || 'blue';
+
+            let matchKeyword = !searchKeyword || pName.includes(searchKeyword);
+            if (numLevelMap[searchKeyword]) {
+                matchKeyword = (pLevel === numLevelMap[searchKeyword]);
+            }
+
+            const matchLevel = (currentRestLevelFilter === 'all') || (pLevel === currentRestLevelFilter);
+
+            card.style.display = (matchKeyword && matchLevel) ? 'inline-flex' : 'none';
+        });
+
+        if (sortType !== 'default') {
+            cards.sort((a, b) => {
+                if (sortType === 'level') {
+                    return (levelRankMap[b.dataset.level || 'blue'] || 1) - (levelRankMap[a.dataset.level || 'blue'] || 1);
+                } else if (sortType === 'played') {
+                    return parseInt(a.dataset.played || 0) - parseInt(b.dataset.played || 0);
+                } else if (sortType === 'name') {
+                    return (a.dataset.name || '').localeCompare(b.dataset.name || '', 'zh-TW');
+                }
+                return 0;
+            });
+            cards.forEach(card => restZone.appendChild(card));
+        }
+    }
+
+    setInterval(updateCourtTimers, 1000);
+
+    function updateCourtTimers() {
+        activeCourts.forEach(num => {
+            const timerElem = document.getElementById(`timer-court-${num}`);
+            const courtZone = document.getElementById(`court-${num}`);
+            if (!timerElem) return;
+
+            if (courtZone && courtZone.children.length > 0 && courtStartTimes[num]) {
+                const elapsedSec = Math.floor((Date.now() - courtStartTimes[num]) / 1000);
+                const mins = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+                const secs = String(elapsedSec % 60).padStart(2, '0');
+                timerElem.innerText = `${mins}:${secs}`;
+            } else {
+                timerElem.innerText = '00:00';
+            }
+        });
+    }
+
+    function openPersonalDetailModal(playerName) {
+        if (!playerName) return;
+        document.getElementById('pDetailModalTitle').innerText = `👤 球員履歷：${playerName}`;
+        
+        let played = 0, wins = 0, losses = 0;
+        const personalLogs = [];
+
+        Object.values(rawHistoryLogs).forEach(item => {
+            const inW = Array.isArray(item.winners) && item.winners.includes(playerName);
+            const inL = Array.isArray(item.losers) && item.losers.includes(playerName);
+
+            if (inW || inL) {
+                played++;
+                if (inW) wins++;
+                if (inL) losses++;
+                personalLogs.push(item);
+            }
+        });
+
+        const rate = played > 0 ? Math.round((wins / played) * 100) : 0;
+        document.getElementById('pd-played').innerText = played;
+        document.getElementById('pd-wins').innerText = wins;
+        document.getElementById('pd-losses').innerText = losses;
+        document.getElementById('pd-winrate').innerText = `${rate}%`;
+
+        const container = document.getElementById('pd-matchLogsContainer');
+        if (personalLogs.length === 0) {
+            container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無該球員參戰紀錄</p>';
+        } else {
+            container.innerHTML = '';
+            [...personalLogs].reverse().forEach(item => {
+                const isWon = item.winners && item.winners.includes(playerName);
+                const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+                const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
+                const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
+
+                container.innerHTML += `
+                    <div class="history-item-single-row" style="border-left: 3px solid ${isWon ? '#10b981' : '#ef4444'};">
+                        <div class="hist-row-info">
+                            <span class="hist-time-tag">📅 ${item.startTime || item.time || ''} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
+                            <div class="hist-teams-compact">
+                                <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                                <span class="loser-text">🛡️ 敗: ${losersStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('personalDetailModal').classList.add('active');
+    }
+
+    function closePersonalDetailModal(e) {
+        if (e && e.target !== document.getElementById('personalDetailModal') && !e.target.classList.contains('close-modal-btn')) return;
+        document.getElementById('personalDetailModal').classList.remove('active');
+    }
+
+    function openRosterModal() { renderRosterUI(); document.getElementById('rosterModal').classList.add('active'); }
+    function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
+
+    function renderRosterUI() {
+        const container = document.getElementById('rosterContainer');
+        if (!container) return;
+
+        const keys = Object.keys(globalPlayerRoster);
+        if (keys.length === 0) {
+            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無常客名單紀錄</p>`;
+            return;
+        }
+
+        const currentActiveNames = [];
+        Object.values(getCurrentStateObject()).forEach(arr => {
+            if (Array.isArray(arr)) arr.forEach(p => currentActiveNames.push(p.name));
+        });
+
+        container.innerHTML = '';
+        keys.forEach(key => {
+            const p = globalPlayerRoster[key];
+            const isAlreadyInGame = currentActiveNames.includes(p.name);
+            const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
+            const lvlName = levelTextMap[p.level] || '初階';
+
+            container.innerHTML += `
+                <div class="roster-item-card" style="${isAlreadyInGame ? 'background:#ecfdf5; border-color:#a7f3d0;' : ''}">
+                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}">
+                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
+                        <div class="roster-name">${p.name} ${genderSymbol}</div>
+                        <div style="font-size:10px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
+                    </label>
+                    <div style="display:flex; gap:2px;">
+                        <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
+                        <button type="button" class="roster-act-btn del" onclick="deletePlayerFromRoster('${key}', event)" title="刪除球員">🗑️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function addSelectedRosterToGame() {
+        const modal = document.getElementById('rosterModal');
+        if (!modal) return;
+        const checkboxes = modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) return;
+
+        saveHistoryState();
+        const rest = document.getElementById('rest');
+
+        checkboxes.forEach(cb => {
+            const p = globalPlayerRoster[cb.value];
+            if (!p) return;
+
+            if (cb.dataset.inGame === "true") {
+                document.querySelectorAll('.player-card').forEach(card => {
+                    if (card.dataset.name === p.name) card.remove();
+                });
+            } else if (rest) {
+                const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+                rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "blue", 0, 0, false));
+            }
+        });
+
+        filterAndSortRestZone();
+        refreshStats();
+        persistData();
+        renderRosterUI();
+    }
+
+    /* 🔢 1. 編輯球員名單程度（支援數字代碼） */
+    function editPlayerFromRoster(key, e) {
+        if (e) e.stopPropagation();
+        const p = globalPlayerRoster[key];
+        if (!p) return;
+        if (!verifyPassword()) return;
+
+        const oldName = p.name;
+        const newNameInput = prompt("修改球員姓名：", oldName);
+        if (newNameInput === null) return;
+        const newName = newNameInput.trim();
+        if (!newName) { alert("球員姓名不能為空！"); return; }
+
+        const newGenderInput = prompt("修改球員性別 (輸入 M 為男，F 為女)：", p.gender);
+        if (newGenderInput === null) return;
+        const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
+
+        const currentLevelNum = p.level === 'green' ? '2' : (p.level === 'yellow' ? '3' : (p.level === 'black' ? '4' : '1'));
+        const newLevelInput = prompt("修改羽球程度 (請輸入數字)：\n1 : 🔵 初階\n2 : 🟢 初中\n3 : 🟡 中階\n4 : ⬛ 團主", currentLevelNum);
+        if (newLevelInput === null) return;
+
+        let newLevel = p.level || "blue";
+        const levelTrimmed = newLevelInput.trim().toLowerCase();
+        if (levelTrimmed === '1' || levelTrimmed === 'blue' || levelTrimmed === '初階') newLevel = 'blue';
+        else if (levelTrimmed === '2' || levelTrimmed === 'green' || levelTrimmed === '初中') newLevel = 'green';
+        else if (levelTrimmed === '3' || levelTrimmed === 'yellow' || levelTrimmed === '中階') newLevel = 'yellow';
+        else if (levelTrimmed === '4' || levelTrimmed === 'black' || levelTrimmed === '團主') newLevel = 'black';
+
+        const updatedPlayer = { name: newName, gender: newGender, level: newLevel, updatedAt: Date.now() };
+        const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
+
+        document.querySelectorAll('.player-card').forEach(card => {
+            if (card.dataset.name === oldName) {
+                card.dataset.name = newName;
+                card.dataset.gender = newGender;
+                card.dataset.level = newLevel;
+                const nameTextElem = card.querySelector('.player-name-text');
+                if (nameTextElem) nameTextElem.innerText = newName;
+                updatePlayerCardUI(card);
+            }
+        });
+
+        if (isFirebaseActive && rosterDbRef) {
+            if (newSafeKey !== key) rosterDbRef.child(key).remove();
+            rosterDbRef.child(newSafeKey).set(updatedPlayer).then(() => { persistData(); });
+        } else {
+            if (newSafeKey !== key) delete globalPlayerRoster[key];
+            globalPlayerRoster[newSafeKey] = updatedPlayer;
+            localStorage.setItem(`${customStoragePrefix}player_roster`, JSON.stringify(globalPlayerRoster));
+            renderRosterUI();
+            persistData();
+        }
+    }
+
+    function deletePlayerFromRoster(key, e) {
+        if (e) e.stopPropagation();
+        if (!confirm(`確定要刪除？`)) return;
+        if (!verifyPassword()) return;
+        delete globalPlayerRoster[key];
+        renderRosterUI();
+    }
+
+    function registerPlayerToRoster(name, gender, level) {
+        if (!name) return;
+        const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
+        if (!safeKey) return;
+        globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue" };
+    }
+
+    function exportRosterJSON() { downloadJSONFile(globalPlayerRoster, `roster_midnight_${new Date().toISOString().slice(0,10)}.json`); }
+    function triggerRosterImport() { if (verifyPassword()) document.getElementById('rosterFileInput').click(); }
+    
+    function handleRosterFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try { globalPlayerRoster = { ...globalPlayerRoster, ...JSON.parse(evt.target.result) }; renderRosterUI(); alert("✅ 匯入成功！"); } catch (err) { alert("❌ 格式錯誤！"); }
+        };
+        reader.readAsText(file);
+    }
+
+    function openHistoryModal() { switchHistoryTab(currentHistoryTab); document.getElementById('historyModal').classList.add('active'); }
+    function closeHistoryModal() { document.getElementById('historyModal').classList.remove('active'); }
+
+    function switchHistoryTab(tabName) {
+        currentHistoryTab = tabName;
+        document.getElementById('htab-logs').classList.toggle('active', tabName === 'logs');
+        document.getElementById('htab-stats').classList.toggle('active', tabName === 'stats');
+        if (tabName === 'logs') renderHistoryRecordsUI();
+        else renderPlayerStatsUI();
+    }
+
+    function renderHistoryRecordsUI() {
+        const container = document.getElementById('historyRecordsContainer');
+        if (!container) return;
+
+        const keys = Object.keys(rawHistoryLogs);
+        if (keys.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無歷史比賽紀錄</p>'; return; }
+
+        container.innerHTML = '';
+        keys.reverse().forEach((key) => {
+            const item = rawHistoryLogs[key];
+            const winnersStr = item.winners && item.winners.length > 0 ? item.winners.join('&') : '無';
+            const losersStr = item.losers && item.losers.length > 0 ? item.losers.join('&') : '無';
+            const durationDisplay = item.durationMins ? `${item.durationMins}分` : '';
+
+            container.innerHTML += `
+                <div class="history-item-single-row">
+                    <div class="hist-row-info">
+                        <span class="hist-time-tag">📅 ${item.startTime || item.time || ''} (${item.court ? item.court + '號場' : ''} ${durationDisplay})</span>
+                        <div class="hist-teams-compact">
+                            <span class="winner-text">🏆 勝: ${winnersStr}</span>
+                            <span class="loser-text">🛡️ 敗: ${losersStr}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:3px;">
+                        <button class="hist-act-btn" onclick="editHistoryRecord('${key}')" title="修改勝敗名單">✏️</button>
+                        <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')" title="刪除紀錄">🗑️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function editHistoryRecord(key) {
+        const item = rawHistoryLogs[key];
+        if (!item) return;
+        if (!verifyPassword()) return;
+
+        const oldWinners = item.winners ? item.winners.join(',') : '';
+        const oldLosers = item.losers ? item.losers.join(',') : '';
+
+        const newWinnersStr = prompt("修改【勝方球員】姓名 (多位請用逗號分開)：", oldWinners);
+        if (newWinnersStr === null) return;
+
+        const newLosersStr = prompt("修改【敗方球員】姓名 (多位請用逗號分開)：", oldLosers);
+        if (newLosersStr === null) return;
+
+        const updatedRecord = {
+            ...item,
+            winners: newWinnersStr.split(',').map(s => s.trim()).filter(Boolean),
+            losers: newLosersStr.split(',').map(s => s.trim()).filter(Boolean)
+        };
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).set(updatedRecord);
+        } else {
+            rawHistoryLogs[key] = updatedRecord;
+            localStorage.setItem(`${customStoragePrefix}history_logs`, JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
+    }
+
+    function renderPlayerStatsUI() {
+        const container = document.getElementById('historyRecordsContainer');
+        if (!container) return;
+
+        const statsMap = {};
+        Object.values(rawHistoryLogs).forEach(log => {
+            if (Array.isArray(log.winners)) log.winners.forEach(name => { if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 }; statsMap[name].played++; statsMap[name].wins++; });
+            if (Array.isArray(log.losers)) log.losers.forEach(name => { if (!statsMap[name]) statsMap[name] = { played: 0, wins: 0 }; statsMap[name].played++; });
+        });
+
+        const playerList = Object.keys(statsMap).map(name => {
+            const p = statsMap[name].played, w = statsMap[name].wins;
+            return { name, played: p, wins: w, losses: p - w, rate: p > 0 ? Math.round((w / p) * 100) : 0 };
+        });
+
+        if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無統計資料</p>'; return; }
+
+        playerList.sort((a, b) => b.wins - a.wins || b.rate - a.rate || a.played - b.played);
+
+        let html = `
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>球員</th>
+                        <th>總場次</th>
+                        <th>勝場</th>
+                        <th>勝率</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        playerList.forEach((item, idx) => {
+            let rankBadge = idx + 1;
+            if (idx === 0) rankBadge = '🥇 1';
+            else if (idx === 1) rankBadge = '🥈 2';
+            else if (idx === 2) rankBadge = '🥉 3';
+
+            html += `
+                <tr onclick="openPersonalDetailModal('${item.name}')" style="cursor:pointer;" title="點擊查看詳細履歷">
+                    <td><b>${rankBadge}</b></td>
+                    <td><b>${item.name}</b></td>
+                    <td>${item.played} 場</td>
+                    <td><b style="color:#10b981;">${item.wins} 勝</b> (${item.losses}敗)</td>
+                    <td><b style="color:#0284c7;">${item.rate}%</b></td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function deleteHistoryRecord(key) {
+        if (!confirm("確定要刪除這筆對戰紀錄嗎？")) return;
+        if (!verifyPassword()) return;
+
+        if (isFirebaseActive && historyDbRef) {
+            historyDbRef.child(key).remove();
+        } else {
+            delete rawHistoryLogs[key];
+            localStorage.setItem(`${customStoragePrefix}history_logs`, JSON.stringify(rawHistoryLogs));
+            renderHistoryRecordsUI();
+        }
+    }
+
+    function exportHistoryJSON() { downloadJSONFile(rawHistoryLogs, `history_midnight_${new Date().toISOString().slice(0,10)}.json`); }
+    function triggerHistoryImport() { if (verifyPassword()) document.getElementById('historyFileInput').click(); }
+
+    function handleHistoryFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try { rawHistoryLogs = { ...rawHistoryLogs, ...JSON.parse(evt.target.result) }; switchHistoryTab(currentHistoryTab); alert("✅ 匯入成功！"); } catch (err) { alert("❌ 匯入失敗！"); }
+        };
+        reader.readAsText(file);
+    }
+
+    function switchMobileTab(tabName) {
+        document.body.setAttribute('data-mobile-tab', tabName);
+        ['courts', 'queues', 'rest'].forEach(t => {
+            const btn = document.getElementById(`mtab-${t}`);
+            if (btn) btn.classList.toggle('active', t === tabName);
+        });
+    }
+
+    function openPlayerMoveModal(playerElem) {
+        selectedPlayerElemForMove = playerElem;
+        document.getElementById('moveModalTitle').innerText = `移動球員：${playerElem.dataset.name}`;
+        
+        const container = document.getElementById('moveOptionsContainer');
+        container.innerHTML = '';
+
+        activeCourts.forEach((num) => {
+            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('court-${num}')"><span>🟢 ${num} 號場</span></button>`;
+        });
+        activeCourts.forEach((num, idx) => {
+            const qCode = queueLabels[idx] || num;
+            container.innerHTML += `<button class="move-opt-btn" onclick="executeMobileMove('queue-${qCode}')"><span>⏳ 等待 ${qCode}</span></button>`;
+        });
+        container.innerHTML += `<button class="move-opt-btn" style="background:#e2e8f0; grid-column: span 2;" onclick="executeMobileMove('rest')"><span>⏸️ 休息區</span></button>`;
+
+        document.getElementById('playerMoveModal').classList.add('active');
+    }
+
+    function closePlayerMoveModal() {
+        document.getElementById('playerMoveModal').classList.remove('active');
+        selectedPlayerElemForMove = null;
+    }
+
+    function executeMobileMove(targetZoneId) {
+        if (!selectedPlayerElemForMove) return;
+
+        const zone = document.getElementById(targetZoneId);
+        if (zone && selectedPlayerElemForMove.parentElement !== zone) {
+            saveHistoryState();
+            zone.appendChild(selectedPlayerElemForMove);
+            refreshStats();
+            persistData();
+            filterAndSortRestZone();
+        }
+        closePlayerMoveModal();
+    }
+
+    function openSettingsModal() { updateModalUI(); document.getElementById('settingsModal').classList.add('active'); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('active'); }
+
+    function updateModalUI() {
+        const grid = document.getElementById('settingsCourtGrid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        [1, 2, 3, 4, 5, 6, 7, 8].forEach(num => {
+            const isOpen = activeCourts.includes(num);
+            grid.innerHTML += `
+                <button class="court-btn ${isOpen ? 'active' : ''}" onclick="toggleCourt(${num})">
+                    <span>${num} 號場</span>
+                    <span class="status-text">${isOpen ? '🟢 開場' : '⚪ 關場'}</span>
+                </button>
+            `;
+        });
+    }
+
+    function toggleCourt(num) {
+        saveHistoryState();
+        const rest = document.getElementById('rest');
+
+        if (activeCourts.includes(num)) {
+            if (activeCourts.length <= 1) { alert("至少保留 1 個場地！"); return; }
+            activeCourts = activeCourts.filter(n => n !== num);
+        } else {
+            activeCourts.push(num);
+            activeCourts.sort((a, b) => a - b);
+        }
+
+        buildLayout();
+        refreshStats();
+        persistData();
+        updateModalUI();
+    }
+
+    function buildLayout() {
+        const cWrap = document.getElementById('courts-wrapper');
+        const qWrap = document.getElementById('queues-wrapper');
+        
+        if (!cWrap || !qWrap) return;
+
+        const courtCount = activeCourts.length;
+        document.documentElement.style.setProperty('--court-count', courtCount);
+        
+        if (courtCount >= 7) {
+            document.documentElement.style.setProperty('--p-name-size', '12px');
+            document.documentElement.style.setProperty('--p-sub-size', '9px');
+            document.documentElement.style.setProperty('--p-badge-size', '8px');
+        } else if (courtCount >= 5) {
+            document.documentElement.style.setProperty('--p-name-size', '12.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+        } else {
+            document.documentElement.style.setProperty('--p-name-size', '13.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '10px');
+            document.documentElement.style.setProperty('--p-badge-size', '9px');
+        }
+
+        cWrap.innerHTML = '';
+        qWrap.innerHTML = '';
+
+        activeCourts.forEach((num, index) => {
+            const qCode = queueLabels[index] || (index + 1);
+
+            cWrap.innerHTML += `
+                <div class="slot-item">
+                    <div class="slot-inner">
+                        <div class="card-header" style="align-items: flex-start;">
+                            <div class="court-header-title">
+                                <div class="court-title-row-top">
+                                    <span>${num}場</span>
+                                </div>
+                                <span class="court-timer-badge" id="timer-court-${num}">00:00</span>
+                            </div>
+                            <span class="badge" id="b-court-${num}">0</span>
+                        </div>
+                        <div class="drop-zone" id="court-${num}"></div>
+                    </div>
+                    <button class="finish-btn" onclick="finishMatch(${num})">結束比賽</button>
+                </div>
+            `;
+
+            qWrap.innerHTML += `
+                <div class="slot-item">
+                    <div class="slot-inner">
+                        <div class="card-header">
+                            <span>等${qCode}</span>
+                            <span class="badge" id="b-queue-${qCode}">0</span>
+                        </div>
+                        <div class="drop-zone" id="queue-${qCode}"></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        bindDropZones();
+        updateCourtTimers();
+    }
+
+    function toggleDeleteMode() {
+        isDeleteMode = !isDeleteMode;
+        document.getElementById('deleteToggleBtn').classList.toggle('active', isDeleteMode);
+        document.body.classList.toggle('delete-mode-active', isDeleteMode);
+    }
+
+    function deletePlayerNode(elem) {
+        saveHistoryState();
+        elem.remove();
+        refreshStats();
+        persistData();
+        filterAndSortRestZone();
+    }
+
+    function saveHistoryState() {
+        undoStack.push({ activeCourts: [...activeCourts], store: getCurrentStateObject() });
+        if (undoStack.length > MAX_HISTORY) undoStack.shift();
+        updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+        document.getElementById('undoBtn').disabled = (undoStack.length === 0);
+    }
+
+    function undo() {
+        if (undoStack.length === 0) return;
+        const prev = undoStack.pop();
+        activeCourts = prev.activeCourts;
+        buildLayout();
+        applyStateObject(prev.store);
+        refreshStats();
+        persistData();
+        filterAndSortRestZone();
+        updateUndoRedoButtons();
+    }
+
+    function toggleWinnerCard(elem) {
+        if (!elem.parentElement || !elem.parentElement.id.startsWith('court-')) return;
+        elem.classList.toggle('is-winner');
+        elem.dataset.selectedWin = elem.classList.contains('is-winner') ? "true" : "false";
+    }
+
+    /* 🎯 結束比賽 (由等待區 A 優先上場遞補，全場平移) */
+    function finishMatch(courtNum) {
+        const court = document.getElementById(`court-${courtNum}`);
+        const rest = document.getElementById('rest');
+        if (!court || !rest) return;
+
+        const courtPlayers = Array.from(court.children);
+        if (courtPlayers.length > 0 && !courtPlayers.some(pNode => pNode.dataset.selectedWin === "true")) {
+            alert(`請先點擊獲勝球員標示贏家！`);
+            return;
+        }
+
+        saveHistoryState();
+        const winners = [], losers = [];
+
+        courtPlayers.forEach(pNode => {
+            let played = parseInt(pNode.dataset.played || 0) + 1;
+            let wins = parseInt(pNode.dataset.wins || 0);
+
+            if (pNode.dataset.selectedWin === "true") { wins++; winners.push(pNode.dataset.name); }
+            else losers.push(pNode.dataset.name);
+
+            pNode.dataset.played = played;
+            pNode.dataset.wins = wins;
+            pNode.dataset.selectedWin = "false";
+            pNode.classList.remove('is-winner');
+
+            updatePlayerCardUI(pNode);
+            rest.appendChild(pNode);
+        });
+
+        if (winners.length > 0 || losers.length > 0) {
+            const endTimeObj = new Date();
+            const startMs = courtStartTimes[courtNum] || endTimeObj.getTime();
+            const startTimeObj = new Date(startMs);
+            const durationMs = Math.max(0, endTimeObj.getTime() - startMs);
+            const durationMins = Math.max(1, Math.round(durationMs / (1000 * 60)));
+
+            const matchLog = {
+                time: formatTimeNoSeconds(startTimeObj),
+                startTime: formatTimeNoSeconds(startTimeObj),
+                endTime: formatHourMinOnly(endTimeObj),
+                durationMins: durationMins,
+                court: courtNum,
+                winners: winners,
+                losers: losers
+            };
+
+            delete courtStartTimes[courtNum];
+
+            if (isFirebaseActive && historyDbRef) {
+                historyDbRef.push(matchLog);
+            } else {
+                const autoKey = 'log_' + Date.now();
+                rawHistoryLogs[autoKey] = matchLog;
+                localStorage.setItem(`${customStoragePrefix}history_logs`, JSON.stringify(rawHistoryLogs));
+            }
+        }
+
+        const headQueue = document.getElementById('queue-A');
+        if (headQueue) {
+            const queuePlayers = Array.from(headQueue.children);
+            queuePlayers.forEach(pNode => {
+                court.appendChild(pNode);
+            });
+            if (court.children.length > 0) courtStartTimes[courtNum] = Date.now();
+        }
+
+        if (queueMode === 'shift') {
+            for (let i = 0; i < queueLabels.length - 1; i++) {
+                const currQ = document.getElementById(`queue-${queueLabels[i]}`);
+                const nextQ = document.getElementById(`queue-${queueLabels[i+1]}`);
+                if (currQ && nextQ) {
+                    while (nextQ.firstChild) {
+                        currQ.appendChild(nextQ.firstChild);
+                    }
+                }
+            }
+        }
+
+        filterAndSortRestZone();
+        refreshStats();
+        persistData();
+    }
+
+    function createPlayer() {
+        const nameInput = document.getElementById('pName');
+        const genderInput = document.getElementById('pGender');
+        const levelInput = document.getElementById('pLevel');
+        if (!nameInput) return;
+
+        const val = nameInput.value.trim();
+        if(!val) return;
+
+        saveHistoryState();
+
+        const pId = 'p_' + Date.now();
+        const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, 0, 0, false);
+        
+        const rest = document.getElementById('rest');
+        if (rest) {
+            rest.appendChild(pElem);
+        }
+
+        registerPlayerToRoster(val, genderInput.value, levelInput.value);
+
+        nameInput.value = '';
+        filterAndSortRestZone();
+        refreshStats();
+        persistData();
+    }
+
+    function makePlayerNode(id, name, gender, level = "blue", played = 0, wins = 0, isWinner = false) {
+        const div = document.createElement('div');
+        div.className = 'player-card' + (isWinner ? ' is-winner' : '');
+        div.id = id;
+        div.draggable = true;
+        div.dataset.gender = gender;
+        div.dataset.level = level;
+        div.dataset.name = name;
+        div.dataset.played = played;
+        div.dataset.wins = wins;
+        div.dataset.selectedWin = isWinner ? "true" : "false";
+
+        const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
+        const lvlName = levelTextMap[level] || "初階";
+
+        div.innerHTML = `
+            <div class="player-main">
+                <div class="player-name-row">
+                    <span class="player-name-text" title="${name}">${name}</span>
+                    <span class="winner-tag">勝</span>
+                </div>
+                <div class="player-sub">
+                    <span class="level-badge ${level}">${lvlName}</span>
+                    <span>${played}場 ${winRate}%</span>
+                </div>
+            </div>
+        `;
+
+        bindTouchEvents(div);
+        return div;
+    }
+
+    function updatePlayerCardUI(elem) {
+        const played = parseInt(elem.dataset.played || 0);
+        const wins = parseInt(elem.dataset.wins || 0);
+        const level = elem.dataset.level || "blue";
+        const lvlName = levelTextMap[level] || "初階";
+        const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
+
+        const subElem = elem.querySelector('.player-sub');
+        if (subElem) {
+            subElem.innerHTML = `<span class="level-badge ${level}">${lvlName}</span><span>${played}場 ${winRate}%</span>`;
+        }
+    }
+
+    /* 👆 2. 點選移動機制：點名牌 -> 點目標區域移動 */
+    function bindDropZones() {
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.ondragover = (e) => e.preventDefault();
+            zone.ondragenter = (e) => {
+                e.preventDefault();
+                if (!isDeleteMode) zone.classList.add('drag-over');
+            };
+            zone.ondragleave = () => zone.classList.remove('drag-over');
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                if (isDeleteMode) return;
+
+                const pId = e.dataTransfer.getData('text/plain');
+                const elem = document.getElementById(pId);
+                movePlayerToZone(elem, zone);
+            };
+
+            zone.onclick = (e) => {
+                if (e.target.closest('.player-card')) return;
+                if (currentlySelectedPlayerElem) {
+                    movePlayerToZone(currentlySelectedPlayerElem, zone);
+                }
+            };
+        });
+    }
+
+    function movePlayerToZone(elem, zone) {
+        if (!elem || !zone) return;
+
+        if (elem.parentElement !== zone) {
+            saveHistoryState();
+            
+            if (!zone.id.startsWith('court-')) {
+                elem.classList.remove('is-winner');
+                elem.dataset.selectedWin = "false";
+            }
+
+            if (zone.id.startsWith('court-')) {
+                const cNum = zone.id.split('-')[1];
+                if (zone.children.length === 0 || !courtStartTimes[cNum]) {
+                    courtStartTimes[cNum] = Date.now();
+                }
+            }
+
+            const oldParent = elem.parentElement;
+            zone.appendChild(elem);
+
+            if (oldParent && oldParent.id.startsWith('court-') && oldParent.children.length === 0) {
+                const oldCNum = oldParent.id.split('-')[1];
+                delete courtStartTimes[oldCNum];
+            }
+
+            filterAndSortRestZone();
+            refreshStats();
+            persistData();
+        }
+
+        clearPlayerSelection();
+    }
+
+    function clearPlayerSelection() {
+        if (currentlySelectedPlayerElem) {
+            currentlySelectedPlayerElem.classList.remove('is-selected');
+            currentlySelectedPlayerElem = null;
+        }
+    }
+
+    /* 📜 3. 休息區手勢分離 (上下滑動瀏覽 / 左右滑動拖曳) + 點選移動 */
+    function bindTouchEvents(elem) {
+        let touchTargetZone = null;
+        let startX = 0, startY = 0;
+        let cardRect = null;
+        let clickTimer = null;
+        let clickCount = 0;
+
+        elem.ondragstart = (e) => {
+            if (isDeleteMode) { e.preventDefault(); return; }
+            e.dataTransfer.setData('text/plain', elem.id);
+        };
+
+        const resetCardStyle = () => {
+            elem.classList.remove('dragging-touch');
+            elem.style.position = '';
+            elem.style.left = '';
+            elem.style.top = '';
+            elem.style.width = '';
+            elem.style.height = '';
+            elem.style.maxWidth = '';
+            elem.style.maxHeight = '';
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+        };
+
+        const handleTapAction = () => {
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => {
+                    if (isDeleteMode) {
+                        deletePlayerNode(elem);
+                    } else if (elem.parentElement && elem.parentElement.id.startsWith('court-')) {
+                        toggleWinnerCard(elem);
+                        persistData();
+                    } else {
+                        // 👆 點擊選取名牌 / 取消選取
+                        if (currentlySelectedPlayerElem === elem) {
+                            clearPlayerSelection();
+                        } else {
+                            clearPlayerSelection();
+                            currentlySelectedPlayerElem = elem;
+                            elem.classList.add('is-selected');
+                        }
+                    }
+                    clickCount = 0;
+                }, 220);
+            } else if (clickCount >= 2) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                clearPlayerSelection();
+                openPersonalDetailModal(elem.dataset.name);
+            }
+        };
+
+        elem.onclick = (e) => {
+            if (elem.dataset.isDragging === "true") return;
+            handleTapAction();
+        };
+
+        elem.ontouchstart = (e) => {
+            if (isDeleteMode) return;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            elem.dataset.isDragging = "false";
+            cardRect = elem.getBoundingClientRect();
+        };
+
+        elem.ontouchmove = (e) => {
+            if (isDeleteMode) return;
+            const touch = e.touches[0];
+            const deltaX = Math.abs(touch.clientX - startX);
+            const deltaY = Math.abs(touch.clientY - startY);
+
+            // 🎯 只有當橫向移動明顯大於縱向移動時，才觸發名牌拖曳，否則放行原生上下滾動！
+            if (deltaX > 10 && deltaX > deltaY) {
+                elem.dataset.isDragging = "true";
+            }
+
+            if (elem.dataset.isDragging !== "true") return;
+
+            if (e.cancelable) e.preventDefault();
+
+            if (!elem.classList.contains('dragging-touch')) {
+                elem.classList.add('dragging-touch');
+                if (cardRect && cardRect.width > 0 && cardRect.height > 0) {
+                    const wStr = cardRect.width + 'px';
+                    const hStr = cardRect.height + 'px';
+                    elem.style.width = wStr;
+                    elem.style.height = hStr;
+                    elem.style.maxWidth = wStr;
+                    elem.style.maxHeight = hStr;
+                }
+            }
+
+            const halfW = cardRect && cardRect.width > 0 ? cardRect.width / 2 : 50;
+            const halfH = cardRect && cardRect.height > 0 ? cardRect.height / 2 : 20;
+            elem.style.left = (touch.clientX - halfW) + 'px';
+            elem.style.top = (touch.clientY - halfH) + 'px';
+
+            const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+            const zone = targetElement ? targetElement.closest('.drop-zone') : null;
+
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+            if (zone) {
+                zone.classList.add('drag-over');
+                touchTargetZone = zone;
+            } else {
+                touchTargetZone = null;
+            }
+        };
+
+        elem.ontouchend = (e) => {
+            const wasDragging = (elem.dataset.isDragging === "true");
+            resetCardStyle();
+
+            if (!isDeleteMode && wasDragging && touchTargetZone && elem.parentElement !== touchTargetZone) {
+                movePlayerToZone(elem, touchTargetZone);
+                touchTargetZone = null;
+            }
+            elem.dataset.isDragging = "false";
+        };
+
+        elem.ontouchcancel = () => {
+            resetCardStyle();
+            elem.dataset.isDragging = "false";
+        };
+    }
+
+    function refreshStats() {
+        activeCourts.forEach((n, idx) => {
+            const qCode = queueLabels[idx] || n;
+            const cz = document.getElementById(`court-${n}`);
+            const qz = document.getElementById(`queue-${qCode}`);
+            if (cz) document.getElementById(`b-court-${n}`).innerText = cz.children.length;
+            if (qz) document.getElementById(`b-queue-${qCode}`).innerText = qz.children.length;
+        });
+        const restCount = document.getElementById('rest')?.children.length || 0;
+        document.getElementById('b-rest').innerText = restCount;
+
+        const mbCourts = document.getElementById('mb-courts-count');
+        const mbQueues = document.getElementById('mb-queues-count');
+        const mbRest = document.getElementById('mb-rest-count');
+        if (mbCourts) mbCourts.innerText = document.querySelectorAll('[id^="court-"] .player-card').length;
+        if (mbQueues) mbQueues.innerText = document.querySelectorAll('[id^="queue-"] .player-card').length;
+        if (mbRest) mbRest.innerText = restCount;
+    }
+
+    function getCurrentStateObject() {
+        const store = {};
+        ['rest', ...[1,2,3,4,5,6,7,8].map(n=>`court-${n}`), ...queueLabels.map(c=>`queue-${c}`)].forEach(zId => {
+            const z = document.getElementById(zId);
+            if (z) {
+                store[zId] = Array.from(z.children).map(node => ({
+                    id: node.id, name: node.dataset.name, gender: node.dataset.gender, level: node.dataset.level, played: parseInt(node.dataset.played||0), wins: parseInt(node.dataset.wins||0), isWinner: node.dataset.selectedWin === "true"
+                }));
+            }
+        });
+        return store;
+    }
+
+    function applyStateObject(store) {
+        if (!store) return;
+        ['rest', ...[1,2,3,4,5,6,7,8].map(n=>`court-${n}`), ...queueLabels.map(c=>`queue-${c}`)].forEach(zId => {
+            const zone = document.getElementById(zId);
+            if (zone) zone.innerHTML = '';
+        });
+
+        Object.keys(store).forEach(zId => {
+            const zone = document.getElementById(zId);
+            if (zone && Array.isArray(store[zId])) {
+                store[zId].forEach(item => {
+                    const pNode = makePlayerNode(item.id, item.name, item.gender, item.level, item.played, item.wins, item.isWinner);
+                    zone.appendChild(pNode);
+                    registerPlayerToRoster(item.name, item.gender, item.level);
+                });
+            }
+        });
+        filterAndSortRestZone();
+    }
+
+    function persistData() {
+        if (isRemoteUpdating) return;
+        const payload = { activeCourts, queueMode, store: getCurrentStateObject() };
+        localStorage.setItem(`${customStoragePrefix}badminton_data`, JSON.stringify(payload));
+        if (isFirebaseActive && dbRef) dbRef.set(payload);
+    }
+
+    function restoreData() {
+        if (isFirebaseActive && dbRef) {
+            dbRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    isRemoteUpdating = true;
+                    if (data.activeCourts) { activeCourts = data.activeCourts; queueMode = data.queueMode || 'shift'; buildLayout(); }
+                    applyStateObject(data.store || data);
+                    refreshStats();
+                    isRemoteUpdating = false;
+                } else restoreLocalFallback();
+            });
+
+            if (historyDbRef) {
+                historyDbRef.on('value', (snapshot) => {
+                    rawHistoryLogs = snapshot.val() || {};
+                    if (document.getElementById('historyModal').classList.contains('active')) {
+                        switchHistoryTab(currentHistoryTab);
+                    }
+                });
+            }
+
+            if (rosterDbRef) {
+                rosterDbRef.on('value', (snapshot) => {
+                    globalPlayerRoster = snapshot.val() || {};
+                    if (document.getElementById('rosterModal').classList.contains('active')) {
+                        renderRosterUI();
+                    }
+                });
+            }
+        } else restoreLocalFallback();
+    }
+
+    function restoreLocalFallback() {
+        const raw = localStorage.getItem(`${customStoragePrefix}badminton_data`);
+        if (raw) {
+            try {
+                const data = JSON.parse(raw);
+                if (data.activeCourts) { activeCourts = data.activeCourts; queueMode = data.queueMode || 'shift'; buildLayout(); applyStateObject(data.store); }
+                refreshStats();
+            } catch(e){}
+        }
+
+        const rawHistory = localStorage.getItem(`${customStoragePrefix}history_logs`);
+        if (rawHistory) {
+            try { rawHistoryLogs = JSON.parse(rawHistory) || {}; } catch(e){}
+        }
+
+        const rawRoster = localStorage.getItem(`${customStoragePrefix}player_roster`);
+        if (rawRoster) {
+            try { globalPlayerRoster = JSON.parse(rawRoster) || {}; } catch(e){}
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            undo();
+        }
+    });
+
+    window.onload = () => {
+        buildLayout();
+        restoreData();
+    };
+</script>
+</body>
+</html>
