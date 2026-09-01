@@ -3,24 +3,23 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.5-NIGHT
+    Version: v3.2.7-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 全介面字體全面有感加大（名牌/標頭/計時器/選單/彈窗）
-      2. 支援完整顯示 5 個中文字不截斷
+      1. 7~8 場動態緊湊縮放，保證 5 個中文字完整顯示不被截斷
+      2. 1~4 場維持大字體，5~6 場中字體，7~8 場小字體自動自適應
       3. 0ms 極速點擊勝者高亮變綠色 + 原生雙擊查看戰績
-      4. 程度數字體系(1:初階 2:初中 3:中階 4:團主)
-      5. 季繳/常客/臨打三大身分分類點名與管理選單
-      6. iPad 10.5 吋 100% 穩定自適應滿版
+      4. 一站式管理選單、程度數字體系(1~4)、季繳/常客/臨打分類
+      5. 休息區手勢分離與 iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.5-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.7-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -55,8 +54,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
@@ -354,15 +353,15 @@
         }
 
         .court-timer-badge {
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 700;
             color: #2563eb;
             background: transparent;
             border: 1.5px solid #bfdbfe;
-            padding: 1px 5px;
+            padding: 1px 4px;
             border-radius: 4px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             line-height: 1.2;
         }
 
@@ -388,10 +387,10 @@
             border: 1.5px dashed #cbd5e1; 
             border-radius: 8px; 
             background: #fafafa; 
-            padding: 4px; 
+            padding: var(--zone-pad, 4px); 
             display: flex; 
             flex-direction: column; 
-            gap: 4px; 
+            gap: var(--zone-gap, 4px); 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -402,8 +401,8 @@
 
         .sub-grid-row {
             display: grid;
-            grid-template-columns: repeat(var(--court-count, 4), 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(var(--court-count, 4), minmax(0, 1fr));
+            gap: 5px;
             width: 100%;
             flex: 1;
             min-height: 0;
@@ -415,14 +414,14 @@
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
             border-radius: 8px; 
-            padding: 5px; 
+            padding: var(--slot-pad, 5px); 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
             min-height: 0;
+            min-width: 0;
             box-sizing: border-box;
-            min-width: 78px;
         }
 
         .slot-inner {
@@ -433,9 +432,9 @@
             overflow: hidden;
         }
 
-        /* 🔤 球員名牌卡片 (字體全面放大 + 支援完整 5 個中文字) */
+        /* 🔤 球員名牌卡片 (動態階梯式縮放 + 5 個中文字支援) */
         .player-card { 
-            padding: 5px 6px; 
+            padding: var(--card-pad, 5px 6px); 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
             border-radius: 6px; 
@@ -443,7 +442,7 @@
             display: inline-flex; 
             flex-direction: column;
             align-items: flex-start;
-            gap: 2px;
+            gap: 1px;
             cursor: pointer;
             touch-action: pan-y !important;
             min-width: 0;
@@ -460,14 +459,14 @@
             background: #eff6ff !important;
         }
 
-        .player-card[data-gender="M"] { border-left: 4px solid #2563eb; }
-        .player-card[data-gender="F"] { border-left: 4px solid #ec4899; }
+        .player-card[data-gender="M"] { border-left: var(--border-l, 3.5px) solid #2563eb; }
+        .player-card[data-gender="F"] { border-left: var(--border-l, 3.5px) solid #ec4899; }
 
         /* 🟢 獲勝勝者高亮 */
         .player-card.is-winner {
             background: #d1fae5 !important;
             border-color: #10b981 !important;
-            box-shadow: 0 0 0 2px #10b981;
+            box-shadow: 0 0 0 1.5px #10b981;
         }
 
         body.delete-mode-active .player-card {
@@ -482,10 +481,10 @@
             right: -4px;
             background: #ef4444;
             color: white;
-            font-size: 9px;
+            font-size: 8px;
             border-radius: 50%;
-            width: 15px;
-            height: 15px;
+            width: 13px;
+            height: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -498,7 +497,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            gap: 2px;
+            gap: 1px;
         }
 
         .player-name-row {
@@ -509,52 +508,55 @@
             font-size: var(--p-name-size, 15px);
             font-weight: 700;
             color: #1e293b;
-            gap: 2px;
-            line-height: 1.2;
+            gap: 1px;
+            line-height: 1.15;
         }
 
+        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 5.5em;
+            max-width: 6em;
             flex: 1;
-            letter-spacing: -0.2px;
+            letter-spacing: -0.3px;
         }
 
         .winner-tag {
             display: none;
-            font-size: 9px;
+            font-size: 8px;
             background: #10b981;
             color: white;
-            padding: 1px 3px;
-            border-radius: 3px;
+            padding: 1px 2px;
+            border-radius: 2px;
             font-weight: bold;
             flex-shrink: 0;
+            line-height: 1;
         }
 
         .player-card.is-winner .winner-tag { display: inline-block; }
 
         .player-sub {
-            font-size: var(--p-sub-size, 11.5px);
+            font-size: var(--p-sub-size, 11px);
             color: #475569;
             font-weight: 600;
             white-space: nowrap;
             display: flex;
-            gap: 3px;
+            gap: 2px;
             align-items: center;
             width: 100%;
-            line-height: 1.2;
+            line-height: 1.15;
         }
 
         .level-badge {
-            padding: 1px 4px;
-            border-radius: 4px;
+            padding: 1px 3px;
+            border-radius: 3px;
             font-weight: 700;
-            font-size: var(--p-badge-size, 10.5px);
+            font-size: var(--p-badge-size, 10px);
             color: #ffffff !important;
             display: inline-block;
-            line-height: 1.1;
+            line-height: 1;
+            letter-spacing: -0.2px;
         }
         .level-badge.blue { background-color: #0284c7; }
         .level-badge.green { background-color: #16a34a; }
@@ -678,7 +680,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.5-NIGHT</span>
+            <span class="version-tag">v3.2.7-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -1172,7 +1174,7 @@
 
         const container = document.getElementById('pd-matchLogsContainer');
         if (personalLogs.length === 0) {
-            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無該球員參戰紀錄</p>';
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; padding: 20px 0;">尚無該球員參戰紀錄</p>';
         } else {
             container.innerHTML = '';
             [...personalLogs].reverse().forEach(item => {
@@ -1204,10 +1206,23 @@
     }
 
     function openRosterModal() { 
+        sanitizeRosterCategories();
         switchRosterTab(currentRosterTab); 
         document.getElementById('rosterModal').classList.add('active'); 
     }
     function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
+
+    function sanitizeRosterCategories() {
+        if (!globalPlayerRoster || typeof globalPlayerRoster !== 'object') {
+            globalPlayerRoster = {};
+            return;
+        }
+        Object.keys(globalPlayerRoster).forEach(k => {
+            if (!globalPlayerRoster[k].category || !['member', 'regular', 'casual'].includes(globalPlayerRoster[k].category)) {
+                globalPlayerRoster[k].category = 'casual';
+            }
+        });
+    }
 
     function switchRosterTab(categoryKey) {
         currentRosterTab = categoryKey;
@@ -1223,6 +1238,7 @@
         const countTextElem = document.getElementById('rosterCountText');
         if (!container) return;
 
+        sanitizeRosterCategories();
         const keys = Object.keys(globalPlayerRoster);
         const categoryKeys = keys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
 
@@ -1231,7 +1247,7 @@
         }
 
         if (categoryKeys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2; padding: 20px 0;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
             updateRosterSubmitBtnUI();
             return;
         }
@@ -1426,7 +1442,9 @@
         if (!name) return;
         const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
         if (!safeKey) return;
-        globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue", category: category || "casual" };
+        if (!globalPlayerRoster[safeKey]) {
+            globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue", category: category || "casual" };
+        }
     }
 
     function exportRosterJSON() { downloadJSONFile(globalPlayerRoster, `roster_midnight_${new Date().toISOString().slice(0,10)}.json`); }
@@ -1437,7 +1455,16 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(evt) {
-            try { globalPlayerRoster = { ...globalPlayerRoster, ...JSON.parse(evt.target.result) }; renderRosterUI(); alert("✅ 匯入成功！"); } catch (err) { alert("❌ 格式錯誤！"); }
+            try { 
+                const imported = JSON.parse(evt.target.result);
+                if (typeof imported === 'object' && imported !== null) {
+                    globalPlayerRoster = { ...globalPlayerRoster, ...imported };
+                    sanitizeRosterCategories();
+                    renderRosterUI();
+                    persistData();
+                    alert("✅ 匯入成功！");
+                }
+            } catch (err) { alert("❌ 格式錯誤！"); }
         };
         reader.readAsText(file);
     }
@@ -1458,7 +1485,7 @@
         if (!container) return;
 
         const keys = Object.keys(rawHistoryLogs);
-        if (keys.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無歷史比賽紀錄</p>'; return; }
+        if (keys.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; padding: 20px 0;">尚無歷史比賽紀錄</p>'; return; }
 
         container.innerHTML = '';
         keys.reverse().forEach((key) => {
@@ -1529,7 +1556,7 @@
             return { name, played: p, wins: w, losses: p - w, rate: p > 0 ? Math.round((w / p) * 100) : 0 };
         });
 
-        if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無統計資料</p>'; return; }
+        if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; padding: 20px 0;">尚無統計資料</p>'; return; }
 
         playerList.sort((a, b) => b.wins - a.wins || b.rate - a.rate || a.played - b.played);
 
@@ -1675,6 +1702,7 @@
         updateModalUI();
     }
 
+    /* 🎯 7~8 場專屬動態尺寸設定 */
     function buildLayout() {
         const cWrap = document.getElementById('courts-wrapper');
         const qWrap = document.getElementById('queues-wrapper');
@@ -1685,17 +1713,35 @@
         document.documentElement.style.setProperty('--court-count', courtCount);
         
         if (courtCount >= 7) {
-            document.documentElement.style.setProperty('--p-name-size', '13.5px');
-            document.documentElement.style.setProperty('--p-sub-size', '10.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '9.5px');
+            // 7~8 場模式：縮窄內距與字體，完整呈現 5 個中文字
+            document.documentElement.style.setProperty('--p-name-size', '11.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '8.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '8px');
+            document.documentElement.style.setProperty('--card-pad', '3px 2px');
+            document.documentElement.style.setProperty('--slot-pad', '2px');
+            document.documentElement.style.setProperty('--zone-pad', '2px');
+            document.documentElement.style.setProperty('--zone-gap', '2px');
+            document.documentElement.style.setProperty('--border-l', '2.5px');
         } else if (courtCount >= 5) {
-            document.documentElement.style.setProperty('--p-name-size', '14px');
+            // 5~6 場模式
+            document.documentElement.style.setProperty('--p-name-size', '13px');
+            document.documentElement.style.setProperty('--p-sub-size', '10px');
+            document.documentElement.style.setProperty('--p-badge-size', '9px');
+            document.documentElement.style.setProperty('--card-pad', '4px 4px');
+            document.documentElement.style.setProperty('--slot-pad', '3px');
+            document.documentElement.style.setProperty('--zone-pad', '3px');
+            document.documentElement.style.setProperty('--zone-gap', '3px');
+            document.documentElement.style.setProperty('--border-l', '3px');
+        } else {
+            // 1~4 場模式：大字體
+            document.documentElement.style.setProperty('--p-name-size', '15px');
             document.documentElement.style.setProperty('--p-sub-size', '11px');
             document.documentElement.style.setProperty('--p-badge-size', '10px');
-        } else {
-            document.documentElement.style.setProperty('--p-name-size', '15px');
-            document.documentElement.style.setProperty('--p-sub-size', '11.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '10.5px');
+            document.documentElement.style.setProperty('--card-pad', '5px 6px');
+            document.documentElement.style.setProperty('--slot-pad', '5px');
+            document.documentElement.style.setProperty('--zone-pad', '4px');
+            document.documentElement.style.setProperty('--zone-gap', '4px');
+            document.documentElement.style.setProperty('--border-l', '3.5px');
         }
 
         cWrap.innerHTML = '';
@@ -1917,7 +1963,7 @@
         div.draggable = true;
         div.dataset.gender = gender;
         div.dataset.level = level;
-        div.dataset.category = category;
+        div.dataset.category = category || "casual";
         div.dataset.name = name;
         div.dataset.played = played;
         div.dataset.wins = wins;
@@ -2166,7 +2212,7 @@
             const z = document.getElementById(zId);
             if (z) {
                 store[zId] = Array.from(z.children).map(node => ({
-                    id: node.id, name: node.dataset.name, gender: node.dataset.gender, level: node.dataset.level, category: node.dataset.category, played: parseInt(node.dataset.played||0), wins: parseInt(node.dataset.wins||0), isWinner: node.dataset.selectedWin === "true"
+                    id: node.id, name: node.dataset.name, gender: node.dataset.gender, level: node.dataset.level, category: node.dataset.category || "casual", played: parseInt(node.dataset.played||0), wins: parseInt(node.dataset.wins||0), isWinner: node.dataset.selectedWin === "true"
                 }));
             }
         });
@@ -2184,9 +2230,9 @@
             const zone = document.getElementById(zId);
             if (zone && Array.isArray(store[zId])) {
                 store[zId].forEach(item => {
-                    const pNode = makePlayerNode(item.id, item.name, item.gender, item.level, item.category, item.played, item.wins, item.isWinner);
+                    const pNode = makePlayerNode(item.id, item.name, item.gender, item.level, item.category || "casual", item.played, item.wins, item.isWinner);
                     zone.appendChild(pNode);
-                    registerPlayerToRoster(item.name, item.gender, item.level, item.category);
+                    registerPlayerToRoster(item.name, item.gender, item.level, item.category || "casual");
                 });
             }
         });
@@ -2195,6 +2241,7 @@
 
     function persistData() {
         if (isRemoteUpdating) return;
+        sanitizeRosterCategories();
         const payload = { activeCourts, queueMode, store: getCurrentStateObject() };
         localStorage.setItem(`${customStoragePrefix}badminton_data`, JSON.stringify(payload));
         if (isFirebaseActive && dbRef) dbRef.set(payload);
@@ -2224,7 +2271,17 @@
 
             if (rosterDbRef) {
                 rosterDbRef.on('value', (snapshot) => {
-                    globalPlayerRoster = snapshot.val() || {};
+                    const val = snapshot.val();
+                    if (val && typeof val === 'object' && Object.keys(val).length > 0) {
+                        globalPlayerRoster = val;
+                        sanitizeRosterCategories();
+                        localStorage.setItem(`${customStoragePrefix}player_roster`, JSON.stringify(globalPlayerRoster));
+                    } else {
+                        const rawRoster = localStorage.getItem(`${customStoragePrefix}player_roster`);
+                        if (rawRoster) {
+                            try { globalPlayerRoster = JSON.parse(rawRoster) || {}; } catch(e){}
+                        }
+                    }
                     if (document.getElementById('rosterModal').classList.contains('active')) {
                         renderRosterUI();
                     }
@@ -2250,7 +2307,10 @@
 
         const rawRoster = localStorage.getItem(`${customStoragePrefix}player_roster`);
         if (rawRoster) {
-            try { globalPlayerRoster = JSON.parse(rawRoster) || {}; } catch(e){}
+            try { 
+                globalPlayerRoster = JSON.parse(rawRoster) || {}; 
+                sanitizeRosterCategories();
+            } catch(e){}
         }
     }
 
