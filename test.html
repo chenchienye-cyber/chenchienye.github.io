@@ -2,16 +2,16 @@
 <!--
     ==================================================
     羽球排場系統 (Badminton Court Board)
-    Version: v2.0.6
-    Last Updated: 2026-08-31
-    Features: iPad 10.5吋100dvh動態滿版修復/視窗防溢出/無底色湛藍計時器
+    Version: v2.0.7
+    Last Updated: 2026-09-01
+    Features: 任意場結束A優先遞補/iPad 10.5吋100dvh滿版/中階紅+高手黑/湛藍計時器/勝場榜排名
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>羽球排場系統 v2.0.6</title>
+    <title>羽球排場系統 v2.0.7</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -31,7 +31,6 @@
             left: -9999px !important;
         }
 
-        /* 📏 使用 100dvh 徹底解決 iPad 10.5 吋 Safari 網址列擠壓溢出的問題 */
         html, body {
             width: 100vw;
             height: 100dvh;
@@ -62,7 +61,7 @@
             border-radius: 4px;
         }
         
-        /* 頂部 Header 微調高度 */
+        /* 頂部 Header */
         .top-bar { 
             display: flex; 
             justify-content: space-between; 
@@ -179,7 +178,7 @@
             color: #ffffff;
         }
 
-        /* 📱 主版面：精準扣除頂部 Header 後的高度 (iPad 10.5 滿版不溢出) */
+        /* 📱 主版面：精準適配 iPad 10.5 吋 */
         .main-layout {
             display: grid;
             grid-template-columns: 215px 1fr;
@@ -340,6 +339,7 @@
         .court-limit-badge.high { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
         .court-limit-badge.friendly { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
+        /* 雙排標頭設計 */
         .court-header-title {
             display: flex;
             flex-direction: column;
@@ -356,6 +356,7 @@
             font-weight: 700;
         }
 
+        /* ⏱️ 質感湛藍無底色計時器 */
         .court-timer-badge {
             font-size: 10px;
             font-weight: 700;
@@ -484,7 +485,7 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: var(--p-name-size, 12px);
+            font-size: var(--p-name-size, 12.5px);
             font-weight: 700;
             color: #1e293b;
             gap: 1px;
@@ -513,7 +514,7 @@
         .player-card.is-winner .winner-tag { display: inline-block; }
 
         .player-sub {
-            font-size: var(--p-sub-size, 9px);
+            font-size: var(--p-sub-size, 9.5px);
             color: #475569;
             font-weight: 600;
             white-space: nowrap;
@@ -528,7 +529,7 @@
             padding: 0px 3px;
             border-radius: 3px;
             font-weight: 600;
-            font-size: var(--p-badge-size, 8px);
+            font-size: var(--p-badge-size, 8.5px);
             color: #ffffff !important;
             display: inline-block;
             line-height: 1.1;
@@ -655,7 +656,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">羽球排場系統</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v2.0.6</span>
+            <span class="version-tag">v2.0.7</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -1885,6 +1886,7 @@
         elem.dataset.selectedWin = elem.classList.contains('is-winner') ? "true" : "false";
     }
 
+    /* 🎯 結束比賽 (由等待區 A 優先上場遞補，全場平移) */
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
