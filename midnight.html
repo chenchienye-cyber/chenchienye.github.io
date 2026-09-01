@@ -3,23 +3,23 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.8-NIGHT
+    Version: v3.3.0-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Fix:
-      1. 徹底修復新增30人只顯示1人的 Key 覆蓋與未存檔 Bug
-      2. 點名視窗新增「🌟 全部」總覽分頁，各類別即時統計人數
-      3. 全介面大字體 + 支援完整 5 個中文字
-      4. 7~8 場動態緊湊縮放自適應
-      5. 0ms 極速點擊勝者變綠 + 雙擊戰績履歷
+    Features:
+      1. 球員名單點名視窗卡片拓寬，保證 5 個中文字完整顯示不截斷
+      2. 點名視窗具備「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類與即時人數統計
+      3. 全介面大字體，7~8 場動態階梯式縮放自適應
+      4. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
+      5. 一站式管理選單、程度數字體系(1~4)、iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.8-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.3.0-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -432,7 +432,7 @@
             overflow: hidden;
         }
 
-        /* 🔤 球員名牌卡片 */
+        /* 🔤 主排場板名牌卡片 */
         .player-card { 
             padding: var(--card-pad, 5px 6px); 
             background: #ffffff; 
@@ -512,6 +512,7 @@
             line-height: 1.15;
         }
 
+        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -584,7 +585,7 @@
             background: #ffffff;
             border-radius: 14px;
             width: 100%;
-            max-width: 640px;
+            max-width: 660px;
             padding: 18px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -637,10 +638,48 @@
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; max-height: 45vh; overflow-y: auto; padding: 2px; margin-bottom: 8px; }
-        .roster-item-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
-        .roster-info { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
-        .roster-name { font-size: 13px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* 🔤 點名清單網格拓寬至 150px，確保 5 個中文字名牌不截斷 */
+        .roster-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 6px; 
+            max-height: 45vh; 
+            overflow-y: auto; 
+            padding: 2px; 
+            margin-bottom: 8px; 
+        }
+
+        .roster-item-card { 
+            background: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            padding: 6px 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            min-width: 0;
+        }
+
+        .roster-info { 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            min-width: 0; 
+            overflow: hidden; 
+        }
+
+        /* 🔤 點名視窗球員姓名 5 個中文字完整顯示 */
+        .roster-name { 
+            font-size: 13.5px; 
+            font-weight: 700; 
+            color: #0f172a; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            max-width: 6em;
+            letter-spacing: -0.2px;
+        }
+
         .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; font-weight: 700; }
         .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
 
@@ -680,7 +719,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.8-NIGHT</span>
+            <span class="version-tag">v3.3.0-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -987,7 +1026,7 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
-    let currentRosterTab = 'all'; // 🌟 預設為全部名單
+    let currentRosterTab = 'all';
 
     const levelTextMap = {
         blue: "初階",
@@ -1239,7 +1278,6 @@
         renderRosterUI();
     }
 
-    /* 👥 渲染球員點名清單 (支援 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打) */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
         const countTextElem = document.getElementById('rosterCountText');
@@ -1248,7 +1286,6 @@
         sanitizeRosterCategories();
         const allKeys = Object.keys(globalPlayerRoster);
 
-        // 即時計算各分類數量
         let countMember = 0, countRegular = 0, countCasual = 0;
         allKeys.forEach(k => {
             const cat = globalPlayerRoster[k].category || 'casual';
@@ -1463,13 +1500,11 @@
         renderRosterUI();
     }
 
-    /* 🛡️ 註冊球員至名單：使用安全 Key 確保 30 個人不互相覆蓋 */
     function registerPlayerToRoster(name, gender, level, category = "casual") {
         if (!name) return;
         const trimmedName = name.trim();
         if (!trimmedName) return;
 
-        // 尋找是否已有同名球員，若有則更新，若無則建立唯一 Key
         let targetKey = Object.keys(globalPlayerRoster).find(k => globalPlayerRoster[k] && globalPlayerRoster[k].name === trimmedName);
         if (!targetKey) {
             targetKey = 'roster_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
@@ -1651,7 +1686,14 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(evt) {
-            try { rawHistoryLogs = { ...rawHistoryLogs, ...JSON.parse(evt.target.result) }; switchHistoryTab(currentHistoryTab); alert("✅ 匯入成功！"); } catch (err) { alert("❌ 匯入失敗！"); }
+            try { 
+                const imported = JSON.parse(evt.target.result);
+                if (typeof imported === 'object' && imported !== null) {
+                    rawHistoryLogs = { ...rawHistoryLogs, ...imported };
+                    switchHistoryTab(currentHistoryTab); 
+                    alert("✅ 戰績已成功匯入！");
+                }
+            } catch (err) { alert("❌ 匯入失敗：檔案格式不正確！"); }
         };
         reader.readAsText(file);
     }
@@ -1960,7 +2002,6 @@
         persistData();
     }
 
-    /* ➕ 新增球員：即時註冊至全域名單並存檔 */
     function createPlayer() {
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
@@ -2105,10 +2146,12 @@
         }
     }
 
+    /* ⚡ 點擊立即變綠 + 時間戳雙擊開啟個人履歷 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
         let cardRect = null;
+        let lastTapTime = 0;
 
         elem.ondragstart = (e) => {
             if (isDeleteMode) { e.preventDefault(); return; }
@@ -2129,6 +2172,15 @@
 
         elem.onclick = (e) => {
             if (elem.dataset.isDragging === "true") return;
+
+            const now = Date.now();
+            if (now - lastTapTime < 280) {
+                lastTapTime = 0;
+                clearPlayerSelection();
+                openPersonalDetailModal(elem.dataset.name);
+                return;
+            }
+            lastTapTime = now;
 
             if (isDeleteMode) {
                 deletePlayerNode(elem);
@@ -2273,7 +2325,6 @@
         filterAndSortRestZone();
     }
 
-    /* 💾 雙向資料庫持久化儲存 */
     function persistData() {
         if (isRemoteUpdating) return;
         sanitizeRosterCategories();
