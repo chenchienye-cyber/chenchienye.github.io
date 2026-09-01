@@ -3,16 +3,16 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.4-NIGHT
+    Version: v3.3.5-NIGHT
     Last Updated: 2026-09-02
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 隊名字體加粗加大 (20px, 900)，底色改為質感深邃半透藍（非全黑）
-      2. 移除版本號標籤，保持 Header 俐落大器
+      1. 隊名視覺全面優化：完全去除黑底，改為極光湛藍漸層+清爽白琉璃微光框 (21px, 900)
+      2. 移除頂部版本號，整體視覺更乾淨大器
       3. 球員名單點名視窗卡片拓寬，5 字姓名完整顯示
       4. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類
-      5. 0ms 極速點擊勝者變綠 + 觸控雙擊查看戰績
+      5. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
       6. iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
@@ -81,47 +81,48 @@
             gap: 8px; 
         }
         
-        /* 🌌 加粗加大、質感深邃半透藍隊名樣式（非全黑） */
+        /* 💎 無黑底、極光湛藍特粗立體隊名 */
         .site-title { 
-            font-size: 20px; 
+            font-size: 21px; 
             font-weight: 900; 
             display: inline-flex; 
             align-items: center; 
             gap: 8px; 
             font-family: "Noto Sans TC", "Fredoka", "Microsoft JhengHei", sans-serif;
-            letter-spacing: 1px;
+            letter-spacing: 0.6px;
             white-space: nowrap;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.9) 100%);
-            color: #38bdf8;
-            border: 1.5px solid #0284c7;
-            padding: 4px 14px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1.5px solid #7dd3fc;
+            padding: 3px 12px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25), inset 0 0 10px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 1px 4px rgba(2, 132, 199, 0.12);
             cursor: pointer;
             transition: all 0.15s ease;
         }
         .site-title:active { 
             transform: scale(0.97);
-            background: rgba(15, 23, 42, 0.98);
-            box-shadow: 0 1px 4px rgba(2, 132, 199, 0.4);
+            background: #e0f2fe;
         }
 
         .site-title-text {
-            color: #38bdf8;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #1e40af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 900;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            filter: drop-shadow(0 1px 1px rgba(2, 132, 199, 0.2));
         }
 
         .site-title-badge {
             font-size: 11px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #7dd3fc;
-            border: 1px solid rgba(56, 189, 248, 0.4);
+            background: #ffffff;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
             padding: 1px 6px;
             border-radius: 4px;
             font-family: sans-serif;
             font-weight: 700;
             letter-spacing: 0px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
