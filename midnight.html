@@ -3,23 +3,24 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.0.0-NIGHT
+    Version: v3.1.0-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 共用 Firebase 配置，透過 clubs/midnight 獨立隔離
+      1. 一站式管理選單 (點擊頂部標題開啟)
       2. 程度數字代碼 (1:初階 2:初中 3:中階 4:團主)
       3. 點選移動功能 (點名牌 -> 點目標區域)
-      4. 休息區上下自然滾動瀏覽 / 左右滑動拖曳卡片
-      5. iPad 10.5 吋 100dvh 動態滿版適配
+      4. 休息區手勢分離 (上下滾動瀏覽 / 左右拖曳)
+      5. 任意場地結束由等待區 A 優先遞補 + 全場平移
+      6. iPad 10.5 吋 100dvh 動態滿版適配
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.0.0-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.1.0-NIGHT</title>
     <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
@@ -105,6 +106,17 @@
             }
         }
 
+        .site-title-badge {
+            font-size: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 1px 4px;
+            border-radius: 4px;
+            -webkit-text-fill-color: #475569;
+            font-family: sans-serif;
+        }
+
         .version-tag {
             font-size: 9px;
             background: #0f172a;
@@ -119,13 +131,10 @@
         }
         
         .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
-        .action-area input { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; outline: none; }
-        .action-area select { padding: 4px 5px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; background: white; outline: none; font-weight: 600; }
-        .action-area button { padding: 4px 8px; background: #2563eb; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 
         .icon-btn {
-            padding: 2px 7px !important;
-            font-size: 11.5px !important;
+            padding: 3px 8px !important;
+            font-size: 12px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -142,19 +151,14 @@
         .redo-btn { background: #475569 !important; color: white !important; }
         .redo-btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; opacity: 0.5; }
         .history-btn { background: #0891b2 !important; color: white !important; }
-        .roster-btn { background: #8b5cf6 !important; color: white !important; }
-        .settings-btn { background: #475569 !important; color: white !important; }
 
         .delete-close-top-btn {
+            display: none;
             background: #dc2626 !important;
             color: #ffffff !important;
-            box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
-            transition: all 0.2s ease-in-out;
-        }
-        .delete-close-top-btn.active {
-            background: #991b1b !important;
             animation: pulse 1.5s infinite;
         }
+        body.delete-mode-active .delete-close-top-btn { display: inline-flex; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
@@ -454,7 +458,6 @@
             flex-shrink: 0;
         }
 
-        /* 👆 點選選取高亮狀態 */
         .player-card.is-selected {
             border-color: #2563eb !important;
             box-shadow: 0 0 0 2px #2563eb, 0 2px 6px rgba(37, 99, 235, 0.25) !important;
@@ -546,7 +549,7 @@
             line-height: 1.1;
         }
 
-        /* 🎨 程度標籤樣式 (1:初階藍, 2:初中綠, 3:中階黃, 4:團主黑) */
+        /* 🎨 程度標籤樣式 (1:初階, 2:初中, 3:中階, 4:團主) */
         .level-badge {
             padding: 0px 3px;
             border-radius: 3px;
@@ -577,7 +580,7 @@
         }
         .modal-overlay.active { display: flex; }
 
-        #rosterModal, #settingsModal, #historyModal, #personalDetailModal, #playerMoveModal { z-index: 2100 !important; }
+        #adminMenuModal, #rosterModal, #settingsModal, #historyModal, #personalDetailModal, #playerMoveModal { z-index: 2100 !important; }
 
         .modal-box {
             background: #ffffff;
@@ -609,6 +612,16 @@
         }
 
         .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
+
+        /* ⚙️ 管理選單區塊 */
+        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+        .menu-section-title { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+        .menu-add-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+        .menu-add-row input { flex: 1.5; min-width: 100px; padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; outline: none; height: 32px; }
+        .menu-add-row select { flex: 1; padding: 5px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; background: white; outline: none; height: 32px; font-weight: 600; }
+        .menu-grid-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 8px; font-size: 12.5px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
+        .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
         .court-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; max-height: 45dvh; overflow-y: auto; }
         .court-btn { padding: 8px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
@@ -660,30 +673,16 @@
 
     <!-- 頂部 Header -->
     <div class="top-bar">
-        <div class="site-title" id="displayClubTitle">
-            深夜羽球
-            <span class="version-tag">v3.0.0-NIGHT</span>
+        <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
+            <span id="displayClubTitle">深夜羽球</span>
+            <span class="site-title-badge">⚙️ 管理</span>
+            <span class="version-tag">v3.1.0-NIGHT</span>
         </div>
         <div class="action-area">
-            <!-- 🔢 程度數字代碼: 1=初階, 2=初中, 3=中階, 4=團主 -->
-            <input type="text" id="pName" placeholder="姓名" autocomplete="off" style="width: 80px;" onkeydown="if(event.key==='Enter') createPlayer()">
-            <select id="pGender">
-                <option value="M">男 ♂</option>
-                <option value="F">女 ♀</option>
-            </select>
-            <select id="pLevel" title="程度代碼: 1=初階, 2=初中, 3=中階, 4=團主">
-                <option value="blue">1: 🔵 初階</option>
-                <option value="green">2: 🟢 初中</option>
-                <option value="yellow">3: 🟡 中階</option>
-                <option value="black">4: ⬛ 團主</option>
-            </select>
-            <button type="button" onclick="createPlayer()">新增</button>
-            
-            <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️</button>
-            <button type="button" class="icon-btn roster-btn" onclick="openRosterModal()" title="常客點名名單">👥</button>
+            <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
+            <button id="redoBtn" class="icon-btn redo-btn" onclick="redo()" title="下一步" disabled>➡️ 下一步</button>
+            <button type="button" class="icon-btn delete-close-top-btn" onclick="toggleDeleteMode()" title="關閉刪除模式">❌ 關閉刪除模式</button>
             <button type="button" class="icon-btn history-btn" onclick="openHistoryModal()" title="對戰紀錄與勝率榜">📜 對戰紀錄</button>
-            <button type="button" class="icon-btn settings-btn" onclick="openSettingsModal()" title="開關場設定">⚙️</button>
-            <button type="button" id="deleteToggleBtn" class="icon-btn delete-close-top-btn" onclick="toggleDeleteMode()" title="切換刪除模式">🗑️</button>
         </div>
     </div>
 
@@ -757,6 +756,49 @@
         </div>
     </div>
 
+    <!-- ⚙️ 管理選單視窗 (點擊頂部標題開啟) -->
+    <div class="modal-overlay" id="adminMenuModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>⚙️ 深夜羽球 - 管理選單</span>
+                <button class="close-modal-btn" onclick="closeAdminMenuModal()">&times;</button>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">➕ 快速新增球員 (支援輸入 1~4)</div>
+                <div class="menu-add-row">
+                    <input type="text" id="pName" placeholder="輸入球員姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayerFromMenu()">
+                    <select id="pGender">
+                        <option value="M">男 ♂</option>
+                        <option value="F">女 ♀</option>
+                    </select>
+                    <select id="pLevel">
+                        <option value="blue">1: 🔵 初階</option>
+                        <option value="green">2: 🟢 初中</option>
+                        <option value="yellow">3: 🟡 中階</option>
+                        <option value="black">4: ⬛ 團主</option>
+                    </select>
+                    <button type="button" class="save-modal-btn" style="height:32px;" onclick="createPlayerFromMenu()">新增至休息區</button>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">🛠️ 系統功能快捷鍵</div>
+                <div class="menu-grid-btns">
+                    <button type="button" class="menu-action-card" onclick="openRosterModalFromMenu()">👥 常客名單與出席點名</button>
+                    <button type="button" class="menu-action-card" onclick="openSettingsModalFromMenu()">⚙️ 開場 / 關場設定 (1~8場)</button>
+                    <button type="button" class="menu-action-card" style="border-color:#f97316; color:#c2410c;" onclick="resetCurrentGameFromMenu()">🧹 重置排場板 (清空名牌)</button>
+                    <button type="button" class="menu-action-card" id="menuDeleteToggleBtn" style="border-color:#ef4444; color:#dc2626;" onclick="toggleDeleteModeFromMenu()">🗑️ 切換球員名牌刪除模式</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div></div>
+                <button class="save-modal-btn secondary" onclick="closeAdminMenuModal()">關閉選單</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 👥 常客球員點名視窗 -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
@@ -784,7 +826,7 @@
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 開場 / 關場設定 (深夜羽球專用)</span>
+                <span>⚙️ 開場 / 關場設定</span>
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
 
@@ -868,9 +910,9 @@
     // -------------------------------------------------------------
     const currentClubName = "深夜羽球";
     const currentAdminPassword = "888";
-    const customStoragePrefix = "midnight_"; // 專用獨立 LocalStorage 前綴
+    const customStoragePrefix = "midnight_";
+    let isAdminUnlocked = false;
 
-    // 💡 共用原 Firebase 專案，但在資料庫內部固定分流至 clubs/midnight 節點
     const firebaseConfig = {
         apiKey: "AIzaSyDPgUmF2FPMpFxgjcLodCvI0GmFsB3cdQU",
         authDomain: "night-badminton.firebaseapp.com",
@@ -890,7 +932,6 @@
 
     try {
         firebase.initializeApp(firebaseConfig);
-        // 🎯 核心隔離節點：所有深夜羽球資料獨立存放於此
         baseClubRef = firebase.database().ref("clubs/midnight");
         dbRef = baseClubRef.child("badminton_supper_club");
         historyDbRef = baseClubRef.child("badminton_match_records");
@@ -901,8 +942,10 @@
     }
 
     function verifyPassword() {
+        if (isAdminUnlocked) return true;
         const input = prompt("🔐 請輸入管理員密碼：");
         if (input === currentAdminPassword) {
+            isAdminUnlocked = true;
             return true;
         } else {
             alert("❌ 密碼錯誤！");
@@ -913,7 +956,7 @@
     let activeCourts = [1, 2, 3, 4];
     let queueMode = 'shift';
     let currentRestLevelFilter = 'all';
-    let currentlySelectedPlayerElem = null; // 👆 點選移動機制
+    let currentlySelectedPlayerElem = null;
 
     const queueLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     let isRemoteUpdating = false;
@@ -940,6 +983,7 @@
     };
 
     const undoStack = [];
+    const redoStack = [];
     const MAX_HISTORY = 20;
     let isDeleteMode = false;
 
@@ -980,7 +1024,6 @@
         filterAndSortRestZone();
     }
 
-    /* 🔍 3. 休息區搜尋與程度過濾 (支援數字 1~4 快速過濾) */
     function filterAndSortRestZone() {
         const restZone = document.getElementById('rest');
         if (!restZone) return;
@@ -1037,6 +1080,46 @@
                 timerElem.innerText = '00:00';
             }
         });
+    }
+
+    /* ⚙️ 管理選單視窗控制 */
+    function openAdminMenuModal() {
+        if (!verifyPassword()) return;
+        const btn = document.getElementById('menuDeleteToggleBtn');
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員名牌刪除模式";
+        document.getElementById('adminMenuModal').classList.add('active');
+    }
+
+    function closeAdminMenuModal() {
+        isAdminUnlocked = false;
+        document.getElementById('adminMenuModal').classList.remove('active');
+    }
+
+    function createPlayerFromMenu() { createPlayer(); }
+    function openRosterModalFromMenu() { openRosterModal(); }
+    function openSettingsModalFromMenu() { openSettingsModal(); }
+    function resetCurrentGameFromMenu() { resetCurrentGame(); }
+    function toggleDeleteModeFromMenu() { 
+        toggleDeleteMode(); 
+        const btn = document.getElementById('menuDeleteToggleBtn');
+        if (btn) btn.innerText = isDeleteMode ? "❌ 關閉刪除模式" : "🗑️ 切換球員名牌刪除模式";
+    }
+
+    function resetCurrentGame() {
+        if (!confirm("⚠️ 確定要重置排場板嗎？此操作將清空休息區、上場區與等待區所有名牌！")) return;
+        if (!verifyPassword()) return;
+
+        saveHistoryState();
+        const allZones = ['rest', ...[1,2,3,4,5,6,7,8].map(n=>`court-${n}`), ...queueLabels.map(c=>`queue-${c}`)];
+        allZones.forEach(zId => {
+            const z = document.getElementById(zId);
+            if (z) z.innerHTML = '';
+        });
+
+        Object.keys(courtStartTimes).forEach(key => delete courtStartTimes[key]);
+        refreshStats();
+        persistData();
+        alert("🧹 排場板已成功重置！");
     }
 
     function openPersonalDetailModal(playerName) {
@@ -1167,7 +1250,6 @@
         renderRosterUI();
     }
 
-    /* 🔢 1. 編輯球員名單程度（支援數字代碼） */
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1548,7 +1630,6 @@
 
     function toggleDeleteMode() {
         isDeleteMode = !isDeleteMode;
-        document.getElementById('deleteToggleBtn').classList.toggle('active', isDeleteMode);
         document.body.classList.toggle('delete-mode-active', isDeleteMode);
     }
 
@@ -1563,19 +1644,35 @@
     function saveHistoryState() {
         undoStack.push({ activeCourts: [...activeCourts], store: getCurrentStateObject() });
         if (undoStack.length > MAX_HISTORY) undoStack.shift();
+        redoStack.length = 0;
         updateUndoRedoButtons();
     }
 
     function updateUndoRedoButtons() {
         document.getElementById('undoBtn').disabled = (undoStack.length === 0);
+        document.getElementById('redoBtn').disabled = (redoStack.length === 0);
     }
 
     function undo() {
         if (undoStack.length === 0) return;
+        redoStack.push({ activeCourts: [...activeCourts], store: getCurrentStateObject() });
         const prev = undoStack.pop();
         activeCourts = prev.activeCourts;
         buildLayout();
         applyStateObject(prev.store);
+        refreshStats();
+        persistData();
+        filterAndSortRestZone();
+        updateUndoRedoButtons();
+    }
+
+    function redo() {
+        if (redoStack.length === 0) return;
+        undoStack.push({ activeCourts: [...activeCourts], store: getCurrentStateObject() });
+        const next = redoStack.pop();
+        activeCourts = next.activeCourts;
+        buildLayout();
+        applyStateObject(next.store);
         refreshStats();
         persistData();
         filterAndSortRestZone();
@@ -1588,7 +1685,6 @@
         elem.dataset.selectedWin = elem.classList.contains('is-winner') ? "true" : "false";
     }
 
-    /* 🎯 結束比賽 (由等待區 A 優先上場遞補，全場平移) */
     function finishMatch(courtNum) {
         const court = document.getElementById(`court-${courtNum}`);
         const rest = document.getElementById('rest');
@@ -1745,7 +1841,6 @@
         }
     }
 
-    /* 👆 2. 點選移動機制：點名牌 -> 點目標區域移動 */
     function bindDropZones() {
         document.querySelectorAll('.drop-zone').forEach(zone => {
             zone.ondragover = (e) => e.preventDefault();
@@ -1814,7 +1909,6 @@
         }
     }
 
-    /* 📜 3. 休息區手勢分離 (上下滑動瀏覽 / 左右滑動拖曳) + 點選移動 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -1849,7 +1943,6 @@
                         toggleWinnerCard(elem);
                         persistData();
                     } else {
-                        // 👆 點擊選取名牌 / 取消選取
                         if (currentlySelectedPlayerElem === elem) {
                             clearPlayerSelection();
                         } else {
@@ -1888,7 +1981,6 @@
             const deltaX = Math.abs(touch.clientX - startX);
             const deltaY = Math.abs(touch.clientY - startY);
 
-            // 🎯 只有當橫向移動明顯大於縱向移動時，才觸發名牌拖曳，否則放行原生上下滾動！
             if (deltaX > 10 && deltaX > deltaY) {
                 elem.dataset.isDragging = "true";
             }
