@@ -3,23 +3,24 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.1-NIGHT
-    Last Updated: 2026-09-01
+    Version: v3.3.2-NIGHT
+    Last Updated: 2026-09-02
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Fix:
-      1. 球員名單彈窗字體精緻微調(12px)，彻底解除截斷，保證 5 個字以上完整顯示
-      2. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類與即時統計
-      3. 主畫面大字體、7~8 場動態階梯式縮放自適應
-      4. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
-      5. 一站式管理選單、程度數字體系(1~4)、iPad 10.5 吋 100% 穩定滿版
+    Features:
+      1. 隊名配色升級為奢華「金藍色」漸層視覺
+      2. 球員名單彈窗字體精緻微調(12px)，保證 5 個字以上完整顯示
+      3. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類與即時統計
+      4. 主畫面大字體、7~8 場動態階梯式縮放自適應
+      5. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
+      6. 一站式管理選單、程度數字體系(1~4)、iPad 10.5 吋 100% 穩定滿版
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.3.1-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.3.2-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -80,6 +81,7 @@
             gap: 8px; 
         }
         
+        /* 🎨 金藍色奢華漸層隊名 */
         .site-title { 
             font-size: 20px; 
             font-weight: 700; 
@@ -89,14 +91,14 @@
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            color: #ea580c;
+            color: #d97706;
             cursor: pointer;
         }
         .site-title:active { transform: scale(0.98); }
 
         @supports (-webkit-background-clip: text) {
             .site-title {
-                background: linear-gradient(135deg, #ff6b6b 0%, #fa8231 100%);
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 40%, #2563eb 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
@@ -620,7 +622,6 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        /* 👥 常客分頁標籤 */
         .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
         .roster-tab-btn { flex: 1; padding: 6px 2px; border: none; background: transparent; font-size: 12.5px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; white-space: nowrap; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
@@ -637,7 +638,7 @@
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-        /* 🔤 點名清單網格與卡片 (微調字體確保 5 個中文字完整顯示) */
+        /* 🔤 點名清單網格與卡片 */
         .roster-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
@@ -667,7 +668,6 @@
             overflow: visible;
         }
 
-        /* 🔤 點名視窗球員姓名：12px 精緻字體，保證 5 個字完整呈現不截斷 */
         .roster-name { 
             font-size: 12px; 
             font-weight: 700; 
@@ -725,7 +725,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.3.1-NIGHT</span>
+            <span class="version-tag">v3.3.2-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
