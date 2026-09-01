@@ -3,22 +3,21 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.3-NIGHT
+    Version: v3.2.4-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Features:
-      1. 休息區卡片依名牌數量動態自適應顯隱，無名牌時自動收合不佔空白
-      2. 名牌支援完整 5 個中文字
-      3. 一站式管理選單、程度數字體系(1~4)、季繳/常客/臨打分類
-      4. 點選移動機制與手勢分離
+    Fix:
+      1. 移除 220ms 點擊延遲，上場區點擊名牌 0 秒極速變綠色（標示勝者）
+      2. 雙擊個人履歷改用原生 ondblclick，徹底解決快點兩下沒反應問題
+      3. 完整保留管理選單、程度數字體系(1~4)、季繳/常客/臨打分類與 iPad 穩定排版
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.3-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.4-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -48,8 +47,8 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 6px;
-            gap: 6px;
+            padding: 8px;
+            gap: 8px;
         }
 
         ::-webkit-scrollbar {
@@ -71,21 +70,20 @@
             justify-content: space-between; 
             align-items: center; 
             background: #ffffff; 
-            padding: 4px 10px; 
-            border-radius: 8px; 
+            padding: 6px 12px; 
+            border-radius: 10px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 38px;
-            gap: 6px; 
-            width: 100%;
+            height: 42px;
+            gap: 8px; 
         }
         
         .site-title { 
-            font-size: 16px; 
+            font-size: 18px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
-            gap: 5px; 
+            gap: 6px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -103,7 +101,7 @@
         }
 
         .site-title-badge {
-            font-size: 9px;
+            font-size: 10px;
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #cbd5e1;
@@ -114,29 +112,29 @@
         }
 
         .version-tag {
-            font-size: 9px;
+            font-size: 10px;
             background: #0f172a;
             color: #38bdf8;
             border: 1px solid #38bdf8;
-            padding: 1px 4px;
-            border-radius: 3px;
+            padding: 1px 5px;
+            border-radius: 4px;
             font-weight: 700;
             -webkit-text-fill-color: #38bdf8;
             font-family: monospace;
             letter-spacing: 0.5px;
         }
         
-        .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
+        .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
 
         .icon-btn {
-            padding: 3px 8px !important;
-            font-size: 12px !important;
+            padding: 4px 10px !important;
+            font-size: 13px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
-            border-radius: 5px;
+            gap: 4px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             white-space: nowrap;
@@ -170,13 +168,13 @@
 
         .mobile-tab-btn {
             flex: 1;
-            padding: 5px 4px;
+            padding: 6px 4px;
             border: none;
             background: transparent;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             color: #64748b;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
@@ -185,67 +183,63 @@
             color: #ffffff;
         }
 
-        /* 📱 主版面：左右欄結構 */
+        /* 主版面佈局 */
         .main-layout {
             display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 6px;
+            grid-template-columns: 230px 1fr;
+            gap: 8px;
             flex: 1;
             min-height: 0;
-            height: calc(100vh - 52px);
+            height: calc(100vh - 58px);
         }
 
-        /* ✨ 休息區卡片：高度依內容球員數量自適應，不佔多餘留白 */
         .rest-card { 
             display: flex; 
             flex-direction: column; 
-            padding: 6px !important; 
-            height: auto;
-            max-height: 100%;
+            padding: 8px !important; 
+            height: 100%;
             min-height: 0;
-            gap: 4px;
+            gap: 6px;
             overflow: hidden;
             background: #ffffff;
-            border-radius: 8px;
+            border-radius: 10px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            align-self: flex-start;
-            width: 100%;
         }
 
         .rest-filter-bar {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 5px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            padding: 4px;
+            border-radius: 6px;
+            padding: 6px;
             flex-shrink: 0;
         }
 
         .rest-search-row {
             display: flex;
-            gap: 3px;
+            gap: 4px;
             align-items: center;
         }
 
         .rest-search-input {
             flex: 1;
-            padding: 3px 5px;
+            padding: 4px 6px;
             border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 11px;
+            border-radius: 5px;
+            font-size: 12px;
             outline: none;
             background: white;
             min-width: 0;
         }
 
         .rest-sort-select {
-            max-width: 70px;
-            padding: 2px;
+            max-width: 80px;
+            padding: 3px;
             border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 10px;
+            border-radius: 5px;
+            font-size: 11px;
             outline: none;
             background: white;
             font-weight: 600;
@@ -255,7 +249,7 @@
 
         .rest-level-pills {
             display: flex;
-            gap: 2px;
+            gap: 3px;
             overflow-x: auto;
             padding-bottom: 1px;
         }
@@ -264,10 +258,10 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 1px 3px;
-            border-radius: 5px;
+            padding: 2px 5px;
+            border-radius: 8px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -277,31 +271,23 @@
             border-color: #2563eb;
         }
 
-        /* 📜 休息區網格：只在有名牌時展開顯示 */
         .rest-zone {
             flex: 1;
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 4px !important;
+            gap: 5px !important;
             align-content: start;
-            padding: 2px !important;
+            padding: 2px 3px 4px 2px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y !important;
             min-height: 0;
-            border: 1.5px dashed #cbd5e1;
-            border-radius: 5px;
-            background: #fafafa;
-        }
-
-        .rest-zone:empty {
-            display: none !important;
         }
 
         .right-column { 
             display: grid;
             grid-template-rows: 1fr 1fr;
-            gap: 6px; 
+            gap: 8px; 
             height: 100%;
             min-height: 0;
             overflow: hidden;
@@ -309,8 +295,8 @@
 
         .card { 
             background: #ffffff; 
-            border-radius: 8px; 
-            padding: 6px; 
+            border-radius: 10px; 
+            padding: 8px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
@@ -320,10 +306,10 @@
         }
         
         .card-header { 
-            font-size: 13px; 
+            font-size: 14px; 
             font-weight: 700; 
             color: #334155; 
-            margin-bottom: 3px; 
+            margin-bottom: 4px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -333,11 +319,11 @@
         .header-title-group {
             display: flex;
             align-items: baseline;
-            gap: 4px;
+            gap: 6px;
         }
 
         .header-note {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             color: #64748b;
         }
@@ -345,7 +331,7 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
         .court-header-title {
             display: flex;
@@ -364,7 +350,7 @@
         }
 
         .court-timer-badge {
-            font-size: 10px;
+            font-size: 10.5px;
             font-weight: 700;
             color: #2563eb;
             background: transparent;
@@ -380,13 +366,13 @@
             background: #10b981;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 3px 2px;
-            font-size: 11px;
+            border-radius: 5px;
+            padding: 4px 2px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            margin-top: 2px;
+            margin-top: 3px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -396,12 +382,12 @@
             flex: 1;
             min-height: 0; 
             border: 1.5px dashed #cbd5e1; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             background: #fafafa; 
-            padding: 2px; 
+            padding: 3px; 
             display: flex; 
             flex-direction: column; 
-            gap: 2px; 
+            gap: 3px; 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -413,7 +399,7 @@
         .sub-grid-row {
             display: grid;
             grid-template-columns: repeat(var(--court-count, 4), 1fr);
-            gap: 4px;
+            gap: 6px;
             width: 100%;
             flex: 1;
             min-height: 0;
@@ -424,15 +410,15 @@
         .slot-item { 
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
-            border-radius: 5px; 
-            padding: 3px; 
+            border-radius: 6px; 
+            padding: 4px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
             min-height: 0;
             box-sizing: border-box;
-            min-width: 68px;
+            min-width: 72px;
         }
 
         .slot-inner {
@@ -443,12 +429,12 @@
             overflow: hidden;
         }
 
-        /* 🔤 球員名牌卡片 (支援完整顯示 5 個中文字) */
+        /* 球員名牌卡片 */
         .player-card { 
             padding: 4px 5px; 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
             display: inline-flex; 
             flex-direction: column;
@@ -459,7 +445,7 @@
             min-width: 0;
             width: 100%;
             box-sizing: border-box;
-            transition: all 0.15s ease;
+            transition: background-color 0.05s ease, border-color 0.05s ease;
             position: relative;
             flex-shrink: 0;
         }
@@ -473,6 +459,7 @@
         .player-card[data-gender="M"] { border-left: 3px solid #2563eb; }
         .player-card[data-gender="F"] { border-left: 3px solid #ec4899; }
 
+        /* 🟢 獲勝勝者高亮 */
         .player-card.is-winner {
             background: #d1fae5 !important;
             border-color: #10b981 !important;
@@ -688,7 +675,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.3-NIGHT</span>
+            <span class="version-tag">v3.2.4-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -713,8 +700,8 @@
 
     <!-- 主版面 -->
     <div class="main-layout">
-        <!-- 休息區 (無名牌時自動收合，有名牌時貼合內容高度) -->
-        <div class="card rest-card" id="restCardContainer">
+        <!-- 休息區 -->
+        <div class="card rest-card">
             <div class="card-header">
                 <span>&#9208; 休息區</span>
                 <span class="badge" id="b-rest">0</span>
@@ -1703,9 +1690,9 @@
             document.documentElement.style.setProperty('--p-sub-size', '9.5px');
             document.documentElement.style.setProperty('--p-badge-size', '8.5px');
         } else {
-            document.documentElement.style.setProperty('--p-name-size', '12.5px');
-            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+            document.documentElement.style.setProperty('--p-name-size', '13px');
+            document.documentElement.style.setProperty('--p-sub-size', '10px');
+            document.documentElement.style.setProperty('--p-badge-size', '9px');
         }
 
         cWrap.innerHTML = '';
@@ -2034,12 +2021,11 @@
         }
     }
 
+    /* ⚡ 核心修復：移除 220ms 延遲，點擊立即切換綠色 (標示勝者) */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
         let cardRect = null;
-        let clickTimer = null;
-        let clickCount = 0;
 
         elem.ondragstart = (e) => {
             if (isDeleteMode) { e.preventDefault(); return; }
@@ -2058,37 +2044,33 @@
             document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
         };
 
-        const handleTapAction = () => {
-            clickCount++;
-            if (clickCount === 1) {
-                clickTimer = setTimeout(() => {
-                    if (isDeleteMode) {
-                        deletePlayerNode(elem);
-                    } else if (elem.parentElement && elem.parentElement.id.startsWith('court-')) {
-                        toggleWinnerCard(elem);
-                        persistData();
-                    } else {
-                        if (currentlySelectedPlayerElem === elem) {
-                            clearPlayerSelection();
-                        } else {
-                            clearPlayerSelection();
-                            currentlySelectedPlayerElem = elem;
-                            elem.classList.add('is-selected');
-                        }
-                    }
-                    clickCount = 0;
-                }, 220);
-            } else if (clickCount >= 2) {
-                clearTimeout(clickTimer);
-                clickCount = 0;
-                clearPlayerSelection();
-                openPersonalDetailModal(elem.dataset.name);
+        // 🟢 點擊事件：零延遲即時反饋
+        elem.onclick = (e) => {
+            if (elem.dataset.isDragging === "true") return;
+
+            if (isDeleteMode) {
+                deletePlayerNode(elem);
+            } else if (elem.parentElement && elem.parentElement.id.startsWith('court-')) {
+                // ⚡ 上場區點擊立即切換綠色勝者高亮
+                toggleWinnerCard(elem);
+                persistData();
+            } else {
+                // 休息區或等待區點選移動選取
+                if (currentlySelectedPlayerElem === elem) {
+                    clearPlayerSelection();
+                } else {
+                    clearPlayerSelection();
+                    currentlySelectedPlayerElem = elem;
+                    elem.classList.add('is-selected');
+                }
             }
         };
 
-        elem.onclick = (e) => {
-            if (elem.dataset.isDragging === "true") return;
-            handleTapAction();
+        // 👤 原生雙擊事件：雙擊開啟戰績履歷，不與單擊衝突
+        elem.ondblclick = (e) => {
+            e.stopPropagation();
+            clearPlayerSelection();
+            openPersonalDetailModal(elem.dataset.name);
         };
 
         elem.ontouchstart = (e) => {
@@ -2106,6 +2088,7 @@
             const deltaX = Math.abs(touch.clientX - startX);
             const deltaY = Math.abs(touch.clientY - startY);
 
+            // 🎯 橫向移動大於縱向移動才進入拖曳模式，否則放行原生滾動
             if (deltaX > 10 && deltaX > deltaY) {
                 elem.dataset.isDragging = "true";
             }
