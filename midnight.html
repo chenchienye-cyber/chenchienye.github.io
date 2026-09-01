@@ -3,28 +3,27 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.1.0-NIGHT
+    Version: v3.2.0-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 一站式管理選單 (點擊頂部標題開啟)
-      2. 程度數字代碼 (1:初階 2:初中 3:中階 4:團主)
-      3. 點選移動功能 (點名牌 -> 點目標區域)
-      4. 休息區手勢分離 (上下滾動瀏覽 / 左右拖曳)
-      5. 任意場地結束由等待區 A 優先遞補 + 全場平移
-      6. iPad 10.5 吋 100dvh 動態滿版適配
+      1. 球員名單三大分類 (季繳 / 常客 / 臨打) 專屬頁籤與點名
+      2. 一站式管理選單 (點擊頂部標題開啟)
+      3. 程度數字代碼 (1:初階 2:初中 3:中階 4:團主)
+      4. 點選移動功能 (點名牌 -> 點目標區域)
+      5. 休息區手勢分離 (上下滑動瀏覽 / 左右拖曳)
+      6. 任意場結束由等待區 A 優先遞補 + 全場平移
+      7. iPad 10.5 吋 100dvh 動態滿版適配
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.1.0-NIGHT</title>
-    <!-- 引入圓胖風格字體 Google Fonts: Fredoka -->
+    <title>深夜羽球 - 排場系統 v3.2.0-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
-    <!-- 引入 Firebase 即時雲端資料庫 SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -53,8 +52,8 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 4px;
-            gap: 4px;
+            padding: 5px;
+            gap: 5px;
         }
 
         ::-webkit-scrollbar {
@@ -82,6 +81,7 @@
             flex-shrink: 0;
             height: 36px;
             gap: 6px; 
+            width: 100%;
         }
         
         .site-title { 
@@ -192,18 +192,19 @@
         /* 📱 主版面：滿版不溢出 */
         .main-layout {
             display: grid;
-            grid-template-columns: 215px 1fr;
-            gap: 5px;
+            grid-template-columns: 220px minmax(0, 1fr);
+            gap: 6px;
             flex: 1;
             min-height: 0;
-            height: calc(100dvh - 44px);
-            max-height: calc(100dvh - 44px);
+            width: 100%;
+            height: calc(100dvh - 46px);
+            max-height: calc(100dvh - 46px);
         }
 
         .rest-card { 
             display: flex; 
             flex-direction: column; 
-            padding: 5px !important; 
+            padding: 6px !important; 
             height: 100%;
             min-height: 0;
             gap: 4px;
@@ -278,7 +279,7 @@
             border-color: #2563eb;
         }
 
-        /* 📜 休息區：支援上下自然滾動瀏覽 */
+        /* 📜 休息區：上下自然滾動瀏覽 */
         .rest-zone {
             flex: 1;
             display: grid !important;
@@ -295,26 +296,29 @@
         .right-column { 
             display: grid;
             grid-template-rows: 1fr 1fr;
-            gap: 5px; 
+            gap: 6px; 
             height: 100%;
             min-height: 0;
+            min-width: 0;
+            width: 100%;
             overflow: hidden;
         }
 
         .card { 
             background: #ffffff; 
             border-radius: 8px; 
-            padding: 5px; 
+            padding: 6px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
             min-height: 0;
+            min-width: 0;
             height: 100%;
             overflow: hidden;
         }
         
         .card-header { 
-            font-size: 12.5px; 
+            font-size: 13px; 
             font-weight: 700; 
             color: #334155; 
             margin-bottom: 2px; 
@@ -331,7 +335,7 @@
         }
 
         .header-note {
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 600;
             color: #64748b;
         }
@@ -339,7 +343,7 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 4px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 6px; font-size: 10px; font-weight: 600; }
 
         .court-header-title {
             display: flex;
@@ -353,7 +357,7 @@
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 700;
         }
 
@@ -363,11 +367,11 @@
             color: #2563eb;
             background: transparent;
             border: 1px solid #bfdbfe;
-            padding: 0px 3px;
+            padding: 0px 4px;
             border-radius: 3px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
             letter-spacing: 0.3px;
-            line-height: 1.1;
+            line-height: 1.2;
         }
 
         .finish-btn {
@@ -406,11 +410,12 @@
 
         .sub-grid-row {
             display: grid;
-            grid-template-columns: repeat(var(--court-count, 4), 1fr);
-            gap: 4px;
+            grid-template-columns: repeat(var(--court-count, 4), minmax(0, 1fr));
+            gap: 5px;
             width: 100%;
             flex: 1;
             min-height: 0;
+            min-width: 0;
             overflow-x: auto;
             overflow-y: hidden;
         }
@@ -425,8 +430,8 @@
             justify-content: space-between;
             height: 100%;
             min-height: 0;
+            min-width: 0;
             box-sizing: border-box;
-            min-width: 65px;
         }
 
         .slot-inner {
@@ -434,6 +439,7 @@
             flex-direction: column;
             height: 100%;
             min-height: 0;
+            min-width: 0;
             overflow: hidden;
         }
 
@@ -520,7 +526,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 4.5em;
+            max-width: 4.8em;
             flex: 1;
         }
 
@@ -586,7 +592,7 @@
             background: #ffffff;
             border-radius: 12px;
             width: 100%;
-            max-width: 600px;
+            max-width: 620px;
             padding: 14px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -623,6 +629,13 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 8px; font-size: 12.5px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
+        /* 👥 常客分頁切換列與工具列 */
+        .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; flex-shrink: 0; }
+        .roster-tab-btn { flex: 1; padding: 5px; border: none; background: transparent; font-size: 11.5px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
+        .roster-tab-btn.active { background: #ffffff; color: #2563eb; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; color: #64748b; flex-shrink: 0; }
+
         .court-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; max-height: 45dvh; overflow-y: auto; }
         .court-btn { padding: 8px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
@@ -656,13 +669,13 @@
         .p-sum-num { font-size: 14px; font-weight: 700; color: #15803d; }
         .p-sum-label { font-size: 9.5px; color: #64748b; }
 
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .main-layout { grid-template-columns: 1fr !important; }
             .mobile-tabs-bar { display: flex; }
             body[data-mobile-tab="rest"] .right-column { display: none !important; }
             body[data-mobile-tab="courts"] .rest-card { display: none !important; }
             body[data-mobile-tab="queues"] .rest-card { display: none !important; }
-            .sub-grid-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .sub-grid-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         }
     </style>
 </head>
@@ -676,7 +689,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.1.0-NIGHT</span>
+            <span class="version-tag">v3.2.0-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -686,7 +699,7 @@
         </div>
     </div>
 
-    <!-- 📱 手機頁籤導覽列 -->
+    <!-- 📱 手機頁籤導覽列 (僅小螢幕出現) -->
     <div class="mobile-tabs-bar">
         <button class="mobile-tab-btn active" id="mtab-courts" onclick="switchMobileTab('courts')">
             🟢 上場區 (<span id="mb-courts-count">0</span>)
@@ -730,7 +743,7 @@
             <div class="drop-zone rest-zone" id="rest"></div>
         </div>
 
-        <!-- 右側主區域 -->
+        <!-- 右側主區域 (上場區 + 等待區) -->
         <div class="right-column" id="mainRightColumn">
             <!-- 🟢 上場區 -->
             <div class="card">
@@ -765,7 +778,7 @@
             </div>
 
             <div class="menu-section">
-                <div class="menu-section-title">➕ 快速新增球員 (支援輸入 1~4)</div>
+                <div class="menu-section-title">➕ 快速新增球員 (支援身分與程度 1~4)</div>
                 <div class="menu-add-row">
                     <input type="text" id="pName" placeholder="輸入球員姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayerFromMenu()">
                     <select id="pGender">
@@ -778,6 +791,11 @@
                         <option value="yellow">3: 🟡 中階</option>
                         <option value="black">4: ⬛ 團主</option>
                     </select>
+                    <select id="pCategory">
+                        <option value="casual">⚡ 臨打</option>
+                        <option value="member">💳 季繳</option>
+                        <option value="regular">🏸 常客</option>
+                    </select>
                     <button type="button" class="save-modal-btn" style="height:32px;" onclick="createPlayerFromMenu()">新增至休息區</button>
                 </div>
             </div>
@@ -785,7 +803,7 @@
             <div class="menu-section">
                 <div class="menu-section-title">🛠️ 系統功能快捷鍵</div>
                 <div class="menu-grid-btns">
-                    <button type="button" class="menu-action-card" onclick="openRosterModalFromMenu()">👥 常客名單與出席點名</button>
+                    <button type="button" class="menu-action-card" onclick="openRosterModalFromMenu()">👥 球員名單 (季繳/常客/臨打)</button>
                     <button type="button" class="menu-action-card" onclick="openSettingsModalFromMenu()">⚙️ 開場 / 關場設定 (1~8場)</button>
                     <button type="button" class="menu-action-card" style="border-color:#f97316; color:#c2410c;" onclick="resetCurrentGameFromMenu()">🧹 重置排場板 (清空名牌)</button>
                     <button type="button" class="menu-action-card" id="menuDeleteToggleBtn" style="border-color:#ef4444; color:#dc2626;" onclick="toggleDeleteModeFromMenu()">🗑️ 切換球員名牌刪除模式</button>
@@ -799,12 +817,27 @@
         </div>
     </div>
 
-    <!-- 👥 常客球員點名視窗 -->
+    <!-- 👥 球員名單點名視窗 (含 季繳 / 常客 / 臨打 分類頁籤) -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>👥 常客名單與出席點名</span>
+                <span>👥 球員名單與出席點名</span>
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
+            </div>
+
+            <!-- 🏷️ 三大分類頁籤 -->
+            <div class="roster-tabs-bar">
+                <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳</button>
+                <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客</button>
+                <button class="roster-tab-btn active" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打</button>
+            </div>
+
+            <div class="roster-toolbar">
+                <span id="rosterCountText">此分類共 0 人</span>
+                <div style="display:flex; gap:4px;">
+                    <button type="button" class="roster-act-btn" onclick="batchMoveSelectedRoster()">🏷️ 移動分區</button>
+                    <button type="button" class="roster-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選/取消</button>
+                </div>
             </div>
 
             <div class="roster-grid" id="rosterContainer"></div>
@@ -815,7 +848,7 @@
                     <button class="save-modal-btn outline" onclick="triggerRosterImport()">📥 匯入名單</button>
                 </div>
                 <div class="modal-footer-btns">
-                    <button class="save-modal-btn" id="addSelectedBtn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入本次球局</button>
+                    <button class="save-modal-btn" id="addSelectedBtn" style="background:#10b981;" onclick="addSelectedRosterToGame()">☑️ 加入今日球局</button>
                     <button class="save-modal-btn secondary" onclick="closeRosterModal()">關閉</button>
                 </div>
             </div>
@@ -905,9 +938,6 @@
     </div>
 
 <script>
-    // -------------------------------------------------------------
-    // 4. 專屬設定：深夜羽球專用獨立分流 (固定隊名: 深夜羽球, 密碼: 888)
-    // -------------------------------------------------------------
     const currentClubName = "深夜羽球";
     const currentAdminPassword = "888";
     const customStoragePrefix = "midnight_";
@@ -966,8 +996,8 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
+    let currentRosterTab = 'casual'; // 🏷️ 預設點名分頁
 
-    /* 🎨 1. 程度分級數字對照 (1:初階, 2:初中, 3:中階, 4:團主) */
     const levelTextMap = {
         blue: "初階",
         green: "初中",
@@ -980,6 +1010,12 @@
         green: 2,
         yellow: 3,
         black: 4
+    };
+
+    const categoryTextMap = {
+        member: "季繳",
+        regular: "常客",
+        casual: "臨打"
     };
 
     const undoStack = [];
@@ -1180,16 +1216,37 @@
         document.getElementById('personalDetailModal').classList.remove('active');
     }
 
-    function openRosterModal() { renderRosterUI(); document.getElementById('rosterModal').classList.add('active'); }
+    function openRosterModal() { 
+        switchRosterTab(currentRosterTab); 
+        document.getElementById('rosterModal').classList.add('active'); 
+    }
     function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
+
+    /* 🏷️ 切換季繳 / 常客 / 臨打 分頁 */
+    function switchRosterTab(categoryKey) {
+        currentRosterTab = categoryKey;
+        ['member', 'regular', 'casual'].forEach(cat => {
+            const btn = document.getElementById(`rtab-${cat}`);
+            if (btn) btn.classList.toggle('active', cat === categoryKey);
+        });
+        renderRosterUI();
+    }
 
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
+        const countTextElem = document.getElementById('rosterCountText');
         if (!container) return;
 
         const keys = Object.keys(globalPlayerRoster);
-        if (keys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無常客名單紀錄</p>`;
+        const categoryKeys = keys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
+
+        if (countTextElem) {
+            countTextElem.innerText = `此分類【${categoryTextMap[currentRosterTab]}】共 ${categoryKeys.length} 人`;
+        }
+
+        if (categoryKeys.length === 0) {
+            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            updateRosterSubmitBtnUI();
             return;
         }
 
@@ -1199,7 +1256,7 @@
         });
 
         container.innerHTML = '';
-        keys.forEach(key => {
+        categoryKeys.forEach(key => {
             const p = globalPlayerRoster[key];
             const isAlreadyInGame = currentActiveNames.includes(p.name);
             const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
@@ -1207,7 +1264,7 @@
 
             container.innerHTML += `
                 <div class="roster-item-card" style="${isAlreadyInGame ? 'background:#ecfdf5; border-color:#a7f3d0;' : ''}">
-                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}">
+                    <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
                     <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
                         <div style="font-size:10px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
@@ -1219,6 +1276,35 @@
                 </div>
             `;
         });
+
+        updateRosterSubmitBtnUI();
+    }
+
+    function updateRosterSubmitBtnUI() {
+        const modal = document.getElementById('rosterModal');
+        const submitBtn = document.getElementById('addSelectedBtn');
+        if (!modal || !submitBtn) return;
+
+        const checkedBoxes = Array.from(modal.querySelectorAll('.roster-grid input[type="checkbox"]:checked'));
+        if (checkedBoxes.length === 0) {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+            return;
+        }
+
+        const hasInGame = checkedBoxes.some(cb => cb.dataset.inGame === "true");
+        const hasNotInGame = checkedBoxes.some(cb => cb.dataset.inGame === "false");
+
+        if (hasInGame && hasNotInGame) {
+            submitBtn.innerText = "🔄 批次更新球局狀態";
+            submitBtn.style.background = "#2563eb";
+        } else if (hasInGame) {
+            submitBtn.innerText = "↩️ 取消加入球局";
+            submitBtn.style.background = "#ef4444";
+        } else {
+            submitBtn.innerText = "☑️ 加入今日球局";
+            submitBtn.style.background = "#10b981";
+        }
     }
 
     function addSelectedRosterToGame() {
@@ -1240,7 +1326,7 @@
                 });
             } else if (rest) {
                 const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
-                rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "blue", 0, 0, false));
+                rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "blue", p.category || "casual", 0, 0, false));
             }
         });
 
@@ -1250,6 +1336,36 @@
         renderRosterUI();
     }
 
+    /* 🏷️ 批次移動勾選球員至其他分類 */
+    function batchMoveSelectedRoster() {
+        const checkboxes = document.querySelectorAll('#rosterModal .roster-grid input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) { alert("請先勾選要移動分類的球員！"); return; }
+        if (!verifyPassword()) return;
+
+        const targetCatInput = prompt(`選擇要移動到的分類 (請輸入數字)：\n1 : 💳 季繳\n2 : 🏸 常客\n3 : ⚡ 臨打`, "1");
+        if (!targetCatInput) return;
+
+        let newCategory = "member";
+        if (targetCatInput.trim() === '2' || targetCatInput.includes('常客')) newCategory = 'regular';
+        if (targetCatInput.trim() === '3' || targetCatInput.includes('臨打')) newCategory = 'casual';
+
+        checkboxes.forEach(cb => {
+            if (globalPlayerRoster[cb.value]) globalPlayerRoster[cb.value].category = newCategory;
+        });
+
+        persistData();
+        switchRosterTab(newCategory);
+    }
+
+    function toggleSelectAllCategoryRoster() {
+        const checkboxes = Array.from(document.querySelectorAll('#rosterContainer input[type="checkbox"]'));
+        if (checkboxes.length === 0) return;
+        const allChecked = checkboxes.every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        updateRosterSubmitBtnUI();
+    }
+
+    /* 🔢 1. 編輯球員名單程度與分類（支援數字代碼） */
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1277,7 +1393,17 @@
         else if (levelTrimmed === '3' || levelTrimmed === 'yellow' || levelTrimmed === '中階') newLevel = 'yellow';
         else if (levelTrimmed === '4' || levelTrimmed === 'black' || levelTrimmed === '團主') newLevel = 'black';
 
-        const updatedPlayer = { name: newName, gender: newGender, level: newLevel, updatedAt: Date.now() };
+        const currentCatNum = p.category === 'member' ? '1' : (p.category === 'regular' ? '2' : '3');
+        const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)", currentCatNum);
+        if (newCatInput === null) return;
+
+        let newCategory = p.category || "casual";
+        const catTrimmed = newCatInput.trim().toLowerCase();
+        if (catTrimmed === '1' || catTrimmed === 'member' || catTrimmed === '季繳') newCategory = 'member';
+        else if (catTrimmed === '2' || catTrimmed === 'regular' || catTrimmed === '常客') newCategory = 'regular';
+        else if (catTrimmed === '3' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
+
+        const updatedPlayer = { name: newName, gender: newGender, level: newLevel, category: newCategory, updatedAt: Date.now() };
         const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
 
         document.querySelectorAll('.player-card').forEach(card => {
@@ -1285,6 +1411,7 @@
                 card.dataset.name = newName;
                 card.dataset.gender = newGender;
                 card.dataset.level = newLevel;
+                card.dataset.category = newCategory;
                 const nameTextElem = card.querySelector('.player-name-text');
                 if (nameTextElem) nameTextElem.innerText = newName;
                 updatePlayerCardUI(card);
@@ -1311,11 +1438,11 @@
         renderRosterUI();
     }
 
-    function registerPlayerToRoster(name, gender, level) {
+    function registerPlayerToRoster(name, gender, level, category = "casual") {
         if (!name) return;
         const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
         if (!safeKey) return;
-        globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue" };
+        globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue", category: category || "casual" };
     }
 
     function exportRosterJSON() { downloadJSONFile(globalPlayerRoster, `roster_midnight_${new Date().toISOString().slice(0,10)}.json`); }
@@ -1630,6 +1757,7 @@
 
     function toggleDeleteMode() {
         isDeleteMode = !isDeleteMode;
+        document.getElementById('deleteToggleBtn').classList.toggle('active', isDeleteMode);
         document.body.classList.toggle('delete-mode-active', isDeleteMode);
     }
 
@@ -1773,6 +1901,7 @@
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
         const levelInput = document.getElementById('pLevel');
+        const categoryInput = document.getElementById('pCategory');
         if (!nameInput) return;
 
         const val = nameInput.value.trim();
@@ -1780,15 +1909,16 @@
 
         saveHistoryState();
 
+        const cat = categoryInput ? categoryInput.value : "casual";
         const pId = 'p_' + Date.now();
-        const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, 0, 0, false);
+        const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, cat, 0, 0, false);
         
         const rest = document.getElementById('rest');
         if (rest) {
             rest.appendChild(pElem);
         }
 
-        registerPlayerToRoster(val, genderInput.value, levelInput.value);
+        registerPlayerToRoster(val, genderInput.value, levelInput.value, cat);
 
         nameInput.value = '';
         filterAndSortRestZone();
@@ -1796,13 +1926,14 @@
         persistData();
     }
 
-    function makePlayerNode(id, name, gender, level = "blue", played = 0, wins = 0, isWinner = false) {
+    function makePlayerNode(id, name, gender, level = "blue", category = "casual", played = 0, wins = 0, isWinner = false) {
         const div = document.createElement('div');
         div.className = 'player-card' + (isWinner ? ' is-winner' : '');
         div.id = id;
         div.draggable = true;
         div.dataset.gender = gender;
         div.dataset.level = level;
+        div.dataset.category = category;
         div.dataset.name = name;
         div.dataset.played = played;
         div.dataset.wins = wins;
@@ -2060,7 +2191,7 @@
             const z = document.getElementById(zId);
             if (z) {
                 store[zId] = Array.from(z.children).map(node => ({
-                    id: node.id, name: node.dataset.name, gender: node.dataset.gender, level: node.dataset.level, played: parseInt(node.dataset.played||0), wins: parseInt(node.dataset.wins||0), isWinner: node.dataset.selectedWin === "true"
+                    id: node.id, name: node.dataset.name, gender: node.dataset.gender, level: node.dataset.level, category: node.dataset.category, played: parseInt(node.dataset.played||0), wins: parseInt(node.dataset.wins||0), isWinner: node.dataset.selectedWin === "true"
                 }));
             }
         });
@@ -2078,9 +2209,9 @@
             const zone = document.getElementById(zId);
             if (zone && Array.isArray(store[zId])) {
                 store[zId].forEach(item => {
-                    const pNode = makePlayerNode(item.id, item.name, item.gender, item.level, item.played, item.wins, item.isWinner);
+                    const pNode = makePlayerNode(item.id, item.name, item.gender, item.level, item.category, item.played, item.wins, item.isWinner);
                     zone.appendChild(pNode);
-                    registerPlayerToRoster(item.name, item.gender, item.level);
+                    registerPlayerToRoster(item.name, item.gender, item.level, item.category);
                 });
             }
         });
