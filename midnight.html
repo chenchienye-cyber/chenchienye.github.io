@@ -3,21 +3,22 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.2-NIGHT
+    Version: v3.2.3-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Fix:
-      1. 完全還原 v2.0.0 穩定高度骨架 (徹底修復平板只剩1/4畫面問題)
-      2. 名牌文字寬度拓寬，支援完整顯示 5 個中文字
-      3. 完整保留管理選單、程度數字體系(1~4)、季繳/常客/臨打分類
+    Features:
+      1. 休息區卡片依名牌數量動態自適應顯隱，無名牌時自動收合不佔空白
+      2. 名牌支援完整 5 個中文字
+      3. 一站式管理選單、程度數字體系(1~4)、季繳/常客/臨打分類
+      4. 點選移動機制與手勢分離
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.2-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.3-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -47,8 +48,8 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 8px;
-            gap: 8px;
+            padding: 6px;
+            gap: 6px;
         }
 
         ::-webkit-scrollbar {
@@ -70,20 +71,21 @@
             justify-content: space-between; 
             align-items: center; 
             background: #ffffff; 
-            padding: 6px 12px; 
-            border-radius: 10px; 
+            padding: 4px 10px; 
+            border-radius: 8px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 42px;
-            gap: 8px; 
+            height: 38px;
+            gap: 6px; 
+            width: 100%;
         }
         
         .site-title { 
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
-            gap: 6px; 
+            gap: 5px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -101,7 +103,7 @@
         }
 
         .site-title-badge {
-            font-size: 10px;
+            font-size: 9px;
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #cbd5e1;
@@ -112,29 +114,29 @@
         }
 
         .version-tag {
-            font-size: 10px;
+            font-size: 9px;
             background: #0f172a;
             color: #38bdf8;
             border: 1px solid #38bdf8;
-            padding: 1px 5px;
-            border-radius: 4px;
+            padding: 1px 4px;
+            border-radius: 3px;
             font-weight: 700;
             -webkit-text-fill-color: #38bdf8;
             font-family: monospace;
             letter-spacing: 0.5px;
         }
         
-        .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
+        .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
 
         .icon-btn {
-            padding: 4px 10px !important;
-            font-size: 13px !important;
+            padding: 3px 8px !important;
+            font-size: 12px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            border-radius: 6px;
+            gap: 3px;
+            border-radius: 5px;
             border: none;
             cursor: pointer;
             white-space: nowrap;
@@ -168,13 +170,13 @@
 
         .mobile-tab-btn {
             flex: 1;
-            padding: 6px 4px;
+            padding: 5px 4px;
             border: none;
             background: transparent;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #64748b;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
         }
 
@@ -183,63 +185,67 @@
             color: #ffffff;
         }
 
-        /* 📏 還原 v2.0.0 最穩定排版結構 */
+        /* 📱 主版面：左右欄結構 */
         .main-layout {
             display: grid;
-            grid-template-columns: 230px 1fr;
-            gap: 8px;
+            grid-template-columns: 220px 1fr;
+            gap: 6px;
             flex: 1;
             min-height: 0;
-            height: calc(100vh - 58px);
+            height: calc(100vh - 52px);
         }
 
+        /* ✨ 休息區卡片：高度依內容球員數量自適應，不佔多餘留白 */
         .rest-card { 
             display: flex; 
             flex-direction: column; 
-            padding: 8px !important; 
-            height: 100%;
+            padding: 6px !important; 
+            height: auto;
+            max-height: 100%;
             min-height: 0;
-            gap: 6px;
+            gap: 4px;
             overflow: hidden;
             background: #ffffff;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            align-self: flex-start;
+            width: 100%;
         }
 
         .rest-filter-bar {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 3px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 6px;
+            border-radius: 5px;
+            padding: 4px;
             flex-shrink: 0;
         }
 
         .rest-search-row {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             align-items: center;
         }
 
         .rest-search-input {
             flex: 1;
-            padding: 4px 6px;
+            padding: 3px 5px;
             border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 4px;
+            font-size: 11px;
             outline: none;
             background: white;
             min-width: 0;
         }
 
         .rest-sort-select {
-            max-width: 80px;
-            padding: 3px;
+            max-width: 70px;
+            padding: 2px;
             border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            font-size: 11px;
+            border-radius: 4px;
+            font-size: 10px;
             outline: none;
             background: white;
             font-weight: 600;
@@ -249,7 +255,7 @@
 
         .rest-level-pills {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             overflow-x: auto;
             padding-bottom: 1px;
         }
@@ -258,10 +264,10 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
-            padding: 2px 5px;
-            border-radius: 8px;
+            padding: 1px 3px;
+            border-radius: 5px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -271,23 +277,31 @@
             border-color: #2563eb;
         }
 
+        /* 📜 休息區網格：只在有名牌時展開顯示 */
         .rest-zone {
             flex: 1;
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 5px !important;
+            gap: 4px !important;
             align-content: start;
-            padding: 2px 3px 4px 2px !important;
+            padding: 2px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y !important;
             min-height: 0;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+
+        .rest-zone:empty {
+            display: none !important;
         }
 
         .right-column { 
             display: grid;
             grid-template-rows: 1fr 1fr;
-            gap: 8px; 
+            gap: 6px; 
             height: 100%;
             min-height: 0;
             overflow: hidden;
@@ -295,8 +309,8 @@
 
         .card { 
             background: #ffffff; 
-            border-radius: 10px; 
-            padding: 8px; 
+            border-radius: 8px; 
+            padding: 6px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
@@ -306,10 +320,10 @@
         }
         
         .card-header { 
-            font-size: 14px; 
+            font-size: 13px; 
             font-weight: 700; 
             color: #334155; 
-            margin-bottom: 4px; 
+            margin-bottom: 3px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -319,11 +333,11 @@
         .header-title-group {
             display: flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 4px;
         }
 
         .header-note {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: #64748b;
         }
@@ -331,7 +345,7 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 6px; font-size: 10px; font-weight: 600; }
 
         .court-header-title {
             display: flex;
@@ -350,7 +364,7 @@
         }
 
         .court-timer-badge {
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 700;
             color: #2563eb;
             background: transparent;
@@ -366,13 +380,13 @@
             background: #10b981;
             color: white;
             border: none;
-            border-radius: 5px;
-            padding: 4px 2px;
-            font-size: 12px;
+            border-radius: 4px;
+            padding: 3px 2px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            margin-top: 3px;
+            margin-top: 2px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -382,12 +396,12 @@
             flex: 1;
             min-height: 0; 
             border: 1.5px dashed #cbd5e1; 
-            border-radius: 6px; 
+            border-radius: 5px; 
             background: #fafafa; 
-            padding: 3px; 
+            padding: 2px; 
             display: flex; 
             flex-direction: column; 
-            gap: 3px; 
+            gap: 2px; 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -399,7 +413,7 @@
         .sub-grid-row {
             display: grid;
             grid-template-columns: repeat(var(--court-count, 4), 1fr);
-            gap: 6px;
+            gap: 4px;
             width: 100%;
             flex: 1;
             min-height: 0;
@@ -410,15 +424,15 @@
         .slot-item { 
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
-            border-radius: 6px; 
-            padding: 4px; 
+            border-radius: 5px; 
+            padding: 3px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
             min-height: 0;
             box-sizing: border-box;
-            min-width: 72px;
+            min-width: 68px;
         }
 
         .slot-inner {
@@ -434,7 +448,7 @@
             padding: 4px 5px; 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
+            border-radius: 5px; 
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
             display: inline-flex; 
             flex-direction: column;
@@ -508,7 +522,7 @@
             line-height: 1.2;
         }
 
-        /* 🔤 設定 max-width: 5.5em，保證 5 個中文字完整顯示不被截斷 */
+        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -674,7 +688,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.2-NIGHT</span>
+            <span class="version-tag">v3.2.3-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -699,8 +713,8 @@
 
     <!-- 主版面 -->
     <div class="main-layout">
-        <!-- 休息區 -->
-        <div class="card rest-card">
+        <!-- 休息區 (無名牌時自動收合，有名牌時貼合內容高度) -->
+        <div class="card rest-card" id="restCardContainer">
             <div class="card-header">
                 <span>&#9208; 休息區</span>
                 <span class="badge" id="b-rest">0</span>
@@ -1689,9 +1703,9 @@
             document.documentElement.style.setProperty('--p-sub-size', '9.5px');
             document.documentElement.style.setProperty('--p-badge-size', '8.5px');
         } else {
-            document.documentElement.style.setProperty('--p-name-size', '13px');
-            document.documentElement.style.setProperty('--p-sub-size', '10px');
-            document.documentElement.style.setProperty('--p-badge-size', '9px');
+            document.documentElement.style.setProperty('--p-name-size', '12.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
         }
 
         cWrap.innerHTML = '';
