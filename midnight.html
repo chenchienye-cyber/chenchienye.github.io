@@ -3,21 +3,24 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.4-NIGHT
+    Version: v3.2.5-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Fix:
-      1. 移除 220ms 點擊延遲，上場區點擊名牌 0 秒極速變綠色（標示勝者）
-      2. 雙擊個人履歷改用原生 ondblclick，徹底解決快點兩下沒反應問題
-      3. 完整保留管理選單、程度數字體系(1~4)、季繳/常客/臨打分類與 iPad 穩定排版
+    Features:
+      1. 全介面字體全面有感加大（名牌/標頭/計時器/選單/彈窗）
+      2. 支援完整顯示 5 個中文字不截斷
+      3. 0ms 極速點擊勝者高亮變綠色 + 原生雙擊查看戰績
+      4. 程度數字體系(1:初階 2:初中 3:中階 4:團主)
+      5. 季繳/常客/臨打三大身分分類點名與管理選單
+      6. iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.4-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.5-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -52,8 +55,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
@@ -70,20 +73,20 @@
             justify-content: space-between; 
             align-items: center; 
             background: #ffffff; 
-            padding: 6px 12px; 
+            padding: 6px 14px; 
             border-radius: 10px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 42px;
+            height: 46px;
             gap: 8px; 
         }
         
         .site-title { 
-            font-size: 18px; 
+            font-size: 20px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
-            gap: 6px; 
+            gap: 8px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -101,22 +104,23 @@
         }
 
         .site-title-badge {
-            font-size: 10px;
+            font-size: 11px;
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #cbd5e1;
-            padding: 1px 4px;
-            border-radius: 4px;
+            padding: 2px 6px;
+            border-radius: 5px;
             -webkit-text-fill-color: #475569;
             font-family: sans-serif;
+            font-weight: 600;
         }
 
         .version-tag {
-            font-size: 10px;
+            font-size: 11px;
             background: #0f172a;
             color: #38bdf8;
             border: 1px solid #38bdf8;
-            padding: 1px 5px;
+            padding: 2px 6px;
             border-radius: 4px;
             font-weight: 700;
             -webkit-text-fill-color: #38bdf8;
@@ -127,8 +131,8 @@
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
 
         .icon-btn {
-            padding: 4px 10px !important;
-            font-size: 13px !important;
+            padding: 6px 12px !important;
+            font-size: 14px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -160,7 +164,7 @@
             display: none;
             background: #ffffff;
             border-radius: 8px;
-            padding: 3px;
+            padding: 4px;
             gap: 4px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             flex-shrink: 0;
@@ -168,10 +172,10 @@
 
         .mobile-tab-btn {
             flex: 1;
-            padding: 6px 4px;
+            padding: 8px 4px;
             border: none;
             background: transparent;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: #64748b;
             border-radius: 6px;
@@ -183,14 +187,14 @@
             color: #ffffff;
         }
 
-        /* 主版面佈局 */
+        /* 主版面 */
         .main-layout {
             display: grid;
-            grid-template-columns: 230px 1fr;
+            grid-template-columns: 245px 1fr;
             gap: 8px;
             flex: 1;
             min-height: 0;
-            height: calc(100vh - 58px);
+            height: calc(100vh - 62px);
         }
 
         .rest-card { 
@@ -212,34 +216,34 @@
             gap: 5px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 6px;
             flex-shrink: 0;
         }
 
         .rest-search-row {
             display: flex;
-            gap: 4px;
+            gap: 5px;
             align-items: center;
         }
 
         .rest-search-input {
             flex: 1;
-            padding: 4px 6px;
+            padding: 5px 8px;
             border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 6px;
+            font-size: 13px;
             outline: none;
             background: white;
             min-width: 0;
         }
 
         .rest-sort-select {
-            max-width: 80px;
-            padding: 3px;
+            max-width: 85px;
+            padding: 4px;
             border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            font-size: 11px;
+            border-radius: 6px;
+            font-size: 12px;
             outline: none;
             background: white;
             font-weight: 600;
@@ -251,17 +255,17 @@
             display: flex;
             gap: 3px;
             overflow-x: auto;
-            padding-bottom: 1px;
+            padding-bottom: 2px;
         }
 
         .level-pill-btn {
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 2px 5px;
-            border-radius: 8px;
+            padding: 3px 6px;
+            border-radius: 6px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -275,9 +279,9 @@
             flex: 1;
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 5px !important;
+            gap: 6px !important;
             align-content: start;
-            padding: 2px 3px 4px 2px !important;
+            padding: 3px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y !important;
@@ -306,7 +310,7 @@
         }
         
         .card-header { 
-            font-size: 14px; 
+            font-size: 15px; 
             font-weight: 700; 
             color: #334155; 
             margin-bottom: 4px; 
@@ -323,7 +327,7 @@
         }
 
         .header-note {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             color: #64748b;
         }
@@ -331,7 +335,7 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 700; }
 
         .court-header-title {
             display: flex;
@@ -344,21 +348,21 @@
         .court-title-row-top {
             display: flex;
             align-items: center;
-            gap: 3px;
-            font-size: 12px;
+            gap: 4px;
+            font-size: 14px;
             font-weight: 700;
         }
 
         .court-timer-badge {
-            font-size: 10.5px;
+            font-size: 12.5px;
             font-weight: 700;
             color: #2563eb;
             background: transparent;
-            border: 1px solid #bfdbfe;
-            padding: 0px 4px;
-            border-radius: 3px;
+            border: 1.5px solid #bfdbfe;
+            padding: 1px 5px;
+            border-radius: 4px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
             line-height: 1.2;
         }
 
@@ -366,13 +370,13 @@
             background: #10b981;
             color: white;
             border: none;
-            border-radius: 5px;
-            padding: 4px 2px;
-            font-size: 12px;
+            border-radius: 6px;
+            padding: 5px 2px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            margin-top: 3px;
+            margin-top: 4px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -382,12 +386,12 @@
             flex: 1;
             min-height: 0; 
             border: 1.5px dashed #cbd5e1; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             background: #fafafa; 
-            padding: 3px; 
+            padding: 4px; 
             display: flex; 
             flex-direction: column; 
-            gap: 3px; 
+            gap: 4px; 
             align-content: flex-start; 
             align-items: stretch;
             transition: all 0.2s; 
@@ -410,15 +414,15 @@
         .slot-item { 
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
-            border-radius: 6px; 
-            padding: 4px; 
+            border-radius: 8px; 
+            padding: 5px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
             min-height: 0;
             box-sizing: border-box;
-            min-width: 72px;
+            min-width: 78px;
         }
 
         .slot-inner {
@@ -429,9 +433,9 @@
             overflow: hidden;
         }
 
-        /* 球員名牌卡片 */
+        /* 🔤 球員名牌卡片 (字體全面放大 + 支援完整 5 個中文字) */
         .player-card { 
-            padding: 4px 5px; 
+            padding: 5px 6px; 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
             border-radius: 6px; 
@@ -456,14 +460,14 @@
             background: #eff6ff !important;
         }
 
-        .player-card[data-gender="M"] { border-left: 3px solid #2563eb; }
-        .player-card[data-gender="F"] { border-left: 3px solid #ec4899; }
+        .player-card[data-gender="M"] { border-left: 4px solid #2563eb; }
+        .player-card[data-gender="F"] { border-left: 4px solid #ec4899; }
 
         /* 🟢 獲勝勝者高亮 */
         .player-card.is-winner {
             background: #d1fae5 !important;
             border-color: #10b981 !important;
-            box-shadow: 0 0 0 1.5px #10b981;
+            box-shadow: 0 0 0 2px #10b981;
         }
 
         body.delete-mode-active .player-card {
@@ -474,14 +478,14 @@
         body.delete-mode-active .player-card::after {
             content: "\274C";
             position: absolute;
-            top: -3px;
-            right: -3px;
+            top: -4px;
+            right: -4px;
             background: #ef4444;
             color: white;
-            font-size: 8px;
+            font-size: 9px;
             border-radius: 50%;
-            width: 13px;
-            height: 13px;
+            width: 15px;
+            height: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -502,14 +506,13 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: var(--p-name-size, 12.5px);
+            font-size: var(--p-name-size, 15px);
             font-weight: 700;
             color: #1e293b;
             gap: 2px;
             line-height: 1.2;
         }
 
-        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -521,11 +524,11 @@
 
         .winner-tag {
             display: none;
-            font-size: 8px;
+            font-size: 9px;
             background: #10b981;
             color: white;
-            padding: 0px 2px;
-            border-radius: 2px;
+            padding: 1px 3px;
+            border-radius: 3px;
             font-weight: bold;
             flex-shrink: 0;
         }
@@ -533,7 +536,7 @@
         .player-card.is-winner .winner-tag { display: inline-block; }
 
         .player-sub {
-            font-size: var(--p-sub-size, 9.5px);
+            font-size: var(--p-sub-size, 11.5px);
             color: #475569;
             font-weight: 600;
             white-space: nowrap;
@@ -545,10 +548,10 @@
         }
 
         .level-badge {
-            padding: 1px 3px;
-            border-radius: 3px;
-            font-weight: 600;
-            font-size: var(--p-badge-size, 8.5px);
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: var(--p-badge-size, 10.5px);
             color: #ffffff !important;
             display: inline-block;
             line-height: 1.1;
@@ -578,10 +581,10 @@
 
         .modal-box {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 14px;
             width: 100%;
-            max-width: 620px;
-            padding: 16px;
+            max-width: 640px;
+            padding: 18px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
             max-height: 85vh;
@@ -596,64 +599,64 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 6px;
+            padding-bottom: 8px;
             flex-shrink: 0;
         }
 
-        .close-modal-btn { background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
+        .close-modal-btn { background: transparent; border: none; font-size: 24px; color: #64748b; cursor: pointer; }
 
-        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-        .menu-section-title { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+        .menu-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .menu-section-title { font-size: 13.5px; font-weight: 700; color: #334155; margin-bottom: 6px; }
         .menu-add-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .menu-add-row input { flex: 1.5; min-width: 110px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; height: 34px; }
-        .menu-add-row select { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: white; outline: none; height: 34px; font-weight: 600; }
+        .menu-add-row input { flex: 1.5; min-width: 110px; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; height: 36px; }
+        .menu-add-row select { flex: 1; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: white; outline: none; height: 36px; font-weight: 600; }
         .menu-grid-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 8px; font-size: 13px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
+        .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; }
-        .roster-tab-btn { flex: 1; padding: 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
+        .roster-tabs-bar { display: flex; gap: 6px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
+        .roster-tab-btn { flex: 1; padding: 6px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
 
-        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; color: #64748b; }
+        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: #64748b; }
 
         .court-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; max-height: 45vh; overflow-y: auto; }
-        .court-btn { padding: 8px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .court-btn { padding: 10px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
 
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 8px; }
-        .modal-footer-btns { display: flex; gap: 4px; align-items: center; }
-        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 10px; }
+        .modal-footer-btns { display: flex; gap: 6px; align-items: center; }
+        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; max-height: 45vh; overflow-y: auto; padding: 2px; margin-bottom: 8px; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; max-height: 45vh; overflow-y: auto; padding: 2px; margin-bottom: 8px; }
         .roster-item-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
         .roster-info { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
-        .roster-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 2px 5px; font-size: 10px; cursor: pointer; font-weight: 700; }
+        .roster-name { font-size: 13px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .roster-act-btn { background: #e2e8f0; color: #334155; border: none; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; font-weight: 700; }
         .roster-act-btn.del { background: #fee2e2; color: #dc2626; }
 
-        .history-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 2px; border-radius: 5px; }
-        .history-tab-btn { flex: 1; padding: 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #64748b; border-radius: 4px; cursor: pointer; }
+        .history-tabs-bar { display: flex; gap: 6px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
+        .history-tab-btn { flex: 1; padding: 6px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; }
         .history-tab-btn.active { background: #ffffff; color: #0f172a; }
 
         .history-list-container { flex: 1; overflow-y: auto; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
-        .history-item-single-row { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; font-size: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-        .hist-time-tag { color: #475569; font-weight: 700; font-size: 11px; flex-shrink: 0; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
+        .history-item-single-row { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px 9px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .hist-time-tag { color: #475569; font-weight: 700; font-size: 12px; flex-shrink: 0; background: #e2e8f0; padding: 2px 5px; border-radius: 4px; }
 
-        .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .stats-table th, .stats-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .stats-table th, .stats-table td { padding: 7px 9px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         .stats-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
 
-        .personal-summary-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px; margin-bottom: 8px; display: flex; justify-content: space-around; align-items: center; text-align: center; }
-        .p-sum-num { font-size: 15px; font-weight: 700; color: #15803d; }
-        .p-sum-label { font-size: 10px; color: #64748b; }
+        .personal-summary-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-around; align-items: center; text-align: center; }
+        .p-sum-num { font-size: 17px; font-weight: 700; color: #15803d; }
+        .p-sum-label { font-size: 11px; color: #64748b; }
 
         @media (max-width: 768px) {
             .main-layout { grid-template-columns: 1fr !important; }
@@ -675,7 +678,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.4-NIGHT</span>
+            <span class="version-tag">v3.2.5-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -782,7 +785,7 @@
                         <option value="member">💳 季繳</option>
                         <option value="regular">🏸 常客</option>
                     </select>
-                    <button type="button" class="save-modal-btn" style="height:34px;" onclick="createPlayerFromMenu()">新增至休息區</button>
+                    <button type="button" class="save-modal-btn" style="height:36px;" onclick="createPlayerFromMenu()">新增至休息區</button>
                 </div>
             </div>
 
@@ -819,7 +822,7 @@
 
             <div class="roster-toolbar">
                 <span id="rosterCountText">此分類共 0 人</span>
-                <div style="display:flex; gap:4px;">
+                <div style="display:flex; gap:6px;">
                     <button type="button" class="roster-act-btn" onclick="batchMoveSelectedRoster()">🏷️ 移動分區</button>
                     <button type="button" class="roster-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選/取消</button>
                 </div>
@@ -848,7 +851,7 @@
                 <button class="close-modal-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
 
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">點擊場地開關開放或關閉場地（關場時場內球員將自動移至休息區）：</p>
             <div class="court-toggle-grid" id="settingsCourtGrid"></div>
 
             <div class="modal-footer">
@@ -897,7 +900,7 @@
                 <div class="p-sum-item"><span class="p-sum-num" style="color:#0284c7;" id="pd-winrate">0%</span><span class="p-sum-label">勝率</span></div>
             </div>
 
-            <p style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">⚔️ 親自參戰歷史紀錄：</p>
+            <p style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">⚔️ 親自參戰歷史紀錄：</p>
             <div class="history-list-container" id="pd-matchLogsContainer"></div>
 
             <div class="modal-footer">
@@ -915,7 +918,7 @@
                 <button class="close-modal-btn" onclick="closePlayerMoveModal()">&times;</button>
             </div>
             <div class="move-option-grid" id="moveOptionsContainer"></div>
-            <div class="modal-footer" style="margin-top:10px;">
+            <div class="modal-footer" style="margin-top:12px;">
                 <div></div>
                 <button class="save-modal-btn secondary" onclick="closePlayerMoveModal()">取消</button>
             </div>
@@ -1169,7 +1172,7 @@
 
         const container = document.getElementById('pd-matchLogsContainer');
         if (personalLogs.length === 0) {
-            container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無該球員參戰紀錄</p>';
+            container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無該球員參戰紀錄</p>';
         } else {
             container.innerHTML = '';
             [...personalLogs].reverse().forEach(item => {
@@ -1228,7 +1231,7 @@
         }
 
         if (categoryKeys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
             updateRosterSubmitBtnUI();
             return;
         }
@@ -1250,9 +1253,9 @@
                     <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
                     <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div style="font-size:10px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
+                        <div style="font-size:11px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
                     </label>
-                    <div style="display:flex; gap:2px;">
+                    <div style="display:flex; gap:3px;">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
                         <button type="button" class="roster-act-btn del" onclick="deletePlayerFromRoster('${key}', event)" title="刪除球員">🗑️</button>
                     </div>
@@ -1455,7 +1458,7 @@
         if (!container) return;
 
         const keys = Object.keys(rawHistoryLogs);
-        if (keys.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無歷史比賽紀錄</p>'; return; }
+        if (keys.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無歷史比賽紀錄</p>'; return; }
 
         container.innerHTML = '';
         keys.reverse().forEach((key) => {
@@ -1473,7 +1476,7 @@
                             <span class="loser-text">🛡️ 敗: ${losersStr}</span>
                         </div>
                     </div>
-                    <div style="display:flex; gap:3px;">
+                    <div style="display:flex; gap:4px;">
                         <button class="hist-act-btn" onclick="editHistoryRecord('${key}')" title="修改勝敗名單">✏️</button>
                         <button class="hist-act-btn del" onclick="deleteHistoryRecord('${key}')" title="刪除紀錄">🗑️</button>
                     </div>
@@ -1526,7 +1529,7 @@
             return { name, played: p, wins: w, losses: p - w, rate: p > 0 ? Math.round((w / p) * 100) : 0 };
         });
 
-        if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center;">尚無統計資料</p>'; return; }
+        if (playerList.length === 0) { container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center;">尚無統計資料</p>'; return; }
 
         playerList.sort((a, b) => b.wins - a.wins || b.rate - a.rate || a.played - b.played);
 
@@ -1682,17 +1685,17 @@
         document.documentElement.style.setProperty('--court-count', courtCount);
         
         if (courtCount >= 7) {
-            document.documentElement.style.setProperty('--p-name-size', '11.5px');
-            document.documentElement.style.setProperty('--p-sub-size', '9px');
-            document.documentElement.style.setProperty('--p-badge-size', '8px');
+            document.documentElement.style.setProperty('--p-name-size', '13.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '10.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '9.5px');
         } else if (courtCount >= 5) {
-            document.documentElement.style.setProperty('--p-name-size', '12px');
-            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+            document.documentElement.style.setProperty('--p-name-size', '14px');
+            document.documentElement.style.setProperty('--p-sub-size', '11px');
+            document.documentElement.style.setProperty('--p-badge-size', '10px');
         } else {
-            document.documentElement.style.setProperty('--p-name-size', '13px');
-            document.documentElement.style.setProperty('--p-sub-size', '10px');
-            document.documentElement.style.setProperty('--p-badge-size', '9px');
+            document.documentElement.style.setProperty('--p-name-size', '15px');
+            document.documentElement.style.setProperty('--p-sub-size', '11.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '10.5px');
         }
 
         cWrap.innerHTML = '';
@@ -2021,7 +2024,7 @@
         }
     }
 
-    /* ⚡ 核心修復：移除 220ms 延遲，點擊立即切換綠色 (標示勝者) */
+    /* ⚡ 點擊立即切換綠色 + 原生雙擊開啟戰績履歷 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -2044,18 +2047,15 @@
             document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
         };
 
-        // 🟢 點擊事件：零延遲即時反饋
         elem.onclick = (e) => {
             if (elem.dataset.isDragging === "true") return;
 
             if (isDeleteMode) {
                 deletePlayerNode(elem);
             } else if (elem.parentElement && elem.parentElement.id.startsWith('court-')) {
-                // ⚡ 上場區點擊立即切換綠色勝者高亮
                 toggleWinnerCard(elem);
                 persistData();
             } else {
-                // 休息區或等待區點選移動選取
                 if (currentlySelectedPlayerElem === elem) {
                     clearPlayerSelection();
                 } else {
@@ -2066,7 +2066,6 @@
             }
         };
 
-        // 👤 原生雙擊事件：雙擊開啟戰績履歷，不與單擊衝突
         elem.ondblclick = (e) => {
             e.stopPropagation();
             clearPlayerSelection();
@@ -2088,7 +2087,6 @@
             const deltaX = Math.abs(touch.clientX - startX);
             const deltaY = Math.abs(touch.clientY - startY);
 
-            // 🎯 橫向移動大於縱向移動才進入拖曳模式，否則放行原生滾動
             if (deltaX > 10 && deltaX > deltaY) {
                 elem.dataset.isDragging = "true";
             }
