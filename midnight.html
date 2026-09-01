@@ -3,17 +3,17 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.3-NIGHT
+    Version: v3.3.4-NIGHT
     Last Updated: 2026-09-02
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 隊名升級為「黑夜霓虹湛藍膠囊」酷炫電競風格
-      2. 移除頂部版本號顯示，介面更簡潔俐落
-      3. 球員名單點名視窗卡片拓寬，保證 5 個字以上完整顯示
-      4. 點名視窗具備「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類
-      5. 主畫面大字體、7~8 場動態階梯式縮放自適應
-      6. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
+      1. 隊名字體加粗加大 (20px, 900)，底色改為質感深邃半透藍（非全黑）
+      2. 移除版本號標籤，保持 Header 俐落大器
+      3. 球員名單點名視窗卡片拓寬，5 字姓名完整顯示
+      4. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類
+      5. 0ms 極速點擊勝者變綠 + 觸控雙擊查看戰績
+      6. iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
 <html lang="zh-TW">
@@ -21,7 +21,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>深夜羽球 - 排場系統</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -77,38 +77,39 @@
             border-radius: 10px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 46px;
+            height: 48px;
             gap: 8px; 
         }
         
-        /* 🌌 黑夜酷炫霓虹隊名樣式 */
+        /* 🌌 加粗加大、質感深邃半透藍隊名樣式（非全黑） */
         .site-title { 
-            font-size: 16px; 
-            font-weight: 700; 
+            font-size: 20px; 
+            font-weight: 900; 
             display: inline-flex; 
             align-items: center; 
             gap: 8px; 
-            font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
-            letter-spacing: 0.8px;
+            font-family: "Noto Sans TC", "Fredoka", "Microsoft JhengHei", sans-serif;
+            letter-spacing: 1px;
             white-space: nowrap;
-            background: #090d16;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.9) 100%);
             color: #38bdf8;
             border: 1.5px solid #0284c7;
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25), inset 0 0 10px rgba(56, 189, 248, 0.15);
             cursor: pointer;
             transition: all 0.15s ease;
         }
         .site-title:active { 
             transform: scale(0.97);
-            background: #020617;
-            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.4);
+            background: rgba(15, 23, 42, 0.98);
+            box-shadow: 0 1px 4px rgba(2, 132, 199, 0.4);
         }
 
         .site-title-text {
             color: #38bdf8;
-            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+            font-weight: 900;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
         }
 
         .site-title-badge {
@@ -120,6 +121,7 @@
             border-radius: 4px;
             font-family: sans-serif;
             font-weight: 700;
+            letter-spacing: 0px;
         }
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
@@ -188,7 +190,7 @@
             gap: 8px;
             flex: 1;
             min-height: 0;
-            height: calc(100vh - 62px);
+            height: calc(100vh - 64px);
         }
 
         .rest-card { 
@@ -507,6 +509,7 @@
             line-height: 1.15;
         }
 
+        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -615,6 +618,7 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
+        /* 👥 常客分頁標籤 */
         .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
         .roster-tab-btn { flex: 1; padding: 6px 2px; border: none; background: transparent; font-size: 12.5px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; white-space: nowrap; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
@@ -631,6 +635,7 @@
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
+        /* 🔤 點名清單網格與卡片 */
         .roster-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
@@ -1275,7 +1280,6 @@
         renderRosterUI();
     }
 
-    /* 👥 渲染球員點名清單 */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
         const countTextElem = document.getElementById('rosterCountText');
@@ -2144,7 +2148,6 @@
         }
     }
 
-    /* ⚡ 點擊立即變綠 + 時間戳雙擊開啟個人履歷 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
