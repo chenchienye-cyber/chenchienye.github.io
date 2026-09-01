@@ -1174,7 +1174,7 @@
     const defaultClubConfigs = {
         'night': { name: "團團圓圓宵夜團", pwd: "888" },
         'gem': { name: "隨心所玉羽球團", pwd: "666" },
-        'default': { name: "羽球團", pwd: "123" },
+        'default': { name: "深夜羽球", pwd: "888" },
         'test': { name: "🧪 測試版排場板", pwd: "999" }
     };
 
@@ -1210,7 +1210,7 @@
     }
 
     // 🔒 管理驗證密碼與隊名由後台對照表讀取
-    const matchedConfig = defaultClubConfigs[clubId] || { name: "羽球團", pwd: "123" };
+    const matchedConfig = defaultClubConfigs[clubId] || { name: "深夜羽球", pwd: "888" };
     let currentAdminPassword = matchedConfig.pwd;
     let currentClubName = matchedConfig.name;
 
