@@ -3,23 +3,23 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.7-NIGHT
+    Version: v3.2.8-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Features:
-      1. 7~8 場動態緊湊縮放，保證 5 個中文字完整顯示不被截斷
-      2. 1~4 場維持大字體，5~6 場中字體，7~8 場小字體自動自適應
-      3. 0ms 極速點擊勝者高亮變綠色 + 原生雙擊查看戰績
-      4. 一站式管理選單、程度數字體系(1~4)、季繳/常客/臨打分類
-      5. 休息區手勢分離與 iPad 10.5 吋 100% 穩定自適應滿版
+    Fix:
+      1. 徹底修復新增30人只顯示1人的 Key 覆蓋與未存檔 Bug
+      2. 點名視窗新增「🌟 全部」總覽分頁，各類別即時統計人數
+      3. 全介面大字體 + 支援完整 5 個中文字
+      4. 7~8 場動態緊湊縮放自適應
+      5. 0ms 極速點擊勝者變綠 + 雙擊戰績履歷
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.7-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.8-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -54,8 +54,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
@@ -432,7 +432,7 @@
             overflow: hidden;
         }
 
-        /* 🔤 球員名牌卡片 (動態階梯式縮放 + 5 個中文字支援) */
+        /* 🔤 球員名牌卡片 */
         .player-card { 
             padding: var(--card-pad, 5px 6px); 
             background: #ffffff; 
@@ -512,7 +512,6 @@
             line-height: 1.15;
         }
 
-        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -621,8 +620,9 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        .roster-tabs-bar { display: flex; gap: 6px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
-        .roster-tab-btn { flex: 1; padding: 6px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; }
+        /* 👥 常客分頁標籤（含「全部」標籤） */
+        .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
+        .roster-tab-btn { flex: 1; padding: 6px 2px; border: none; background: transparent; font-size: 12.5px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; white-space: nowrap; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
 
         .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: #64748b; }
@@ -680,7 +680,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.7-NIGHT</span>
+            <span class="version-tag">v3.2.8-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -808,7 +808,7 @@
         </div>
     </div>
 
-    <!-- 👥 球員名單點名視窗 -->
+    <!-- 👥 球員名單點名視窗 (含 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打) -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -817,13 +817,14 @@
             </div>
 
             <div class="roster-tabs-bar">
-                <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳</button>
-                <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客</button>
-                <button class="roster-tab-btn active" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打</button>
+                <button class="roster-tab-btn active" id="rtab-all" onclick="switchRosterTab('all')">🌟 全部 (<span id="cnt-all">0</span>)</button>
+                <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳 (<span id="cnt-member">0</span>)</button>
+                <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客 (<span id="cnt-regular">0</span>)</button>
+                <button class="roster-tab-btn" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打 (<span id="cnt-casual">0</span>)</button>
             </div>
 
             <div class="roster-toolbar">
-                <span id="rosterCountText">此分類共 0 人</span>
+                <span id="rosterCountText">名單載入中...</span>
                 <div style="display:flex; gap:6px;">
                     <button type="button" class="roster-act-btn" onclick="batchMoveSelectedRoster()">🏷️ 移動分區</button>
                     <button type="button" class="roster-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選/取消</button>
@@ -986,7 +987,7 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
-    let currentRosterTab = 'casual';
+    let currentRosterTab = 'all'; // 🌟 預設為全部名單
 
     const levelTextMap = {
         blue: "初階",
@@ -1003,6 +1004,7 @@
     };
 
     const categoryTextMap = {
+        all: "全部",
         member: "季繳",
         regular: "常客",
         casual: "臨打"
@@ -1207,7 +1209,7 @@
 
     function openRosterModal() { 
         sanitizeRosterCategories();
-        switchRosterTab(currentRosterTab); 
+        switchRosterTab(currentRosterTab || 'all'); 
         document.getElementById('rosterModal').classList.add('active'); 
     }
     function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
@@ -1218,6 +1220,10 @@
             return;
         }
         Object.keys(globalPlayerRoster).forEach(k => {
+            if (!globalPlayerRoster[k] || typeof globalPlayerRoster[k] !== 'object') {
+                delete globalPlayerRoster[k];
+                return;
+            }
             if (!globalPlayerRoster[k].category || !['member', 'regular', 'casual'].includes(globalPlayerRoster[k].category)) {
                 globalPlayerRoster[k].category = 'casual';
             }
@@ -1226,28 +1232,50 @@
 
     function switchRosterTab(categoryKey) {
         currentRosterTab = categoryKey;
-        ['member', 'regular', 'casual'].forEach(cat => {
+        ['all', 'member', 'regular', 'casual'].forEach(cat => {
             const btn = document.getElementById(`rtab-${cat}`);
             if (btn) btn.classList.toggle('active', cat === categoryKey);
         });
         renderRosterUI();
     }
 
+    /* 👥 渲染球員點名清單 (支援 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打) */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
         const countTextElem = document.getElementById('rosterCountText');
         if (!container) return;
 
         sanitizeRosterCategories();
-        const keys = Object.keys(globalPlayerRoster);
-        const categoryKeys = keys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
+        const allKeys = Object.keys(globalPlayerRoster);
+
+        // 即時計算各分類數量
+        let countMember = 0, countRegular = 0, countCasual = 0;
+        allKeys.forEach(k => {
+            const cat = globalPlayerRoster[k].category || 'casual';
+            if (cat === 'member') countMember++;
+            else if (cat === 'regular') countRegular++;
+            else countCasual++;
+        });
+
+        const cntAll = document.getElementById('cnt-all');
+        const cntMem = document.getElementById('cnt-member');
+        const cntReg = document.getElementById('cnt-regular');
+        const cntCas = document.getElementById('cnt-casual');
+        if (cntAll) cntAll.innerText = allKeys.length;
+        if (cntMem) cntMem.innerText = countMember;
+        if (cntReg) cntReg.innerText = countRegular;
+        if (cntCas) cntCas.innerText = countCasual;
+
+        const categoryKeys = (currentRosterTab === 'all')
+            ? allKeys 
+            : allKeys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
 
         if (countTextElem) {
-            countTextElem.innerText = `此分類【${categoryTextMap[currentRosterTab]}】共 ${categoryKeys.length} 人`;
+            countTextElem.innerText = `【${categoryTextMap[currentRosterTab]}】名單共 ${categoryKeys.length} 人`;
         }
 
         if (categoryKeys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2; padding: 20px 0;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2; padding: 25px 0;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
             updateRosterSubmitBtnUI();
             return;
         }
@@ -1263,13 +1291,14 @@
             const isAlreadyInGame = currentActiveNames.includes(p.name);
             const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
             const lvlName = levelTextMap[p.level] || '初階';
+            const catName = categoryTextMap[p.category || 'casual'] || '臨打';
 
             container.innerHTML += `
                 <div class="roster-item-card" style="${isAlreadyInGame ? 'background:#ecfdf5; border-color:#a7f3d0;' : ''}">
                     <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
-                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} ${genderSymbol}">
+                    <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} (${catName})">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div style="font-size:11px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
+                        <div style="font-size:11px; color:${isAlreadyInGame ? '#059669' : '#64748b'}; font-weight:600;">[${lvlName}·${catName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
                     </label>
                     <div style="display:flex; gap:3px;">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
@@ -1327,7 +1356,7 @@
                     if (card.dataset.name === p.name) card.remove();
                 });
             } else if (rest) {
-                const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+                const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*10000);
                 rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "blue", p.category || "casual", 0, 0, false));
             }
         });
@@ -1355,7 +1384,7 @@
         });
 
         persistData();
-        switchRosterTab(newCategory);
+        switchRosterTab(currentRosterTab);
     }
 
     function toggleSelectAllCategoryRoster() {
@@ -1404,7 +1433,8 @@
         else if (catTrimmed === '3' || catTrimmed === 'casual' || catTrimmed === '臨打') newCategory = 'casual';
 
         const updatedPlayer = { name: newName, gender: newGender, level: newLevel, category: newCategory, updatedAt: Date.now() };
-        const newSafeKey = newName.toLowerCase().replace(/[.#$\[\]]/g, "_");
+
+        globalPlayerRoster[key] = updatedPlayer;
 
         document.querySelectorAll('.player-card').forEach(card => {
             if (card.dataset.name === oldName) {
@@ -1418,33 +1448,40 @@
             }
         });
 
-        if (isFirebaseActive && rosterDbRef) {
-            if (newSafeKey !== key) rosterDbRef.child(key).remove();
-            rosterDbRef.child(newSafeKey).set(updatedPlayer).then(() => { persistData(); });
-        } else {
-            if (newSafeKey !== key) delete globalPlayerRoster[key];
-            globalPlayerRoster[newSafeKey] = updatedPlayer;
-            localStorage.setItem(`${customStoragePrefix}player_roster`, JSON.stringify(globalPlayerRoster));
-            renderRosterUI();
-            persistData();
-        }
+        persistData();
+        renderRosterUI();
     }
 
     function deletePlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
-        if (!confirm(`確定要刪除？`)) return;
+        const p = globalPlayerRoster[key];
+        const pName = p ? p.name : '此球員';
+        if (!confirm(`確定要從名單中永久刪除【${pName}】嗎？`)) return;
         if (!verifyPassword()) return;
         delete globalPlayerRoster[key];
+        persistData();
         renderRosterUI();
     }
 
+    /* 🛡️ 註冊球員至名單：使用安全 Key 確保 30 個人不互相覆蓋 */
     function registerPlayerToRoster(name, gender, level, category = "casual") {
         if (!name) return;
-        const safeKey = name.trim().toLowerCase().replace(/[.#$\[\]]/g, "_");
-        if (!safeKey) return;
-        if (!globalPlayerRoster[safeKey]) {
-            globalPlayerRoster[safeKey] = { name: name.trim(), gender, level: level || "blue", category: category || "casual" };
+        const trimmedName = name.trim();
+        if (!trimmedName) return;
+
+        // 尋找是否已有同名球員，若有則更新，若無則建立唯一 Key
+        let targetKey = Object.keys(globalPlayerRoster).find(k => globalPlayerRoster[k] && globalPlayerRoster[k].name === trimmedName);
+        if (!targetKey) {
+            targetKey = 'roster_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         }
+
+        globalPlayerRoster[targetKey] = {
+            name: trimmedName,
+            gender: gender || 'M',
+            level: level || 'blue',
+            category: category || 'casual',
+            updatedAt: Date.now()
+        };
     }
 
     function exportRosterJSON() { downloadJSONFile(globalPlayerRoster, `roster_midnight_${new Date().toISOString().slice(0,10)}.json`); }
@@ -1460,11 +1497,11 @@
                 if (typeof imported === 'object' && imported !== null) {
                     globalPlayerRoster = { ...globalPlayerRoster, ...imported };
                     sanitizeRosterCategories();
-                    renderRosterUI();
                     persistData();
-                    alert("✅ 匯入成功！");
+                    renderRosterUI();
+                    alert("✅ 名單已成功匯入！");
                 }
-            } catch (err) { alert("❌ 格式錯誤！"); }
+            } catch (err) { alert("❌ 匯入失敗：檔案格式不正確！"); }
         };
         reader.readAsText(file);
     }
@@ -1702,7 +1739,6 @@
         updateModalUI();
     }
 
-    /* 🎯 7~8 場專屬動態尺寸設定 */
     function buildLayout() {
         const cWrap = document.getElementById('courts-wrapper');
         const qWrap = document.getElementById('queues-wrapper');
@@ -1713,7 +1749,6 @@
         document.documentElement.style.setProperty('--court-count', courtCount);
         
         if (courtCount >= 7) {
-            // 7~8 場模式：縮窄內距與字體，完整呈現 5 個中文字
             document.documentElement.style.setProperty('--p-name-size', '11.5px');
             document.documentElement.style.setProperty('--p-sub-size', '8.5px');
             document.documentElement.style.setProperty('--p-badge-size', '8px');
@@ -1723,7 +1758,6 @@
             document.documentElement.style.setProperty('--zone-gap', '2px');
             document.documentElement.style.setProperty('--border-l', '2.5px');
         } else if (courtCount >= 5) {
-            // 5~6 場模式
             document.documentElement.style.setProperty('--p-name-size', '13px');
             document.documentElement.style.setProperty('--p-sub-size', '10px');
             document.documentElement.style.setProperty('--p-badge-size', '9px');
@@ -1733,7 +1767,6 @@
             document.documentElement.style.setProperty('--zone-gap', '3px');
             document.documentElement.style.setProperty('--border-l', '3px');
         } else {
-            // 1~4 場模式：大字體
             document.documentElement.style.setProperty('--p-name-size', '15px');
             document.documentElement.style.setProperty('--p-sub-size', '11px');
             document.documentElement.style.setProperty('--p-badge-size', '10px');
@@ -1927,6 +1960,7 @@
         persistData();
     }
 
+    /* ➕ 新增球員：即時註冊至全域名單並存檔 */
     function createPlayer() {
         const nameInput = document.getElementById('pName');
         const genderInput = document.getElementById('pGender');
@@ -1940,7 +1974,7 @@
         saveHistoryState();
 
         const cat = categoryInput ? categoryInput.value : "casual";
-        const pId = 'p_' + Date.now();
+        const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, cat, 0, 0, false);
         
         const rest = document.getElementById('rest');
@@ -1954,6 +1988,7 @@
         filterAndSortRestZone();
         refreshStats();
         persistData();
+        renderRosterUI();
     }
 
     function makePlayerNode(id, name, gender, level = "blue", category = "casual", played = 0, wins = 0, isWinner = false) {
@@ -2070,7 +2105,6 @@
         }
     }
 
-    /* ⚡ 點擊立即切換綠色 + 原生雙擊開啟戰績履歷 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
@@ -2239,12 +2273,21 @@
         filterAndSortRestZone();
     }
 
+    /* 💾 雙向資料庫持久化儲存 */
     function persistData() {
         if (isRemoteUpdating) return;
         sanitizeRosterCategories();
+        
         const payload = { activeCourts, queueMode, store: getCurrentStateObject() };
         localStorage.setItem(`${customStoragePrefix}badminton_data`, JSON.stringify(payload));
-        if (isFirebaseActive && dbRef) dbRef.set(payload);
+        localStorage.setItem(`${customStoragePrefix}player_roster`, JSON.stringify(globalPlayerRoster));
+
+        if (isFirebaseActive && dbRef) {
+            dbRef.set(payload);
+        }
+        if (isFirebaseActive && rosterDbRef) {
+            rosterDbRef.set(globalPlayerRoster);
+        }
     }
 
     function restoreData() {
