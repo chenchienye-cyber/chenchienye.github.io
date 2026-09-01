@@ -3,25 +3,18 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.2.0-NIGHT
+    Version: v3.2.1-NIGHT
     Last Updated: 2026-09-01
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
-    Features:
-      1. 球員名單三大分類 (季繳 / 常客 / 臨打) 專屬頁籤與點名
-      2. 一站式管理選單 (點擊頂部標題開啟)
-      3. 程度數字代碼 (1:初階 2:初中 3:中階 4:團主)
-      4. 點選移動功能 (點名牌 -> 點目標區域)
-      5. 休息區手勢分離 (上下滑動瀏覽 / 左右拖曳)
-      6. 任意場結束由等待區 A 優先遞補 + 全場平移
-      7. iPad 10.5 吋 100dvh 動態滿版適配
+    Fix: 徹底修復 iPad 10.5 吋下半部截斷問題 (Flex/Grid 深度彈性高度修復)
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.2.0-NIGHT</title>
+    <title>深夜羽球 - 排場系統 v3.2.1-NIGHT</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -52,13 +45,14 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 5px;
-            gap: 5px;
+            padding: 4px;
+            gap: 4px;
+            box-sizing: border-box;
         }
 
         ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
@@ -75,21 +69,21 @@
             justify-content: space-between; 
             align-items: center; 
             background: #ffffff; 
-            padding: 3px 10px; 
-            border-radius: 8px; 
+            padding: 2px 8px; 
+            border-radius: 6px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             flex-shrink: 0;
-            height: 36px;
+            height: 32px;
             gap: 6px; 
             width: 100%;
         }
         
         .site-title { 
-            font-size: 16px; 
+            font-size: 15px; 
             font-weight: 700; 
             display: flex; 
             align-items: center; 
-            gap: 5px; 
+            gap: 4px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
             letter-spacing: 0.5px;
             white-space: nowrap;
@@ -107,11 +101,11 @@
         }
 
         .site-title-badge {
-            font-size: 10px;
+            font-size: 9px;
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #cbd5e1;
-            padding: 1px 4px;
+            padding: 1px 3px;
             border-radius: 4px;
             -webkit-text-fill-color: #475569;
             font-family: sans-serif;
@@ -122,8 +116,8 @@
             background: #0f172a;
             color: #38bdf8;
             border: 1px solid #38bdf8;
-            padding: 1px 5px;
-            border-radius: 4px;
+            padding: 0px 4px;
+            border-radius: 3px;
             font-weight: 700;
             -webkit-text-fill-color: #38bdf8;
             font-family: monospace;
@@ -133,14 +127,14 @@
         .action-area { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
 
         .icon-btn {
-            padding: 3px 8px !important;
-            font-size: 12px !important;
+            padding: 2px 6px !important;
+            font-size: 11px !important;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
-            border-radius: 5px;
+            gap: 2px;
+            border-radius: 4px;
             border: none;
             cursor: pointer;
             white-space: nowrap;
@@ -165,8 +159,8 @@
         .mobile-tabs-bar {
             display: none;
             background: #ffffff;
-            border-radius: 8px;
-            padding: 3px;
+            border-radius: 6px;
+            padding: 2px;
             gap: 4px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             flex-shrink: 0;
@@ -174,13 +168,13 @@
 
         .mobile-tab-btn {
             flex: 1;
-            padding: 5px 4px;
+            padding: 4px;
             border: none;
             background: transparent;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
             color: #64748b;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
@@ -189,65 +183,66 @@
             color: #ffffff;
         }
 
-        /* 📱 主版面：滿版不溢出 */
+        /* 📱 主版面：強制鎖定 100% 高度不超出螢幕 */
         .main-layout {
             display: grid;
-            grid-template-columns: 220px minmax(0, 1fr);
-            gap: 6px;
+            grid-template-columns: 210px minmax(0, 1fr);
+            gap: 4px;
             flex: 1;
             min-height: 0;
             width: 100%;
-            height: calc(100dvh - 46px);
-            max-height: calc(100dvh - 46px);
+            height: calc(100dvh - 40px);
+            max-height: calc(100dvh - 40px);
+            overflow: hidden;
         }
 
         .rest-card { 
             display: flex; 
             flex-direction: column; 
-            padding: 6px !important; 
+            padding: 4px !important; 
             height: 100%;
             min-height: 0;
-            gap: 4px;
+            gap: 3px;
             overflow: hidden;
             background: #ffffff;
-            border-radius: 8px;
+            border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
         .rest-filter-bar {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            padding: 4px;
+            border-radius: 4px;
+            padding: 3px;
             flex-shrink: 0;
         }
 
         .rest-search-row {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             align-items: center;
         }
 
         .rest-search-input {
             flex: 1;
-            padding: 3px 5px;
+            padding: 2px 4px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            font-size: 11px;
+            font-size: 10.5px;
             outline: none;
             background: white;
             min-width: 0;
         }
 
         .rest-sort-select {
-            max-width: 70px;
-            padding: 2px;
+            max-width: 65px;
+            padding: 1px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9.5px;
             outline: none;
             background: white;
             font-weight: 600;
@@ -266,10 +261,10 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 700;
             padding: 1px 3px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -279,25 +274,27 @@
             border-color: #2563eb;
         }
 
-        /* 📜 休息區：上下自然滾動瀏覽 */
+        /* 📜 休息區：支援上下自然滾動瀏覽 */
         .rest-zone {
             flex: 1;
             display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 4px !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 3px !important;
             align-content: start;
-            padding: 2px 2px 4px 2px !important;
+            padding: 2px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y !important;
             min-height: 0;
         }
 
+        /* 🎯 關鍵修復：右側欄固定兩列且 min-height 為 0，絕對不被撐爆 */
         .right-column { 
             display: grid;
-            grid-template-rows: 1fr 1fr;
-            gap: 6px; 
+            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 4px; 
             height: 100%;
+            max-height: 100%;
             min-height: 0;
             min-width: 0;
             width: 100%;
@@ -306,19 +303,20 @@
 
         .card { 
             background: #ffffff; 
-            border-radius: 8px; 
-            padding: 6px; 
+            border-radius: 6px; 
+            padding: 4px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             display: flex;
             flex-direction: column;
             min-height: 0;
             min-width: 0;
             height: 100%;
+            max-height: 100%;
             overflow: hidden;
         }
         
         .card-header { 
-            font-size: 13px; 
+            font-size: 11.5px; 
             font-weight: 700; 
             color: #334155; 
             margin-bottom: 2px; 
@@ -331,11 +329,11 @@
         .header-title-group {
             display: flex;
             align-items: baseline;
-            gap: 4px;
+            gap: 3px;
         }
 
         .header-note {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             color: #64748b;
         }
@@ -343,44 +341,44 @@
         .note-highlight-red { color: #ef4444; font-weight: 700; }
         .note-highlight-green { color: #10b981; font-weight: 700; }
 
-        .badge { background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+        .badge { background: #e2e8f0; color: #475569; padding: 1px 4px; border-radius: 4px; font-size: 9.5px; font-weight: 600; }
 
         .court-header-title {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             gap: 1px;
-            line-height: 1.1;
+            line-height: 1;
         }
 
         .court-title-row-top {
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
         }
 
         .court-timer-badge {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             color: #2563eb;
             background: transparent;
             border: 1px solid #bfdbfe;
-            padding: 0px 4px;
+            padding: 0px 3px;
             border-radius: 3px;
             font-family: monospace, SFMono-Regular, Consolas, monospace;
-            letter-spacing: 0.3px;
-            line-height: 1.2;
+            letter-spacing: 0.2px;
+            line-height: 1.1;
         }
 
         .finish-btn {
             background: #10b981;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 3px 2px;
-            font-size: 11px;
+            border-radius: 3px;
+            padding: 2px 0px;
+            font-size: 10px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
@@ -394,7 +392,7 @@
             flex: 1;
             min-height: 0; 
             border: 1.5px dashed #cbd5e1; 
-            border-radius: 5px; 
+            border-radius: 4px; 
             background: #fafafa; 
             padding: 2px; 
             display: flex; 
@@ -408,23 +406,23 @@
         }
         .drop-zone.drag-over { background: #eff6ff; border-color: #2563eb; }
 
+        /* 網格依場地數量均分，並設定 min-height: 0 */
         .sub-grid-row {
             display: grid;
             grid-template-columns: repeat(var(--court-count, 4), minmax(0, 1fr));
-            gap: 5px;
+            gap: 4px;
             width: 100%;
             flex: 1;
             min-height: 0;
             min-width: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
+            overflow: hidden;
         }
 
         .slot-item { 
             background: #ffffff; 
             border: 1px solid #e2e8f0; 
-            border-radius: 5px; 
-            padding: 3px; 
+            border-radius: 4px; 
+            padding: 2px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -432,6 +430,7 @@
             min-height: 0;
             min-width: 0;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .slot-inner {
@@ -445,10 +444,10 @@
 
         /* 球員名牌卡片 */
         .player-card { 
-            padding: 3px 4px; 
+            padding: 2px 3px; 
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
-            border-radius: 4px; 
+            border-radius: 3px; 
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
             display: inline-flex; 
             flex-direction: column;
@@ -487,14 +486,14 @@
         body.delete-mode-active .player-card::after {
             content: "\274C";
             position: absolute;
-            top: -3px;
-            right: -3px;
+            top: -2px;
+            right: -2px;
             background: #ef4444;
             color: white;
-            font-size: 8px;
+            font-size: 7px;
             border-radius: 50%;
-            width: 13px;
-            height: 13px;
+            width: 11px;
+            height: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -515,7 +514,7 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: var(--p-name-size, 12.5px);
+            font-size: var(--p-name-size, 11px);
             font-weight: 700;
             color: #1e293b;
             gap: 1px;
@@ -532,7 +531,7 @@
 
         .winner-tag {
             display: none;
-            font-size: 8px;
+            font-size: 7px;
             background: #10b981;
             color: white;
             padding: 0px 2px;
@@ -544,7 +543,7 @@
         .player-card.is-winner .winner-tag { display: inline-block; }
 
         .player-sub {
-            font-size: var(--p-sub-size, 9.5px);
+            font-size: var(--p-sub-size, 8.5px);
             color: #475569;
             font-weight: 600;
             white-space: nowrap;
@@ -557,13 +556,13 @@
 
         /* 🎨 程度標籤樣式 (1:初階, 2:初中, 3:中階, 4:團主) */
         .level-badge {
-            padding: 0px 3px;
-            border-radius: 3px;
+            padding: 0px 2px;
+            border-radius: 2px;
             font-weight: 600;
-            font-size: var(--p-badge-size, 8.5px);
+            font-size: var(--p-badge-size, 8px);
             color: #ffffff !important;
             display: inline-block;
-            line-height: 1.1;
+            line-height: 1;
         }
         .level-badge.blue { background-color: #0284c7; }
         .level-badge.green { background-color: #16a34a; }
@@ -592,7 +591,7 @@
             background: #ffffff;
             border-radius: 12px;
             width: 100%;
-            max-width: 620px;
+            max-width: 600px;
             padding: 14px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: modalIn 0.2s ease-out;
@@ -669,6 +668,7 @@
         .p-sum-num { font-size: 14px; font-weight: 700; color: #15803d; }
         .p-sum-label { font-size: 9.5px; color: #64748b; }
 
+        /* 📱 僅在直向小手機生效 */
         @media (max-width: 600px) {
             .main-layout { grid-template-columns: 1fr !important; }
             .mobile-tabs-bar { display: flex; }
@@ -689,7 +689,7 @@
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
             <span id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.2.0-NIGHT</span>
+            <span class="version-tag">v3.2.1-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -817,7 +817,7 @@
         </div>
     </div>
 
-    <!-- 👥 球員名單點名視窗 (含 季繳 / 常客 / 臨打 分類頁籤) -->
+    <!-- 👥 球員名單點名視窗 -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -825,7 +825,6 @@
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
             </div>
 
-            <!-- 🏷️ 三大分類頁籤 -->
             <div class="roster-tabs-bar">
                 <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳</button>
                 <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客</button>
@@ -996,7 +995,7 @@
     let rawHistoryLogs = {}; 
     let globalPlayerRoster = {}; 
     let currentHistoryTab = 'logs';
-    let currentRosterTab = 'casual'; // 🏷️ 預設點名分頁
+    let currentRosterTab = 'casual';
 
     const levelTextMap = {
         blue: "初階",
@@ -1118,7 +1117,6 @@
         });
     }
 
-    /* ⚙️ 管理選單視窗控制 */
     function openAdminMenuModal() {
         if (!verifyPassword()) return;
         const btn = document.getElementById('menuDeleteToggleBtn');
@@ -1222,7 +1220,6 @@
     }
     function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
 
-    /* 🏷️ 切換季繳 / 常客 / 臨打 分頁 */
     function switchRosterTab(categoryKey) {
         currentRosterTab = categoryKey;
         ['member', 'regular', 'casual'].forEach(cat => {
@@ -1336,7 +1333,6 @@
         renderRosterUI();
     }
 
-    /* 🏷️ 批次移動勾選球員至其他分類 */
     function batchMoveSelectedRoster() {
         const checkboxes = document.querySelectorAll('#rosterModal .roster-grid input[type="checkbox"]:checked');
         if (checkboxes.length === 0) { alert("請先勾選要移動分類的球員！"); return; }
@@ -1365,7 +1361,6 @@
         updateRosterSubmitBtnUI();
     }
 
-    /* 🔢 1. 編輯球員名單程度與分類（支援數字代碼） */
     function editPlayerFromRoster(key, e) {
         if (e) e.stopPropagation();
         const p = globalPlayerRoster[key];
@@ -1701,17 +1696,17 @@
         document.documentElement.style.setProperty('--court-count', courtCount);
         
         if (courtCount >= 7) {
-            document.documentElement.style.setProperty('--p-name-size', '12px');
-            document.documentElement.style.setProperty('--p-sub-size', '9px');
-            document.documentElement.style.setProperty('--p-badge-size', '8px');
+            document.documentElement.style.setProperty('--p-name-size', '10px');
+            document.documentElement.style.setProperty('--p-sub-size', '8px');
+            document.documentElement.style.setProperty('--p-badge-size', '7.5px');
         } else if (courtCount >= 5) {
-            document.documentElement.style.setProperty('--p-name-size', '12.5px');
-            document.documentElement.style.setProperty('--p-sub-size', '9.5px');
-            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
+            document.documentElement.style.setProperty('--p-name-size', '10.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '8.5px');
+            document.documentElement.style.setProperty('--p-badge-size', '8px');
         } else {
-            document.documentElement.style.setProperty('--p-name-size', '13.5px');
-            document.documentElement.style.setProperty('--p-sub-size', '10px');
-            document.documentElement.style.setProperty('--p-badge-size', '9px');
+            document.documentElement.style.setProperty('--p-name-size', '11.5px');
+            document.documentElement.style.setProperty('--p-sub-size', '9px');
+            document.documentElement.style.setProperty('--p-badge-size', '8.5px');
         }
 
         cWrap.innerHTML = '';
