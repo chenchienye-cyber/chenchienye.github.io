@@ -3,25 +3,25 @@
     ==================================================
     深夜羽球專用排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.2-NIGHT
+    Version: v3.3.3-NIGHT
     Last Updated: 2026-09-02
     Club: 深夜羽球 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 隊名配色升級為奢華「金藍色」漸層視覺
-      2. 球員名單彈窗字體精緻微調(12px)，保證 5 個字以上完整顯示
-      3. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類與即時統計
-      4. 主畫面大字體、7~8 場動態階梯式縮放自適應
-      5. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
-      6. 一站式管理選單、程度數字體系(1~4)、iPad 10.5 吋 100% 穩定滿版
+      1. 隊名升級為「黑夜霓虹湛藍膠囊」酷炫電競風格
+      2. 移除頂部版本號顯示，介面更簡潔俐落
+      3. 球員名單點名視窗卡片拓寬，保證 5 個字以上完整顯示
+      4. 點名視窗具備「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類
+      5. 主畫面大字體、7~8 場動態階梯式縮放自適應
+      6. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
     ==================================================
 -->
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統 v3.3.2-NIGHT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    <title>深夜羽球 - 排場系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -81,52 +81,45 @@
             gap: 8px; 
         }
         
-        /* 🎨 金藍色奢華漸層隊名 */
+        /* 🌌 黑夜酷炫霓虹隊名樣式 */
         .site-title { 
-            font-size: 20px; 
+            font-size: 16px; 
             font-weight: 700; 
-            display: flex; 
+            display: inline-flex; 
             align-items: center; 
             gap: 8px; 
             font-family: "Fredoka", "圓體-繁", "Yuanti TC", "Comic Sans MS", "Microsoft JhengHei", sans-serif;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             white-space: nowrap;
-            color: #d97706;
+            background: #090d16;
+            color: #38bdf8;
+            border: 1.5px solid #0284c7;
+            padding: 4px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.15);
             cursor: pointer;
+            transition: all 0.15s ease;
         }
-        .site-title:active { transform: scale(0.98); }
+        .site-title:active { 
+            transform: scale(0.97);
+            background: #020617;
+            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.4);
+        }
 
-        @supports (-webkit-background-clip: text) {
-            .site-title {
-                background: linear-gradient(135deg, #f59e0b 0%, #d97706 40%, #2563eb 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
+        .site-title-text {
+            color: #38bdf8;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
         }
 
         .site-title-badge {
             font-size: 11px;
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-            padding: 2px 6px;
-            border-radius: 5px;
-            -webkit-text-fill-color: #475569;
-            font-family: sans-serif;
-            font-weight: 600;
-        }
-
-        .version-tag {
-            font-size: 11px;
-            background: #0f172a;
-            color: #38bdf8;
-            border: 1px solid #38bdf8;
-            padding: 2px 6px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 1px 6px;
             border-radius: 4px;
+            font-family: sans-serif;
             font-weight: 700;
-            -webkit-text-fill-color: #38bdf8;
-            font-family: monospace;
-            letter-spacing: 0.5px;
         }
         
         .action-area { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
@@ -638,7 +631,6 @@
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-        /* 🔤 點名清單網格與卡片 */
         .roster-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
@@ -723,9 +715,8 @@
     <!-- 頂部 Header -->
     <div class="top-bar">
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
-            <span id="displayClubTitle">深夜羽球</span>
+            <span class="site-title-text" id="displayClubTitle">深夜羽球</span>
             <span class="site-title-badge">⚙️ 管理</span>
-            <span class="version-tag">v3.3.2-NIGHT</span>
         </div>
         <div class="action-area">
             <button id="undoBtn" class="icon-btn undo-btn" onclick="undo()" title="上一步" disabled>↩️ 上一步</button>
@@ -2153,6 +2144,7 @@
         }
     }
 
+    /* ⚡ 點擊立即變綠 + 時間戳雙擊開啟個人履歷 */
     function bindTouchEvents(elem) {
         let touchTargetZone = null;
         let startX = 0, startY = 0;
