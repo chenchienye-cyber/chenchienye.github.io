@@ -3,13 +3,13 @@
     ==================================================
     團團圓圓宵夜團排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.7-NIGHT
+    Version: v3.3.9-NIGHT
     Last Updated: 2026-11-09
     Club: 團團圓圓宵夜團 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 球員名單新增「👻 幽靈」分區（全部/季繳/常客/臨打/幽靈）
-      2. 新增「🗑️ 刪除勾選」批次刪除功能
+      1. 球員名單左側新增「已加入今日球局」專屬面板（即時顯示位置狀態與一鍵移出）
+      2. 右側保留「全部/季繳/常客/臨打/幽靈」分頁、即時搜尋與批次操作
       3. 團名「團團圓圓宵夜團」極光立體字
       4. 5 級階級圓圈顯示 (🟢 新手 / 🟡 初階 / 🔵 初中 / 🔴 中階 / ⚫ 中進階)
       5. 0ms 極速勝者變綠 + 觸控雙擊查看戰績
@@ -594,6 +594,113 @@
             overflow: hidden;
         }
 
+        /* 👥 點名視窗放大為寬螢幕雙欄版型 */
+        .roster-modal-box {
+            max-width: 860px !important;
+            width: 95vw !important;
+            height: 88vh !important;
+            max-height: 88vh !important;
+        }
+
+        .roster-split-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* 左側「已加入球局名單」專屬面板 */
+        .roster-ingame-panel {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            gap: 6px;
+        }
+
+        .roster-ingame-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .roster-ingame-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 0;
+            padding-right: 2px;
+        }
+
+        .roster-ingame-item {
+            background: #ffffff;
+            border: 1px solid #bbf7d0;
+            border-left: 3.5px solid #10b981;
+            border-radius: 5px;
+            padding: 4px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+            font-size: 11.5px;
+        }
+
+        .roster-ingame-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .roster-ingame-name {
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .roster-ingame-loc {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .roster-remove-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .roster-remove-btn:hover { background: #fca5a5; }
+
+        /* 右側庫存點名面板 */
+        .roster-library-panel {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
         @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
         .modal-header {
@@ -603,9 +710,9 @@
             font-size: 18px;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             flex-shrink: 0;
         }
 
@@ -620,32 +727,67 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        /* 👥 常客分頁標籤（含「全部」與「幽靈」） */
-        .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
+        /* 👥 常客分頁標籤 */
+        .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 6px; background: #f1f5f9; padding: 3px; border-radius: 6px; flex-shrink: 0; }
         .roster-tab-btn { flex: 1; padding: 6px 2px; border: none; background: transparent; font-size: 12px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; white-space: nowrap; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
 
-        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: #64748b; }
+        /* 🔍 球員名單專屬搜尋列樣式 */
+        .roster-search-bar {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-bottom: 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 4px 6px;
+            flex-shrink: 0;
+        }
+        .roster-search-input {
+            flex: 1;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12.5px;
+            outline: none;
+            background: #ffffff;
+            min-width: 0;
+        }
+        .roster-search-clear-btn {
+            background: #e2e8f0;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .roster-search-clear-btn:hover { background: #cbd5e1; color: #0f172a; }
+
+        .roster-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11.5px; color: #64748b; flex-shrink: 0; }
 
         .court-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; max-height: 45vh; overflow-y: auto; }
         .court-btn { padding: 10px 4px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .court-btn.active { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
 
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 10px; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 8px; flex-shrink: 0; }
         .modal-footer-btns { display: flex; gap: 6px; align-items: center; }
-        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+        .save-modal-btn { background: #2563eb; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
         /* 點名清單網格與卡片 */
         .roster-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
-            gap: 6px; 
-            max-height: 45vh; 
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); 
+            gap: 5px; 
+            flex: 1;
             overflow-y: auto; 
             padding: 2px; 
-            margin-bottom: 8px; 
+            min-height: 0;
         }
 
         .roster-item-card { 
@@ -711,6 +853,8 @@
             body[data-mobile-tab="courts"] .rest-card { display: none !important; }
             body[data-mobile-tab="queues"] .rest-card { display: none !important; }
             .sub-grid-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .roster-split-layout { grid-template-columns: 1fr !important; }
+            .roster-ingame-panel { max-height: 140px; }
         }
     </style>
 </head>
@@ -854,32 +998,54 @@
         </div>
     </div>
 
-    <!-- 👥 球員名單點名視窗 (含 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打 / 👻 幽靈) -->
+    <!-- 👥 球員名單點名視窗 (左側已加球局名單 + 右側名庫與搜尋) -->
     <div class="modal-overlay" id="rosterModal">
-        <div class="modal-box">
+        <div class="modal-box roster-modal-box">
             <div class="modal-header">
-                <span>👥 球員名單與出席點名</span>
+                <span>👥 球員名單管理與今日點名</span>
                 <button class="close-modal-btn" onclick="closeRosterModal()">&times;</button>
             </div>
 
-            <div class="roster-tabs-bar">
-                <button class="roster-tab-btn active" id="rtab-all" onclick="switchRosterTab('all')">🌟 全部 (<span id="cnt-all">0</span>)</button>
-                <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳 (<span id="cnt-member">0</span>)</button>
-                <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客 (<span id="cnt-regular">0</span>)</button>
-                <button class="roster-tab-btn" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打 (<span id="cnt-casual">0</span>)</button>
-                <button class="roster-tab-btn" id="rtab-ghost" onclick="switchRosterTab('ghost')">👻 幽靈 (<span id="cnt-ghost">0</span>)</button>
-            </div>
+            <!-- 雙欄版面：左側已加入名單 / 右側庫存名單 -->
+            <div class="roster-split-layout">
+                <!-- 👈 左側：今日已加入球局球員名單 -->
+                <div class="roster-ingame-panel">
+                    <div class="roster-ingame-header">
+                        <span>🎾 已在今日球局 (<span id="inGameCountText">0</span>人)</span>
+                        <button type="button" class="roster-remove-btn" onclick="removeAllPlayersFromGame()" title="全部移出球局">🧹 全清</button>
+                    </div>
+                    <div class="roster-ingame-list" id="inGamePlayersContainer">
+                        <!-- 動態生成已在場或休息區球員 -->
+                    </div>
+                </div>
 
-            <div class="roster-toolbar">
-                <span id="rosterCountText">名單載入中...</span>
-                <div style="display:flex; gap:6px;">
-                    <button type="button" class="roster-act-btn" onclick="batchMoveSelectedRoster()">🏷️ 移動分區</button>
-                    <button type="button" class="roster-act-btn del" onclick="batchDeleteSelectedRoster()">🗑️ 刪除勾選</button>
-                    <button type="button" class="roster-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選/取消</button>
+                <!-- 👉 右側：名庫選擇、分類與搜尋 -->
+                <div class="roster-library-panel">
+                    <div class="roster-tabs-bar">
+                        <button class="roster-tab-btn active" id="rtab-all" onclick="switchRosterTab('all')">🌟 全部 (<span id="cnt-all">0</span>)</button>
+                        <button class="roster-tab-btn" id="rtab-member" onclick="switchRosterTab('member')">💳 季繳 (<span id="cnt-member">0</span>)</button>
+                        <button class="roster-tab-btn" id="rtab-regular" onclick="switchRosterTab('regular')">🏸 常客 (<span id="cnt-regular">0</span>)</button>
+                        <button class="roster-tab-btn" id="rtab-casual" onclick="switchRosterTab('casual')">⚡ 臨打 (<span id="cnt-casual">0</span>)</button>
+                        <button class="roster-tab-btn" id="rtab-ghost" onclick="switchRosterTab('ghost')">👻 幽靈 (<span id="cnt-ghost">0</span>)</button>
+                    </div>
+
+                    <div class="roster-search-bar">
+                        <input type="text" id="rosterSearchInput" class="roster-search-input" placeholder="🔍 搜尋姓名或輸入 1~5 程度代碼..." oninput="renderRosterUI()">
+                        <button type="button" class="roster-search-clear-btn" onclick="clearRosterSearch()">✖ 清除</button>
+                    </div>
+
+                    <div class="roster-toolbar">
+                        <span id="rosterCountText">名單載入中...</span>
+                        <div style="display:flex; gap:6px;">
+                            <button type="button" class="roster-act-btn" onclick="batchMoveSelectedRoster()">🏷️ 移動分區</button>
+                            <button type="button" class="roster-act-btn del" onclick="batchDeleteSelectedRoster()">🗑️ 刪除勾選</button>
+                            <button type="button" class="roster-act-btn" onclick="toggleSelectAllCategoryRoster()">☑️ 本類全選/取消</button>
+                        </div>
+                    </div>
+
+                    <div class="roster-grid" id="rosterContainer"></div>
                 </div>
             </div>
-
-            <div class="roster-grid" id="rosterContainer"></div>
 
             <div class="modal-footer">
                 <div class="modal-footer-btns">
@@ -1269,9 +1435,18 @@
     function openRosterModal() { 
         sanitizeRosterCategories();
         switchRosterTab(currentRosterTab || 'all'); 
+        renderInGamePlayersUI();
         document.getElementById('rosterModal').classList.add('active'); 
     }
     function closeRosterModal() { document.getElementById('rosterModal').classList.remove('active'); }
+
+    function clearRosterSearch() {
+        const input = document.getElementById('rosterSearchInput');
+        if (input) {
+            input.value = '';
+            renderRosterUI();
+        }
+    }
 
     function sanitizeRosterCategories() {
         if (!globalPlayerRoster || typeof globalPlayerRoster !== 'object') {
@@ -1301,7 +1476,75 @@
         renderRosterUI();
     }
 
-    /* 👥 渲染球員點名清單 (支援 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打 / 👻 幽靈) */
+    /* 👈 渲染左側「已加入今日球局名單」 */
+    function renderInGamePlayersUI() {
+        const container = document.getElementById('inGamePlayersContainer');
+        const countElem = document.getElementById('inGameCountText');
+        if (!container) return;
+
+        const allCards = Array.from(document.querySelectorAll('.player-card'));
+        if (countElem) countElem.innerText = allCards.length;
+
+        if (allCards.length === 0) {
+            container.innerHTML = '<p style="color:#94a3b8; font-size:12px; text-align:center; padding: 25px 0;">今日球局尚無球員<br>請由右側勾選加入</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+        allCards.forEach(card => {
+            const pName = card.dataset.name || '';
+            const pGender = card.dataset.gender || 'M';
+            const pLevel = card.dataset.level || 'green';
+            const genderSymbol = pGender === 'M' ? '♂️' : '♀️';
+            const lvlIcon = levelIconMap[pLevel] || '🟢';
+            const parentId = card.parentElement ? card.parentElement.id : '';
+
+            let locText = '⏸️ 休息區';
+            if (parentId.startsWith('court-')) locText = `🟢 ${parentId.replace('court-', '')}號場`;
+            else if (parentId.startsWith('queue-')) locText = `⏳ 等待 ${parentId.replace('queue-', '')}`;
+
+            container.innerHTML += `
+                <div class="roster-ingame-item">
+                    <div class="roster-ingame-info">
+                        <div class="roster-ingame-name">${pName} ${genderSymbol}</div>
+                        <div class="roster-ingame-loc">${lvlIcon} ${locText}</div>
+                    </div>
+                    <button type="button" class="roster-remove-btn" onclick="removeSinglePlayerFromGame('${pName}')" title="移出今日球局">❌</button>
+                </div>
+            `;
+        });
+    }
+
+    /* 從球局中單筆移出球員 */
+    function removeSinglePlayerFromGame(playerName) {
+        if (!playerName) return;
+        saveHistoryState();
+        document.querySelectorAll('.player-card').forEach(card => {
+            if (card.dataset.name === playerName) card.remove();
+        });
+        filterAndSortRestZone();
+        refreshStats();
+        persistData();
+        renderInGamePlayersUI();
+        renderRosterUI();
+    }
+
+    /* 全部移出今日球局 */
+    function removeAllPlayersFromGame() {
+        const allCards = document.querySelectorAll('.player-card');
+        if (allCards.length === 0) return;
+        if (!confirm(`確定要將目前在場上的全部 ${allCards.length} 位球員移出球局嗎？`)) return;
+
+        saveHistoryState();
+        allCards.forEach(c => c.remove());
+        filterAndSortRestZone();
+        refreshStats();
+        persistData();
+        renderInGamePlayersUI();
+        renderRosterUI();
+    }
+
+    /* 👥 渲染球員點名清單 (支援 🔍 搜尋 + 雙欄同步) */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
         const countTextElem = document.getElementById('rosterCountText');
@@ -1330,16 +1573,36 @@
         if (cntCas) cntCas.innerText = countCasual;
         if (cntGho) cntGho.innerText = countGhost;
 
-        const categoryKeys = (currentRosterTab === 'all')
-            ? allKeys 
-            : allKeys.filter(k => (globalPlayerRoster[k].category || 'casual') === currentRosterTab);
+        const searchInput = document.getElementById('rosterSearchInput');
+        const searchKeyword = (searchInput ? searchInput.value : '').trim().toLowerCase();
+        const numLevelMap = { '1': 'green', '2': 'yellow', '3': 'blue', '4': 'red', '5': 'black' };
+
+        const categoryKeys = allKeys.filter(k => {
+            const p = globalPlayerRoster[k];
+            if (!p) return false;
+
+            const matchCategory = (currentRosterTab === 'all') || ((p.category || 'casual') === currentRosterTab);
+            if (!matchCategory) return false;
+
+            if (!searchKeyword) return true;
+
+            const nameMatch = (p.name || '').toLowerCase().includes(searchKeyword);
+            const levelMatch = numLevelMap[searchKeyword] ? (p.level === numLevelMap[searchKeyword]) : false;
+            const textLevelMatch = (levelTextMap[p.level] || '').includes(searchKeyword);
+
+            return nameMatch || levelMatch || textLevelMatch;
+        });
 
         if (countTextElem) {
-            countTextElem.innerText = `【${categoryTextMap[currentRosterTab]}】名單共 ${categoryKeys.length} 人`;
+            const filterNote = searchKeyword ? ` (搜尋「${searchKeyword}」過濾)` : '';
+            countTextElem.innerText = `【${categoryTextMap[currentRosterTab]}】名單共 ${categoryKeys.length} 人${filterNote}`;
         }
 
         if (categoryKeys.length === 0) {
-            container.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; grid-column: span 2; padding: 25px 0;">尚無【${categoryTextMap[currentRosterTab]}】球員紀錄</p>`;
+            const emptyMsg = searchKeyword 
+                ? `找不到符合「${searchKeyword}」的球員` 
+                : `尚無【${categoryTextMap[currentRosterTab]}】球員紀錄`;
+            container.innerHTML = `<p style="color:#64748b; font-size:13px; text-align:center; grid-column: span 2; padding: 25px 0;">${emptyMsg}</p>`;
             updateRosterSubmitBtnUI();
             return;
         }
@@ -1363,7 +1626,7 @@
                     <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
                     <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} (${catName})">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div class="roster-sub-text" style="color:${isAlreadyInGame ? '#059669' : '#64748b'};">[${lvlIcon} ${lvlName}·${catName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
+                        <div class="roster-sub-text" style="color:${isAlreadyInGame ? '#059669' : '#64748b'};">[${lvlIcon} ${lvlName}·${catName}] ${isAlreadyInGame ? '(已加入)' : ''}</div>
                     </label>
                     <div style="display:flex; gap:2px;">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
@@ -1374,6 +1637,7 @@
         });
 
         updateRosterSubmitBtnUI();
+        renderInGamePlayersUI();
     }
 
     function updateRosterSubmitBtnUI() {
@@ -1429,6 +1693,7 @@
         filterAndSortRestZone();
         refreshStats();
         persistData();
+        renderInGamePlayersUI();
         renderRosterUI();
     }
 
@@ -1453,7 +1718,6 @@
         switchRosterTab(currentRosterTab);
     }
 
-    /* 🗑️ 批次選取刪除球員 */
     function batchDeleteSelectedRoster() {
         const checkboxes = document.querySelectorAll('#rosterModal .roster-grid input[type="checkbox"]:checked');
         if (checkboxes.length === 0) { alert("請先勾選要刪除的球員！"); return; }
@@ -1920,6 +2184,7 @@
         refreshStats();
         persistData();
         filterAndSortRestZone();
+        renderInGamePlayersUI();
     }
 
     function saveHistoryState() {
@@ -1945,6 +2210,7 @@
         persistData();
         filterAndSortRestZone();
         updateUndoRedoButtons();
+        renderInGamePlayersUI();
     }
 
     function redo() {
@@ -1958,6 +2224,7 @@
         persistData();
         filterAndSortRestZone();
         updateUndoRedoButtons();
+        renderInGamePlayersUI();
     }
 
     function toggleWinnerCard(elem) {
@@ -2048,6 +2315,7 @@
         filterAndSortRestZone();
         refreshStats();
         persistData();
+        renderInGamePlayersUI();
     }
 
     function createPlayer() {
@@ -2079,6 +2347,7 @@
         refreshStats();
         persistData();
         renderRosterUI();
+        renderInGamePlayersUI();
     }
 
     function makePlayerNode(id, name, gender, level = "green", category = "casual", played = 0, wins = 0, isWinner = false) {
@@ -2185,6 +2454,7 @@
             filterAndSortRestZone();
             refreshStats();
             persistData();
+            renderInGamePlayersUI();
         }
 
         clearPlayerSelection();
@@ -2373,6 +2643,7 @@
             }
         });
         filterAndSortRestZone();
+        renderInGamePlayersUI();
     }
 
     function persistData() {
