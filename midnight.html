@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <!--
     ==================================================
-    深夜羽球專用排場系統 (Badminton Court Board)
+    團團圓圓宵夜團排場系統 (Badminton Court Board)
     File Name: midnight.html
-    Version: v3.3.5-NIGHT
-    Last Updated: 2026-09-02
-    Club: 深夜羽球 (Password: 888)
+    Version: v3.3.6-NIGHT
+    Last Updated: 2026-11-09
+    Club: 團團圓圓宵夜團 (Password: 888)
     Firebase Node: clubs/midnight
     Features:
-      1. 隊名視覺全面優化：完全去除黑底，改為極光湛藍漸層+清爽白琉璃微光框 (21px, 900)
-      2. 移除頂部版本號，整體視覺更乾淨大器
-      3. 球員名單點名視窗卡片拓寬，5 字姓名完整顯示
-      4. 點名視窗「🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打」四大分類
-      5. 0ms 極速點擊勝者變綠 + 時間戳雙擊查看戰績履歷
+      1. 團名更新為「團團圓圓宵夜團」
+      2. 階級更新為 5 級 (🟢 新手 / 🟡 初階 / 🔵 初中 / 🔴 中階 / ⚫ 中進階)
+      3. 標籤顯示改為「顏色圓圈+階級名稱」，隱藏數字代碼
+      4. 支援 5 個中文字完整顯示，無截斷問題
+      5. 0ms 極速勝者高亮變綠，觸控雙擊查看戰績
       6. iPad 10.5 吋 100% 穩定自適應滿版
     ==================================================
 -->
@@ -20,7 +20,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>深夜羽球 - 排場系統</title>
+    <title>團團圓圓宵夜團 - 排場系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -81,9 +81,9 @@
             gap: 8px; 
         }
         
-        /* 💎 無黑底、極光湛藍特粗立體隊名 */
+        /* 團團圓圓宵夜團專屬質感漸層 */
         .site-title { 
-            font-size: 21px; 
+            font-size: 20px; 
             font-weight: 900; 
             display: inline-flex; 
             align-items: center; 
@@ -430,7 +430,7 @@
             overflow: hidden;
         }
 
-        /* 🔤 主排場板名牌卡片 */
+        /* 主排場板名牌卡片 */
         .player-card { 
             padding: var(--card-pad, 5px 6px); 
             background: #ffffff; 
@@ -460,7 +460,6 @@
         .player-card[data-gender="M"] { border-left: var(--border-l, 3.5px) solid #2563eb; }
         .player-card[data-gender="F"] { border-left: var(--border-l, 3.5px) solid #ec4899; }
 
-        /* 🟢 獲勝勝者高亮 */
         .player-card.is-winner {
             background: #d1fae5 !important;
             border-color: #10b981 !important;
@@ -510,7 +509,6 @@
             line-height: 1.15;
         }
 
-        /* 🔤 支援 5 個中文字完整顯示 */
         .player-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -546,20 +544,23 @@
             line-height: 1.15;
         }
 
+        /* 🎨 階級標籤樣式 (綠/黃/藍/紅/黑) */
         .level-badge {
-            padding: 1px 3px;
+            padding: 1px 4px;
             border-radius: 3px;
             font-weight: 700;
             font-size: var(--p-badge-size, 10px);
-            color: #ffffff !important;
-            display: inline-block;
-            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            line-height: 1.1;
             letter-spacing: -0.2px;
         }
-        .level-badge.blue { background-color: #0284c7; }
-        .level-badge.green { background-color: #16a34a; }
-        .level-badge.yellow { background-color: #eab308; }
-        .level-badge.black { background-color: #0f172a; }
+        .level-badge.green { background-color: #16a34a; color: #ffffff !important; }
+        .level-badge.yellow { background-color: #eab308; color: #ffffff !important; }
+        .level-badge.blue { background-color: #0284c7; color: #ffffff !important; }
+        .level-badge.red { background-color: #dc2626; color: #ffffff !important; }
+        .level-badge.black { background-color: #0f172a; color: #ffffff !important; }
 
         .modal-overlay {
             display: none;
@@ -619,7 +620,6 @@
         .menu-action-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 10px; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .menu-action-card:active { background: #f1f5f9; transform: scale(0.98); }
 
-        /* 👥 常客分頁標籤 */
         .roster-tabs-bar { display: flex; gap: 4px; margin-bottom: 8px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
         .roster-tab-btn { flex: 1; padding: 6px 2px; border: none; background: transparent; font-size: 12.5px; font-weight: 700; color: #64748b; border-radius: 5px; cursor: pointer; white-space: nowrap; }
         .roster-tab-btn.active { background: #ffffff; color: #2563eb; }
@@ -636,7 +636,7 @@
         .save-modal-btn.secondary { background: #64748b; }
         .save-modal-btn.outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-        /* 🔤 點名清單網格與卡片 */
+        /* 點名清單網格與卡片 */
         .roster-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
@@ -721,7 +721,7 @@
     <!-- 頂部 Header -->
     <div class="top-bar">
         <div class="site-title" onclick="openAdminMenuModal()" title="點擊開啟球隊管理與設定選單">
-            <span class="site-title-text" id="displayClubTitle">深夜羽球</span>
+            <span class="site-title-text" id="displayClubTitle">團團圓圓宵夜團</span>
             <span class="site-title-badge">⚙️ 管理</span>
         </div>
         <div class="action-area">
@@ -756,7 +756,7 @@
 
             <div class="rest-filter-bar">
                 <div class="rest-search-row">
-                    <input type="text" id="restSearchInput" class="rest-search-input" placeholder="🔍 搜尋姓名或輸入1~4..." oninput="filterAndSortRestZone()">
+                    <input type="text" id="restSearchInput" class="rest-search-input" placeholder="🔍 搜尋姓名或輸入1~5..." oninput="filterAndSortRestZone()">
                     <select id="restSortSelect" class="rest-sort-select" onchange="filterAndSortRestZone()">
                         <option value="default">預設</option>
                         <option value="level">程度</option>
@@ -766,10 +766,11 @@
                 </div>
                 <div class="rest-level-pills">
                     <button class="level-pill-btn active" onclick="setRestLevelFilter('all', this)">全部</button>
-                    <button class="level-pill-btn" onclick="setRestLevelFilter('blue', this)">1:🔵初階</button>
-                    <button class="level-pill-btn" onclick="setRestLevelFilter('green', this)">2:🟢初中</button>
-                    <button class="level-pill-btn" onclick="setRestLevelFilter('yellow', this)">3:🟡中階</button>
-                    <button class="level-pill-btn" onclick="setRestLevelFilter('black', this)">4:⬛團主</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('green', this)">🟢 新手</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('yellow', this)">🟡 初階</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('blue', this)">🔵 初中</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('red', this)">🔴 中階</button>
+                    <button class="level-pill-btn" onclick="setRestLevelFilter('black', this)">⚫ 中進階</button>
                 </div>
             </div>
 
@@ -806,12 +807,12 @@
     <div class="modal-overlay" id="adminMenuModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>⚙️ 深夜羽球 - 管理選單</span>
+                <span>⚙️ 團團圓圓宵夜團 - 管理選單</span>
                 <button class="close-modal-btn" onclick="closeAdminMenuModal()">&times;</button>
             </div>
 
             <div class="menu-section">
-                <div class="menu-section-title">➕ 快速新增球員 (支援身分與程度 1~4)</div>
+                <div class="menu-section-title">➕ 快速新增球員 (支援程度 1~5)</div>
                 <div class="menu-add-row">
                     <input type="text" id="pName" placeholder="輸入球員姓名" autocomplete="off" onkeydown="if(event.key==='Enter') createPlayerFromMenu()">
                     <select id="pGender">
@@ -819,10 +820,11 @@
                         <option value="F">女 ♀</option>
                     </select>
                     <select id="pLevel">
-                        <option value="blue">1: 🔵 初階</option>
-                        <option value="green">2: 🟢 初中</option>
-                        <option value="yellow">3: 🟡 中階</option>
-                        <option value="black">4: ⬛ 團主</option>
+                        <option value="green">🟢 新手</option>
+                        <option value="yellow">🟡 初階</option>
+                        <option value="blue">🔵 初中</option>
+                        <option value="red">🔴 中階</option>
+                        <option value="black">⚫ 中進階</option>
                     </select>
                     <select id="pCategory">
                         <option value="casual">⚡ 臨打</option>
@@ -850,7 +852,7 @@
         </div>
     </div>
 
-    <!-- 👥 球員名單點名視窗 (含 🌟 全部 / 💳 季繳 / 🏸 常客 / ⚡ 臨打) -->
+    <!-- 👥 球員名單點名視窗 -->
     <div class="modal-overlay" id="rosterModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -971,7 +973,7 @@
     </div>
 
 <script>
-    const currentClubName = "深夜羽球";
+    const currentClubName = "團團圓圓宵夜團";
     const currentAdminPassword = "888";
     const customStoragePrefix = "midnight_";
     let isAdminUnlocked = false;
@@ -1031,18 +1033,29 @@
     let currentHistoryTab = 'logs';
     let currentRosterTab = 'all';
 
+    /* 🎨 全新 5 級階級與圓圈符號定義 */
     const levelTextMap = {
-        blue: "初階",
-        green: "初中",
-        yellow: "中階",
-        black: "團主"
+        green: "新手",
+        yellow: "初階",
+        blue: "初中",
+        red: "中階",
+        black: "中進階"
+    };
+
+    const levelIconMap = {
+        green: "🟢",
+        yellow: "🟡",
+        blue: "🔵",
+        red: "🔴",
+        black: "⚫"
     };
 
     const levelRankMap = {
-        blue: 1,
-        green: 2,
-        yellow: 3,
-        black: 4
+        green: 1,
+        yellow: 2,
+        blue: 3,
+        red: 4,
+        black: 5
     };
 
     const categoryTextMap = {
@@ -1102,11 +1115,11 @@
         const sortType = document.getElementById('restSortSelect')?.value || 'default';
         const cards = Array.from(restZone.querySelectorAll('.player-card'));
 
-        const numLevelMap = { '1': 'blue', '2': 'green', '3': 'yellow', '4': 'black' };
+        const numLevelMap = { '1': 'green', '2': 'yellow', '3': 'blue', '4': 'red', '5': 'black' };
 
         cards.forEach(card => {
             const pName = (card.dataset.name || '').toLowerCase();
-            const pLevel = card.dataset.level || 'blue';
+            const pLevel = card.dataset.level || 'green';
 
             let matchKeyword = !searchKeyword || pName.includes(searchKeyword);
             if (numLevelMap[searchKeyword]) {
@@ -1121,7 +1134,7 @@
         if (sortType !== 'default') {
             cards.sort((a, b) => {
                 if (sortType === 'level') {
-                    return (levelRankMap[b.dataset.level || 'blue'] || 1) - (levelRankMap[a.dataset.level || 'blue'] || 1);
+                    return (levelRankMap[b.dataset.level || 'green'] || 1) - (levelRankMap[a.dataset.level || 'green'] || 1);
                 } else if (sortType === 'played') {
                     return parseInt(a.dataset.played || 0) - parseInt(b.dataset.played || 0);
                 } else if (sortType === 'name') {
@@ -1269,6 +1282,10 @@
             if (!globalPlayerRoster[k].category || !['member', 'regular', 'casual'].includes(globalPlayerRoster[k].category)) {
                 globalPlayerRoster[k].category = 'casual';
             }
+            // 程度向後相容修正
+            if (!globalPlayerRoster[k].level || !['green', 'yellow', 'blue', 'red', 'black'].includes(globalPlayerRoster[k].level)) {
+                globalPlayerRoster[k].level = 'green';
+            }
         });
     }
 
@@ -1281,6 +1298,7 @@
         renderRosterUI();
     }
 
+    /* 👥 渲染球員點名清單 */
     function renderRosterUI() {
         const container = document.getElementById('rosterContainer');
         const countTextElem = document.getElementById('rosterCountText');
@@ -1330,7 +1348,8 @@
             const p = globalPlayerRoster[key];
             const isAlreadyInGame = currentActiveNames.includes(p.name);
             const genderSymbol = p.gender === 'M' ? '♂️' : '♀️';
-            const lvlName = levelTextMap[p.level] || '初階';
+            const lvlIcon = levelIconMap[p.level] || '🟢';
+            const lvlName = levelTextMap[p.level] || '新手';
             const catName = categoryTextMap[p.category || 'casual'] || '臨打';
 
             container.innerHTML += `
@@ -1338,7 +1357,7 @@
                     <input type="checkbox" value="${key}" id="cb_${key}" data-in-game="${isAlreadyInGame}" onchange="updateRosterSubmitBtnUI()">
                     <label for="cb_${key}" class="roster-info" style="cursor:pointer;" title="${p.name} (${catName})">
                         <div class="roster-name">${p.name} ${genderSymbol}</div>
-                        <div class="roster-sub-text" style="color:${isAlreadyInGame ? '#059669' : '#64748b'};">[${lvlName}·${catName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
+                        <div class="roster-sub-text" style="color:${isAlreadyInGame ? '#059669' : '#64748b'};">[${lvlIcon} ${lvlName}·${catName}] ${isAlreadyInGame ? '(球局中)' : ''}</div>
                     </label>
                     <div style="display:flex; gap:2px;">
                         <button type="button" class="roster-act-btn" onclick="editPlayerFromRoster('${key}', event)" title="修改球員資訊">✏️</button>
@@ -1397,7 +1416,7 @@
                 });
             } else if (rest) {
                 const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random()*10000);
-                rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "blue", p.category || "casual", 0, 0, false));
+                rest.appendChild(makePlayerNode(pId, p.name, p.gender, p.level || "green", p.category || "casual", 0, 0, false));
             }
         });
 
@@ -1451,16 +1470,17 @@
         if (newGenderInput === null) return;
         const newGender = (newGenderInput.trim().toUpperCase() === 'F') ? 'F' : 'M';
 
-        const currentLevelNum = p.level === 'green' ? '2' : (p.level === 'yellow' ? '3' : (p.level === 'black' ? '4' : '1'));
-        const newLevelInput = prompt("修改羽球程度 (請輸入數字)：\n1 : 🔵 初階\n2 : 🟢 初中\n3 : 🟡 中階\n4 : ⬛ 團主", currentLevelNum);
+        const currentLevelNum = p.level === 'yellow' ? '2' : (p.level === 'blue' ? '3' : (p.level === 'red' ? '4' : (p.level === 'black' ? '5' : '1')));
+        const newLevelInput = prompt("修改羽球程度 (請輸入數字 1~5)：\n1 : 🟢 新手\n2 : 🟡 初階\n3 : 🔵 初中\n4 : 🔴 中階\n5 : ⚫ 中進階", currentLevelNum);
         if (newLevelInput === null) return;
 
-        let newLevel = p.level || "blue";
+        let newLevel = p.level || "green";
         const levelTrimmed = newLevelInput.trim().toLowerCase();
-        if (levelTrimmed === '1' || levelTrimmed === 'blue' || levelTrimmed === '初階') newLevel = 'blue';
-        else if (levelTrimmed === '2' || levelTrimmed === 'green' || levelTrimmed === '初中') newLevel = 'green';
-        else if (levelTrimmed === '3' || levelTrimmed === 'yellow' || levelTrimmed === '中階') newLevel = 'yellow';
-        else if (levelTrimmed === '4' || levelTrimmed === 'black' || levelTrimmed === '團主') newLevel = 'black';
+        if (levelTrimmed === '1' || levelTrimmed.includes('新手')) newLevel = 'green';
+        else if (levelTrimmed === '2' || levelTrimmed.includes('初階')) newLevel = 'yellow';
+        else if (levelTrimmed === '3' || levelTrimmed.includes('初中')) newLevel = 'blue';
+        else if (levelTrimmed === '4' || levelTrimmed.includes('中階')) newLevel = 'red';
+        else if (levelTrimmed === '5' || levelTrimmed.includes('中進階')) newLevel = 'black';
 
         const currentCatNum = p.category === 'member' ? '1' : (p.category === 'regular' ? '2' : '3');
         const newCatInput = prompt("修改球員分類 (請輸入數字)：\n1 : 💳 季繳 (member)\n2 : 🏸 常客 (regular)\n3 : ⚡ 臨打 (casual)", currentCatNum);
@@ -1516,7 +1536,7 @@
         globalPlayerRoster[targetKey] = {
             name: trimmedName,
             gender: gender || 'M',
-            level: level || 'blue',
+            level: level || 'green',
             category: category || 'casual',
             updatedAt: Date.now()
         };
@@ -2018,15 +2038,16 @@
         saveHistoryState();
 
         const cat = categoryInput ? categoryInput.value : "casual";
+        const lvl = levelInput ? levelInput.value : "green";
         const pId = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-        const pElem = makePlayerNode(pId, val, genderInput.value, levelInput.value, cat, 0, 0, false);
+        const pElem = makePlayerNode(pId, val, genderInput.value, lvl, cat, 0, 0, false);
         
         const rest = document.getElementById('rest');
         if (rest) {
             rest.appendChild(pElem);
         }
 
-        registerPlayerToRoster(val, genderInput.value, levelInput.value, cat);
+        registerPlayerToRoster(val, genderInput.value, lvl, cat);
 
         nameInput.value = '';
         filterAndSortRestZone();
@@ -2035,7 +2056,7 @@
         renderRosterUI();
     }
 
-    function makePlayerNode(id, name, gender, level = "blue", category = "casual", played = 0, wins = 0, isWinner = false) {
+    function makePlayerNode(id, name, gender, level = "green", category = "casual", played = 0, wins = 0, isWinner = false) {
         const div = document.createElement('div');
         div.className = 'player-card' + (isWinner ? ' is-winner' : '');
         div.id = id;
@@ -2049,7 +2070,8 @@
         div.dataset.selectedWin = isWinner ? "true" : "false";
 
         const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
-        const lvlName = levelTextMap[level] || "初階";
+        const lvlIcon = levelIconMap[level] || "🟢";
+        const lvlName = levelTextMap[level] || "新手";
 
         div.innerHTML = `
             <div class="player-main">
@@ -2058,7 +2080,7 @@
                     <span class="winner-tag">勝</span>
                 </div>
                 <div class="player-sub">
-                    <span class="level-badge ${level}">${lvlName}</span>
+                    <span class="level-badge ${level}">${lvlIcon} ${lvlName}</span>
                     <span>${played}場 ${winRate}%</span>
                 </div>
             </div>
@@ -2071,13 +2093,14 @@
     function updatePlayerCardUI(elem) {
         const played = parseInt(elem.dataset.played || 0);
         const wins = parseInt(elem.dataset.wins || 0);
-        const level = elem.dataset.level || "blue";
-        const lvlName = levelTextMap[level] || "初階";
+        const level = elem.dataset.level || "green";
+        const lvlIcon = levelIconMap[level] || "🟢";
+        const lvlName = levelTextMap[level] || "新手";
         const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
 
         const subElem = elem.querySelector('.player-sub');
         if (subElem) {
-            subElem.innerHTML = `<span class="level-badge ${level}">${lvlName}</span><span>${played}場 ${winRate}%</span>`;
+            subElem.innerHTML = `<span class="level-badge ${level}">${lvlIcon} ${lvlName}</span><span>${played}場 ${winRate}%</span>`;
         }
     }
 
